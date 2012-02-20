@@ -1,0 +1,15 @@
+form.well.span3.offset4
+  h2 Sign here...
+  div.alerts
+  p.help-block 
+    strong Note: 
+    | You won't be able to change your nickname later
+  p
+  label Nickname:
+    input(type='text', name='nick') 
+  label Password:
+    input(type='password', name='password')
+  label Repeat password:
+    input(type='password', name='password2')
+  input(type='submit', name='register', value='Register').btn.btn-primary
+  input(type='button', name='back', value='Back').btn.pull-right

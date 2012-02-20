@@ -1,0 +1,11 @@
+{
+  "name": "Board games",
+  "description": "Board",
+  "version": "0.1.0",
+  "author": "Zoltán Nagy <abesto@abesto.net>",
+  "private": true,
+  "engines": { "node": ">= 0.4.0 < 0.5.0" },
+  "dependencies": {
+    "socketstream": "~>0.2.0"
+  }
+}
