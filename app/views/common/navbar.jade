@@ -1,6 +1,6 @@
 {{if user}}
 ul.nav
-  li
+  li.active
     a#chat(href='#', data-toggle='tab') Chat
 ul.nav.pull-right
   li.dropdown
@@ -8,6 +8,8 @@ ul.nav.pull-right
       b.caret
     ul.dropdown-menu
       li
-        a#profile(href='#') Profile
+        a#edit-profile(href='#') Change Password
+      li.divider
+      li
         a#logout(href='#') Log out
 {{/if}}

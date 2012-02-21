@@ -14,14 +14,20 @@ loginForm = (cb) ->
           strong: 'Oops!'
           normal: res.info
       else
+        $form.remove()
         SS.server.user.getCurrentUser cb
     false
   RUB.content.html $form
-  $form.find('[name=register]').click registerForm
+  $form.find('[name=register]').click ->
+    registerForm cb
 
 registerForm = (cb) ->
   $form = $('#user-register').tmpl()
-  $form.find('[name=back]').click loginForm
+
+  $form.find('[name=back]').click ->
+    $form.remove()
+    loginForm cb
+
   $form.submit ->
     return unless nick = validate(
       'nick', $form, RUB.V.trim(),
@@ -42,6 +48,7 @@ registerForm = (cb) ->
           strong: 'Oops!'
           normal: res.info
       else
+        $form.remove()
         SS.server.user.login nick, password, cb
     false
 
