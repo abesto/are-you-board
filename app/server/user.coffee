@@ -7,6 +7,7 @@ exports.actions =
     @session.authenticate auth_path, {nick: nick, password: password}, (response) =>
       @session.setUserId response.user_id if response.success
       cb response
+  setPassword: (password, cb) -> auth.setPassword @session.user_id, password, cb
   logout: (cb) -> @session.user.logout cb
   getCurrentUser: (cb) -> 
     if @session.user_id

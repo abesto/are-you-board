@@ -1,7 +1,6 @@
 window.RUB = {}
 
 loginInit = ->
-  SS.client.user.login.init appInit
 
 appInit = (res) ->
   RUB.user = res
@@ -9,14 +8,16 @@ appInit = (res) ->
   SS.client.chat.init()
 
 navbar = ->
-  RUB.navbar.html $('#common-navbar').tmpl user: RUB.user
+  $navbar = $('#common-navbar').tmpl user: RUB.user
+  RUB.navbar.html $navbar
   if RUB.user
-    $('#logout').click ->
+    $navbar.find('#logout').click ->
       SS.server.user.logout -> 
         delete RUB.user
         navbar()
-        loginInit()
-    $('#edit-profile').click SS.client.user.profile.edit
+        SS.client.user.login appInit
+    $navbar.find('#chat').click SS.client.chat.init
+    $navbar.find('#edit-profile').click SS.client.user.edit
 
 exports.init = ->
   RUB.content = $('#content')
@@ -27,4 +28,4 @@ exports.init = ->
     if res
       appInit res
     else
-      loginInit()
+      SS.client.user.login appInit

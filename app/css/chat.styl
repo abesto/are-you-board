@@ -1,43 +1,28 @@
 div.chat
-  width 100%
+  background-color pink
 
   .head
-    border-bottom: 1px solid;
-    margin 15px
-    padding 7px
-    border-radius 10px
+    background-color yellow
 
-  table.chat-view
-    width 85%
-    float left
-    tbody
-      overflow: auto;
-      display: block;
-      td
-        vertical-align: top;
-      td.left
-        border-right: 1px dashed;
-        font-weight: bold;
-        padding-right: 5px;
-
-      td.time
-        margin-right 5px
-      td.time:before
-        content "("
-      td.time:after
-        content ")"
-
-  div.userlist-container
-    float right
-    margin auto
-    padding 15px
-
-    ul.userlist
+  .body
+    background-color blue
+    .scroll
+      height 400px
+      overflow auto
+      background-color lightblue
+    .users-container
+      background-color lightblue
+      .users
+        background-color cyan
         list-style none
-        padding 0
+        margin 0
+        width 100%
+    .messages td
+        vertical-align top
+    .user
+      background-color pink
+    .message
+      background-color gray
 
   .foot
-    border-top: 1px solid;
-    clear both
-
-
+    background-color orange

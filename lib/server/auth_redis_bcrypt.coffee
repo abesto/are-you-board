@@ -46,6 +46,12 @@ exports.register = ({nick, password}, cb) ->
             return cb {success: false, info: err}
           cb {success: true, user_id: id}
 
+exports.setPassword = (id, password, cb) ->
+  hash_password password, (err, hash) ->
+    return cb {success: false, info: err} if err
+    R.hset "user:#{id}", 'hash', hash, (err, res) -> 
+     cb {success: not err, info: res}
+
 exports.getUserData = (id, cb) -> R.hmget "user:#{id}", 'nick', 'id', (err, [nick, id]) -> cb {nick: nick, id: id}
 
 exports.hash_password = hash_password
