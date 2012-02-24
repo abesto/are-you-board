@@ -30,7 +30,7 @@ exports.register = ({nick, password}, cb) ->
   hash_password password, (err, hash) ->
     return cb {success: false, info: err} if err
     R.hsetnx 'users', nick, -1, (err, res) ->
-      return cb {success: false, info: err or 'Nick already taken.'} if err or not res
+      return cb {success: false, info: err or 'Sorry, that nick is already taken.'} if err or not res
       R.incr 'users:id', (err, id) ->
         if err
           R.hdel 'users', nick

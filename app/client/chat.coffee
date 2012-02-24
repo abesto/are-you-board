@@ -3,7 +3,7 @@ exports.init = ->
   $messages = $chat.find '.messages'
   $scroll = $chat.find '.messages-scroll'
   $input = $chat.find 'form.chat-send input[name=input-msg]'
-  RUB.content.html $chat
+  RUB.$content.html $chat
 
   viewport = $(window).height() - 40
   $chat.find('.scroll, .filler').css 'height', viewport * .7
