@@ -4,11 +4,12 @@
 #           ---> builder.coffee ---> game objects
 # JSON ----/ (client, from server)
 
-exports.build = (input) ->
+exports.build = (input, apiTreeRoot=SS.shared) ->
   constructorParts = input['_type'].split('.')
-  constructor = SS.shared
+  constructor = apiTreeRoot
   while constructorParts.length > 0
-    constructor = constructor[constructorParts.shift()]
+    constructor = constructor[node = constructorParts.shift()]
+    if not constructor then throw Error "API tree node '#{node}' not found while building '#{input._type}'"
   output = new constructor()
   for key, value of input
     output[key] = value
