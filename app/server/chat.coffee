@@ -1,3 +1,5 @@
+# Backend of the chat demo
+
 auth_path = SS.root + '/lib/server/auth_redis_bcrypt'
 auth = require auth_path
 

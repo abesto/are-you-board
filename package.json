@@ -6,10 +6,15 @@
   "private": true,
   "engines": { "node": ">= 0.4.0 < 0.5.0" },
   "dependencies": {
-    "socketstream": "~>0.2.0",
     "bcrypt": ">= 0.5.0",
     "msgpack2": ">= 0.1.7",
     "coffee-script": ">= 1.2.0",
-    "nodeunit": ">= 0.7.3"
+    "nodeunit": ">= 0.7.3",
+    "redis": ">= 0.7.1",
+    "socketstream": "~>0.2.0"
+  },
+
+  "optionalDependencies": {
+      "hiredis": "*"
   }
 }

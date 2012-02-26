@@ -1,3 +1,6 @@
+# User registration, login, logout and profile editing
+# Authentication is implemented in lib/server/auth_redis_bcrypt
+
 auth_path = SS.root + '/lib/server/auth_redis_bcrypt'
 auth = require auth_path
 
