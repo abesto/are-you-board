@@ -6,6 +6,7 @@
   "private": true,
   "engines": { "node": ">= 0.4.0 < 0.5.0" },
   "dependencies": {
+    "async": ">= 0.1.18",
     "bcrypt": ">= 0.5.0",
     "msgpack2": ">= 0.1.7",
     "coffee-script": ">= 1.2.0",

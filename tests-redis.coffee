@@ -11,3 +11,4 @@ require('nodeunit').reporters['default'].run
       R.quit()
       cb()
     'bcrypt auth': test 'auth_redis_bcrypt'
+    'game storage': test 'server/game'
