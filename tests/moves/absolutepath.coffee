@@ -1,5 +1,5 @@
 CallCounter = require '../utils/callcounter'
-AbsolutePath = require '../../app/shared/moves/absolutepath'
+AbsolutePath = require('../../app/shared/moves/absolutepath').path
   
 
 board1D = { field: (i) -> if not @[i] then @[i] = { seq: i } else @[i] }

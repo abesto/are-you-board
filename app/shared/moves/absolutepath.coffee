@@ -1,4 +1,4 @@
-module.exports = class AbsolutePath
+exports.path = class AbsolutePath
   constructor: (fields...) ->
     @_type = 'moves.absolutepath'
     @fields = []
