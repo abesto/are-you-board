@@ -6,12 +6,12 @@ auth = require auth_path
 
 A = SS.require 'action_helpers'
 
-A.actions
+A.actions module,
   register: auth.register
   login: ({nick, password}, cb) ->
-    @session.authenticate auth_path, {nick: nick, password: password}, (response) =>
-      @session.setUserId response.user_id if response.success
-      cb response
+    @session.authenticate auth_path, {nick: nick, password: password}, (err, res) =>
+      @session.setUserId res unless err 
+      cb err, res
   setPassword: (password, cb) -> auth.setPassword {user_id:@session.user_id, password:password}, cb
   logout: (cb) -> @session.user.logout cb
   getCurrentUser: (cb) -> 

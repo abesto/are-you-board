@@ -1,12 +1,18 @@
 window.RUB = {}
 
 appInit = ->
-  SS.client.navbar.render 'chat'
+  SS.client.navbar.addItems
+    chat: SS.client.chat.init,
+    'edit-profile': SS.client.user.edit 
+    logout: SS.client.user.logout
+  SS.client.navbar.setDefaultTab('chat')
+  SS.client.navbar.render()
 
 exports.init = ->
   RUB.$content = $('#content')
-  RUB.$navbar = $('#navbar-content')
   RUB.V = SS.shared.validate
+
+  SS.client.navbar.init $('#navbar-content')
 
   SS.client.user.getCurrentUser (res) ->
     if res then appInit()
