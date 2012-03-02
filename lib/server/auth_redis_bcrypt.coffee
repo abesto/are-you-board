@@ -5,53 +5,50 @@
 #  user:<id> HASH {nick, hash}
 
 bcrypt = require 'bcrypt'
+async = require 'async'
 
 hash_password = (password, cb) ->
-  bcrypt.genSalt (err, salt) ->
-    return cb err, null if err
-    bcrypt.hash password, salt, (err, hash) ->
-      return cb err, null if err
-      cb null, hash
+  async.waterfall [
+    (cb      ) -> bcrypt.genSalt cb
+    (salt, cb) -> bcrypt.hash password, salt, cb
+  ], cb
 
 exports.authenticate = ({nick, password}, cb) ->
-  R.hget 'users', nick, (err, id) ->
-    return cb {success: false, info: err} if err
-    # If user doesn't exist: simulate the time it takes to validate the password and return
-    if id is null
-      return hash_password password, (err, res) -> cb {success: false, info: err || 'User not found.'}
-    R.hget "user:#{id}", 'hash', (err, old_hash) ->
-      return cb {success: false, info: err} if err
-      bcrypt.compare password, old_hash, (err, res) ->
-        return cb {success: false, info: err or 'Invalid password.'} if err or not res
-        cb {success: true, user_id: id}
-        hash_password password, (err, new_hash) -> R.hset "user:#{id}", 'hash', new_hash
+  id = null
+  async.waterfall [
+    (          cb) -> R.hget 'users', nick, cb
+    (i,        cb) ->
+      if i is null
+        cb 'User not found.', null 
+      else 
+        id = i
+        cb()
+    (          cb) -> R.hget "user:#{id}", 'hash', cb
+    (old_hash, cb) -> bcrypt.compare password, old_hash, cb
+    (valid,    cb) -> if not valid then cb 'Invalid password.', null else cb()
+    (          cb) -> hash_password password, cb
+    (new_hash, cb) -> R.hset "user:#{id}", 'hash', new_hash, cb
+  ], (err) -> cb err, id
 
 exports.register = ({nick, password}, cb) ->
-  hash_password password, (err, hash) ->
-    return cb {success: false, info: err} if err
-    R.hsetnx 'users', nick, -1, (err, res) ->
-      return cb {success: false, info: err or 'Sorry, that nick is already taken.'} if err or not res
-      R.incr 'users:id', (err, id) ->
-        if err
-          R.hdel 'users', nick
-          return cb {success: false, info: err}
-        R.multi().hset('users', nick, id).hmset("user:#{id}",
-          id: id
-          nick: nick
-          hash: hash
-        ).exec (err, res) ->
-          if err
-            R.hdel 'users', nick
-            R.del "user:#{nick}"
-            return cb {success: false, info: err}
-          cb {success: true, user_id: id}
+  user = {nick: nick}
+  async.waterfall [
+    (       cb) -> hash_password password, cb
+    (hash,  cb) -> user.hash = hash; R.hsetnx 'users', user.nick, -1, cb
+    (valid, cb) -> if not valid then cb 'Sorry, that nick is already taken.', null else cb()
+    (       cb) -> R.incr 'users:id', cb
+    (id,    cb) -> user.user_id = id; R.hset 'users', user.nick, user.user_id, cb
+    (xx,    cb) -> R.hmset "user:#{user.user_id}", user, cb
+  ],(err      ) -> cb err, user
 
-exports.setPassword = (id, password, cb) ->
-  hash_password password, (err, hash) ->
-    return cb {success: false, info: err} if err
-    R.hset "user:#{id}", 'hash', hash, (err, res) -> 
-     cb {success: not err, info: res}
+exports.setPassword = ({user_id, password}, cb) ->
+  async.waterfall [
+    (      cb) -> hash_password password, cb
+    (hash, cb) -> R.hset "user:#{user_id}", 'hash', hash, cb
+  ], cb
 
-exports.getUserData = (id, cb) -> R.hmget "user:#{id}", 'nick', 'id', (err, [nick, id]) -> cb {nick: nick, id: id}
+exports.getUserData = (id, cb) -> 
+  R.hmget "user:#{id}", 'nick', 'id', (err, [nick, id]) -> 
+    cb err, {nick: nick, id: id}
 
 exports.hash_password = hash_password

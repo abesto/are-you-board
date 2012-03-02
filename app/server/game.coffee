@@ -1,12 +1,7 @@
 # Create, edit and view game definitions
 
-msgpack = require 'msgpack2'
-buffer = require 'buffer'
 async = require 'async'
-
-##########################################
-# Helper functions; will be moved to lib #
-##########################################
+A = require '../../lib/server/action_helpers'
 
 # http://coffeescriptcookbook.com/chapters/classes_and_objects/cloning
 clone = (obj) ->
@@ -18,34 +13,6 @@ clone = (obj) ->
   return newInstance
 #
 
-packFieldsGen = (packedFields) -> (data) -> 
-  ret = {}
-  for key, value of data
-    if key in packedFields then ret[key] = msgpack.pack(data[key]).toString 'binary'
-    else ret[key] = value
-  ret
-
-unpackFieldsGen = (packedFields) -> (data) -> 
-  ret = {}
-  for key, value of data
-    if key in packedFields then ret[key] = msgpack.unpack new buffer.Buffer data[key], 'binary'
-    else ret[key] = value
-  ret
-
-wrapAction = (action) -> (args...) ->
-  cb = args.pop()
-  args.push (err, res) -> cb {success:!err, res:if err then err else res}
-  action.apply this, args
-
-actions = (obj) ->
-  module.exports.actions = {}
-  for name, action of obj
-    module.exports.actions[name] = wrapAction action
-
-###########################
-# End of helper functions #
-###########################
-
 emptyGame = 
   author: null
   name: 'New game'
@@ -54,8 +21,8 @@ emptyGame =
   rules: []
 
 packedFields = ['boards', 'moves', 'rules']
-packFields = packFieldsGen packedFields
-unpackFields = unpackFieldsGen packedFields
+packFields = A.packFieldsGen packedFields
+unpackFields = A.unpackFieldsGen packedFields
 
 rawActions =
   create: (cb) ->
@@ -84,4 +51,4 @@ rawActions =
   update: (game, cb) ->
     R.hmset "game:#{game.id}", packFields(game), cb
 
-actions rawActions
+A.actions module, rawActions

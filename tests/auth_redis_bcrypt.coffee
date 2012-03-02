@@ -6,52 +6,55 @@ cred = -> {nick: credId++, password:'pwd'}
 module.exports =
   'Error: User not found': (test) ->
     test.expect 1
-    auth.authenticate {nick: 'nosuch', password:'nickname'}, (res) ->
-      test.deepEqual {success:false, info:'User not found.'}, res
+    auth.authenticate {nick: 'nosuch', password:'nickname'}, (err, res) ->
+      test.equal 'User not found.', err 
       test.done()
 
-  'Registration increments users id': (test) ->
-    test.expect 2
+  'Registration increments users id, sets nick': (test) ->
+    test.expect 3
+    credentials = cred()
     R.get 'users:id', (err, oldId) ->
-      auth.register cred(), (res) ->
-        test.equal true, res.success
-        test.ok res.user_id > oldId
+      auth.register credentials, (err, user) ->
+        test.equal null, err
+        test.ok user.user_id > oldId
+        test.equal credentials.nick, user.nick
         test.done()
 
-  'Authentication': (test) ->
-    test.expect 2
+  'Authentication returns the user id': (test) ->
+    test.expect 3
     credentials = cred()
-    auth.register credentials, (res) ->
-      test.equal true, res.success
-      auth.authenticate credentials, (res) ->
-        test.equal true, res.success
+    auth.register credentials, (err, user) ->
+      test.equal null, err,
+      auth.authenticate credentials, (err, res) ->
+        test.equal null, err
+        test.equal user.user_id, res
         test.done()
 
   'Invalid password': (test) ->
     test.expect 2
     credentials = cred()
-    auth.register credentials, (res) ->
-      test.equal true, res.success
-      auth.authenticate {nick:credentials.nick, password:'notthis'}, (res) ->
-        test.deepEqual {success:false, info:'Invalid password.'}, res
+    auth.register credentials, (err, res) ->
+      test.equal null, err
+      auth.authenticate {nick:credentials.nick, password:'notthis'}, (err, res) ->
+        test.equal 'Invalid password.', err
         test.done()
 
   'Nick already exists': (test) ->
     test.expect 2
     credentials = cred()
-    auth.register credentials, (res) ->
-      test.equal true, res.success
-      auth.register credentials, (res) ->
-        test.deepEqual {success:false, info:'Sorry, that nick is already taken.'}, res
+    auth.register credentials, (err, res) ->
+      test.equal null, err
+      auth.register credentials, (err, res) ->
+        test.equal 'Sorry, that nick is already taken.', err
         test.done()
 
   'Change password': (test) ->
     test.expect 3
     credentials = cred()
-    auth.register credentials, (res) ->
-      test.equal true, res.success, 'Registering'
-      auth.setPassword res.user_id, 'newpwd', (res) ->
-        test.equal true, res.success, 'Changing the password'
-        auth.authenticate {nick:credentials.nick, password:'newpwd'}, (res) ->
-          test.equal true, res.success, 'Authentication after the password is changed'
+    auth.register credentials, (err, res) ->
+      test.equal null, err
+      auth.setPassword {user_id:res.user_id, password:'newpwd'}, (err, res) ->
+        test.equal null, err
+        auth.authenticate {nick:credentials.nick, password:'newpwd'}, (err, res) ->
+          test.equal null, err
           test.done()
