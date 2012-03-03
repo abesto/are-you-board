@@ -2,7 +2,8 @@ window.RUB = {}
 
 appInit = ->
   SS.client.navbar.addItems
-    chat: SS.client.chat.init,
+    chat: SS.client.chat.init
+    editor: SS.client.editor.init
     'edit-profile': SS.client.user.edit 
     logout: SS.client.user.logout
   SS.client.navbar.setDefaultTab('chat')

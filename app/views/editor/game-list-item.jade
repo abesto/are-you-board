@@ -1,0 +1,9 @@
+tr.game-list-item
+  td ${game.name}
+  td ${game.description}
+  td ${ Date(game.lastModified).toLocaleString() }
+  td
+    span.edit.btn.btn-small(rel='tooltip', title='Edit ${game.name}', href='#')
+      i.icon-cog
+    span.remove.btn.btn-small(rel='tooltip', title='Delete ${game.name}', href='#')
+      i.icon-trash

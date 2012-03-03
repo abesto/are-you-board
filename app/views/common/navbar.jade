@@ -2,9 +2,14 @@
 ul.nav
   li.active
     a#chat(href='#', data-toggle='tab') Chat
+  li
+    a#play(href='#', data-toggle='tab') Play!
+  li
+    a#editor(href='#', data-toggle='tab') Build
 ul.nav.pull-right
   li.dropdown
-    a.dropdown-toggle(href='#', data-toggle='dropdown') ${user.nick}
+    a.dropdown-toggle(href='#', data-toggle='dropdown')
+      span ${user.nick}
       b.caret
     ul.dropdown-menu
       li

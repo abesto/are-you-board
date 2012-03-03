@@ -1,2 +1,2 @@
 # Later.
-exports.notify = alert
+window.notify = exports.notify = alert

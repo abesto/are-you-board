@@ -1,0 +1,21 @@
+div.game-list
+  div.page-header
+    h1 Select a game to edit 
+      small Only your own games are visible for now
+  div.row-fluid
+    div.span10
+      table.table.table-bordered.table-striped
+        thead
+          tr
+            th Name
+            th Description
+            th(colspan=2) Last modified
+        tbody
+        tfoot
+          tr
+            td(colspan=4)
+              input(type='button', value='Create new game', style='margin:0', id='create-game').btn
+
+    div.span2
+      | Helpful text here.
+
