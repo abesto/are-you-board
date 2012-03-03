@@ -8,17 +8,17 @@ module.exports =
 
   'Game can be created and read': (test) ->
     test.expect 3
-    G.create.call this, ({success, res:created}) ->
-      test.ok success
-      G.get created.id, ({success, res:read}) ->
-        test.ok success
+    G.create.call this, ({err, res:created}) ->
+      test.equal null, err
+      G.get created.id, ({err, res:read}) ->
+        test.equal null, err
         test.deepEqual created, read
         test.done()
 
   'Created game has expected data': (test) ->
     test.expect 2
-    G.create.call this, ({success, res:game}) =>
-      test.ok success
+    G.create.call this, ({err, res:game}) =>
+      test.equal null, err
       expected =
         id: 1
         author: @session.user_id
@@ -26,24 +26,19 @@ module.exports =
         boards: []
         moves: []
         rules: []
+        lastModified: game.lastModified
       test.deepEqual expected, game
       test.done()
 
   'Game can be renamed': (test) ->
-    test.expect 3
-    expected =
-      author: @session.user_id
-      name: 'Changed'
-      boards: []
-      moves: []
-      rules: []
-    G.create.call this, ({res:game}) ->
-      expected.id = game.id
-      G.update {id: game.id, name: 'Changed'}, ({success}) ->
-        test.ok success
-        G.get game.id, ({success, res:game}) ->
-          test.ok success
-          test.deepEqual expected, game
+    test.expect 4
+    G.create.call this, ({res:old}) ->
+      G.update {id: old.id, name: 'Changed'}, ({err}) ->
+        test.equal null, err
+        G.get old.id, ({err, res:renamed}) ->
+          test.equal null, err
+          test.equal 'Changed', renamed.name
+          test.ok renamed.lastModified >= old.lastModified
           test.done()
 
   'Change multiple fields of a game': (test) ->
@@ -62,10 +57,11 @@ module.exports =
         moves: [{a:3}]
         rules: []
 
-      G.update data, ({success}) ->
-        test.ok success
-        G.get game.id, ({success, res:game}) ->
-          test.ok success
+      G.update data, ({err}) ->
+        test.equal null, err
+        G.get game.id, ({err, res:game}) ->
+          expected.lastModified = game.lastModified
+          test.equal null, err
           test.deepEqual expected, game
           test.done()
 

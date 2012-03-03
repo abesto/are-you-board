@@ -27,6 +27,7 @@ unpackFields = A.unpackFieldsGen packedFields
 rawActions =
   create: (cb) ->
     game = clone emptyGame
+    game.lastModified = Date.now()
     game.author = @session.user_id
     async.waterfall [
       (cb    ) -> R.incr 'games:id', cb
@@ -49,6 +50,7 @@ rawActions =
     ], cb
 
   update: (game, cb) ->
+    game.lastModified = Date.now()
     R.hmset "game:#{game.id}", packFields(game), cb
 
 A.actions module, rawActions
