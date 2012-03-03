@@ -38,3 +38,36 @@ exports.instance = class RectangleBoardInstance
     key = "#{r},#{c}"
     if key not of @_fields then @_fields[key] = new RectangleField(this, r, c)
     @_fields[key]
+
+exports.editor = (definition, $container) ->
+  $html = $('<table>').addClass('rectangle-board')
+
+  makeField = (row, column) -> "<td data-row=\"#{row}\" data-column=\"#{column}\" class=\"field\"></td>"
+
+  actions =
+    addRow: (viewOnly=false) ->
+      $row = $('<tr>').attr('data-row', definition.rows).addClass('row')
+      $row.append (makeField definition.rows, column for column in [0...definition.columns]).join('')
+      $html.append $row
+      definition.rows++ unless viewOnly
+
+    addColumn: (viewOnly=false) ->
+      $html.find('.row').each ->
+        $(this).append(makeField $(this).attr('data-row'), definition.columns)
+      definition.columns++ unless viewOnly
+
+    deleteRow: ->
+      throw 'Can not delete the last row' if definition.rows == 1
+      $html.find('.row:last-child').remove()
+      definition.rows--
+
+    deleteColumn: ->
+      throw 'Can not delete the last column' if definition.columns == 1
+      $html.find(".field[data-column=#{--definition.columns}]").remove()
+      definition.columns--
+
+  actions.addRow true for row in [0...definition.rows]
+
+  $container.html $html
+
+  window.e = actions

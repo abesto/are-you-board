@@ -1,4 +1,4 @@
-div.editor
+div.editor.row
   form(action='#')
     h1 Editing 
       span.game-name ${game.name}
@@ -7,38 +7,40 @@ div.editor
         | (id:
         span.game-id ${game.id}
         | )
-    div.row
-      div.span10
-        div.tabbable
-          ul.nav.nav-tabs
-            li.active
-              a(href='#general', data-toggle='tab') General
-            li 
-              a(id='boards-tab', href='#boards', data-toggle='tab') Boards
-          // eof nav-tabs
-          div.tab-content 
-            div.tab-pane.active#general
-                label Game name
-                  input(name='name', type='text', value='${game.name}')
-                label Description
-                  textarea(name='description', rows='10').span10 ${game.description}
-            // eof #general
-            div.tab-pane#boards
-              div.boards-list.span5
-              div.board-properties.span7
-                div.container
+    div.tabbable
+      ul.nav.nav-tabs
+        li.active
+          a(href='#general', data-toggle='tab') General
+        li 
+          a(id='boards-tab', href='#boards', data-toggle='tab') Boards
+      // eof nav-tabs
+      div.tab-content 
+        div.tab-pane.active#general
+            label Game name
+              input(name='name', type='text', value='${game.name}')
+            label Description
+              textarea(name='description', rows='10').span12 ${game.description}
+            input.btn.btn-primary.save(type='submit', value='Save')
+        // eof #general
+        div.tab-pane#boards
+          div.row
+            div.left.span9
+            div.right.span3.well(style='padding:9px')
+              fieldset(style='margin-bottom:9px')
+                legend 
+                  | Boards
+                  input.btn.btn-primary.save(type='submit', value='Save', style='float:right')
+                ul.board-list
+                  li Fake board
                 div.btn-group
                   a.btn.dropdown-toggle(data-toggle="dropdown", href="#") Add a board 
                     span.caret
                   ul.dropdown-menu
                     li
                       a(href="#", id="add-rectangle-board", rel="Board;RectangleBoard;8,8") Rectangle board
-            // eof #boards
-          // eof tab-content
-        // eof tabbable
-        input.btn.btn-primary.save(type='submit', value='Save')
-
-      div.span2.sidebar
-        div.help
-        div.alerts
-
+                fieldset(style='margin-botton:9px')
+                  legend Properties
+                  div.properties
+        // eof #boards
+      // eof tab-content
+    // eof tabbable

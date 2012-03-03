@@ -12,6 +12,12 @@ edit = (game) ->
       notify err || res
     false 
 
+  board = new SS.shared.boards.rectangle.definition
+    rows: 8
+    columns: 8
+
+  SS.shared.boards.rectangle.editor board, $editor.find('.left')
+
   RUB.$content.html $editor
 
 exports.init = ->
