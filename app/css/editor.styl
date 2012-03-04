@@ -1,6 +1,6 @@
 div.game-list
   .game-list-item
-    td
+    td, [class^="icon-"]
       vertical-align middle     
   
 div.editor
@@ -9,8 +9,11 @@ div.editor
     padding 0
 
   .rectangle-board
-    border-collapse collapse
-    td
+    .field
       border 1px solid gray
       width 30px
       height 30px
+    .field.selected, .field.selected:hover
+      box-shadow 0 0 3px blue
+    .field:hover
+      box-shadow 0 0 3px green

@@ -42,12 +42,16 @@ exports.instance = class RectangleBoardInstance
 exports.editor = (definition, $container) ->
   $html = $('<table>').addClass('rectangle-board')
 
-  makeField = (row, column) -> "<td data-row=\"#{row}\" data-column=\"#{column}\" class=\"field\"></td>"
+  makeField = (row, column) -> 
+    $("<td data-row=\"#{row}\" data-column=\"#{column}\" class=\"field\"></td>")
+      .click ->
+        $html.find('.selected').removeClass 'selected'
+        $(this).addClass 'selected'
 
   actions =
     addRow: (viewOnly=false) ->
       $row = $('<tr>').attr('data-row', definition.rows).addClass('row')
-      $row.append (makeField definition.rows, column for column in [0...definition.columns]).join('')
+      $row.append makeField definition.rows, column for column in [0...definition.columns]
       $html.append $row
       definition.rows++ unless viewOnly
 

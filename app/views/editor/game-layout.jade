@@ -1,12 +1,13 @@
 div.editor.row
   form(action='#')
-    h1 Editing 
-      span.game-name ${game.name}
-      | 
-      small 
-        | (id:
-        span.game-id ${game.id}
-        | )
+    div.page-header
+      h1 Editing 
+        span.game-name ${game.name}
+        | 
+        small 
+          | (id:
+          span.game-id ${game.id}
+          | )
     div.tabbable
       ul.nav.nav-tabs
         li.active
