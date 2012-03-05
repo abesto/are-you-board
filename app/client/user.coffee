@@ -51,7 +51,7 @@ registerForm = (cb) ->
     )
 
     # Register user
-    SS.server.user.register nick, password, ({err, res}) ->
+    SS.server.user.register {nick:nick,password:password}, ({err, res}) ->
       if err
         # Server refused the request
         $form.find('.alerts').html $('#common-alert').tmpl
@@ -59,7 +59,7 @@ registerForm = (cb) ->
       else
         # Registration succeeded, log the user in
         $form.remove()
-        SS.server.user.login nick, password, ->
+        SS.server.user.login {nick:nick,password:password}, ->
           SS.client.user.getCurrentUser cb
     false
 
