@@ -1,16 +1,19 @@
 exports.definition = class RectangleBoardDefinition
   constructor: ({rows: @rows, columns: @columns}) ->
+    @name = "Rectangle board (#{@rows} x #{@columns})"
     @_type = 'boards.rectangle.definition'
+    @_css = {}
     @__defineGetter__ 'fields', -> @rows * @columns
-    @css = {}
 
   _checkRowColumn: (row, column) -> row >= 0 && column >= 0 && row < @rows && column < @columns
 
-  css: ({row, column, style}) ->
+  css: (opts) ->
+    {row, column} = opts
     idx = "#{row},#{column}"
+    return @_css[idx]? unless style = opts.style
     throw "row,col index (#{idx}}) out of bounds" unless @_checkRowColumn(row, column)
-    return @css[idx] unless style
-    @css[idx] = style
+    return @_css[idx] unless style
+    @_css[idx] = style
 
 
 class RectangleField
@@ -39,39 +42,65 @@ exports.instance = class RectangleBoardInstance
     if key not of @_fields then @_fields[key] = new RectangleField(this, r, c)
     @_fields[key]
 
-exports.editor = (definition, $container) ->
-  $html = $('<table>').addClass('rectangle-board')
+exports.editor = class RectangleBoardEditor
+  constructor: (@$container) ->
 
-  makeField = (row, column) -> 
-    $("<td data-row=\"#{row}\" data-column=\"#{column}\" class=\"field\"></td>")
-      .click ->
-        $html.find('.selected').removeClass 'selected'
-        $(this).addClass 'selected'
+  setBoard: (@board) ->
+    @$html = $('<table>').addClass('rectangle-board')
+    {rows, columns} = @board
+    @board.rows = @board.columns = 0
+    @addRow() while @board.rows < rows
+    @addColumn() while @board.columns < columns
+    selecting = false
+    @$container.html @$html
 
-  actions =
-    addRow: (viewOnly=false) ->
-      $row = $('<tr>').attr('data-row', definition.rows).addClass('row')
-      $row.append makeField definition.rows, column for column in [0...definition.columns]
-      $html.append $row
-      definition.rows++ unless viewOnly
+  _makeField: (row, column) -> 
+    editor = this
+    $field = $("<td data-row=\"#{row}\" data-column=\"#{column}\" class=\"field\"></td>")
+      .mousedown (e) ->
+        $this = $(this)
+        $this.siblings('.selected').removeClass 'selected' unless e.ctrlKey
+        $this.toggleClass 'selected'
+        editor.selecting = true
+        false
+      .mouseover ->
+        $(this).toggleClass 'selected' if editor.selecting
+        false
+      .mouseup ->
+        editor.selecting = false
+        false
+    css = @board.css {row:row, column:column}
+    $field.css css if css
+    $field
 
-    addColumn: (viewOnly=false) ->
-      $html.find('.row').each ->
-        $(this).append(makeField $(this).attr('data-row'), definition.columns)
-      definition.columns++ unless viewOnly
+  addRow: ->
+    $row = $('<tr>').attr('data-row', @board.rows).addClass('row')
+    $row.append @_makeField @board.rows, column for column in [0...@board.columns]
+    @$html.append $row
+    @board.rows++
 
-    deleteRow: ->
-      throw 'Can not delete the last row' if definition.rows == 1
-      $html.find('.row:last-child').remove()
-      definition.rows--
+  addColumn: ->
+    editor = this
+    @$html.find('.row').each ->
+      $this = $(this)
+      $this.append editor._makeField $this.attr('data-row'), editor.board.columns
+    @board.columns++ 
 
-    deleteColumn: ->
-      throw 'Can not delete the last column' if definition.columns == 1
-      $html.find(".field[data-column=#{--definition.columns}]").remove()
-      definition.columns--
+  deleteRow: ->
+    throw 'Can not delete the last row' if @board.rows == 1
+    @$html.find('.row:last-child').remove()
+    @board.rows--
 
-  actions.addRow true for row in [0...definition.rows]
+  deleteColumn: ->
+    throw 'Can not delete the last column' if @board.columns == 1
+    @$html.find(".field[data-column=#{--@board.columns}]").remove()
 
-  $container.html $html
-
-  window.e = actions
+  css: (styles) ->
+    editor = this
+    @$html.find('.field.selected').each ->
+      $this = $(this)
+      $this.css styles
+      editor.board.css
+        row: $this.attr('data-row')
+        column: $this.attr('data-column')
+        style: $this.attr('style')

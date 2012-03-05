@@ -22,6 +22,7 @@ exports.loginForm = loginForm = (cb) ->
     false
   RUB.$content.html $form
   $form.find('[name=register]').click -> registerForm cb
+  $form.find('input[name=nick]').focus()
 
 # Show registration form
 registerForm = (cb) ->

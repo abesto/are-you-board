@@ -1,5 +1,6 @@
 # Editing a game
 edit = (game) ->
+  game.boards = SS.shared.builder.build game.boards
   $editor = $('#editor-game-layout').tmpl(game:game)
 
   # Game name, description
@@ -12,11 +13,38 @@ edit = (game) ->
       notify err || res
     false 
 
-  board = new SS.shared.boards.rectangle.definition
-    rows: 8
-    columns: 8
+  # Boards
+  boardEditor = new SS.shared.boards.rectangle.editor $editor.find('.left')
+  addBoard = (board) ->
+    $editor.find('.board-list').append(
+      $('<li>').text(board.name).click ->
+        boardEditor.setBoard board
+        $editor.find(".#{type}-count").html boardEditor.board[type+'s']
+    )
 
-  SS.shared.boards.rectangle.editor board, $editor.find('.left')
+  $editor.find('.add-board').click ->
+    $this = $(this)
+    clazz = $this.attr('data-board')
+    parameters = $this.attr('data-parameters')
+    board = new SS.shared.boards[clazz].definition JSON.parse parameters
+    game.boards.push board
+    addBoard board
+    boardEditor.setBoard board
+
+  addBoard(board) for board in game.boards
+
+  # Add, remove rows and columns
+  for type in ['row', 'column']
+    do (type) ->
+      $counter = $editor.find(".#{type}-count")
+      for action in ['add', 'delete']
+        do (action) ->
+          $editor.find(".#{action}-#{type}").click ->
+            boardEditor[action + type[0].toUpperCase() + type[1..]]()
+            $counter.html boardEditor.board[type+'s']
+
+  $editor.find('.field-color').colorpicker().on 'changeColor', (event) ->
+    boardEditor.css 'background-color': event.color.toHex()
 
   RUB.$content.html $editor
 

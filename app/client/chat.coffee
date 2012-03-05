@@ -6,8 +6,8 @@ exports.init = ->
   RUB.$content.html $chat
 
   viewport = $(window).height() - 40
-  $chat.find('.scroll, .filler').css 'height', viewport * .7
-  $chat.css 'margin-top', viewport * .095
+  $chat.find('.scroll, .filler').css 'height', viewport - 120 - 40
+  $chat.css 'margin-top', 40
 
   $chat.find('form.chat-send').submit ->
     msg = $input.val()

@@ -6,7 +6,7 @@ appInit = ->
     editor: SS.client.editor.init
     'edit-profile': SS.client.user.edit 
     logout: SS.client.user.logout
-  SS.client.navbar.setDefaultTab('chat')
+  SS.client.navbar.setDefaultTab('editor')
   SS.client.navbar.render()
 
 exports.init = ->

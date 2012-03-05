@@ -1,28 +1,53 @@
 div.chat
-  background-color pink
+  //background-color black
 
   .head
-    background-color yellow
+    //background-color yellow
+    padding 9px
+    font-weight bold
 
   .body
-    background-color blue
+    //background-color blue
     .scroll
       height 400px
       overflow auto
-      background-color lightblue
+      //background-color lightblue
     .users-container
-      background-color lightblue
+      //background-color lightblue
       .users
-        background-color cyan
+        //background-color cyan
         list-style none
         margin 0
-        width 100%
-    .messages td
+
+    .messages
+      tr:nth-child(2n+1)
+        color #656565
+      tr:nth-child(2n)
+        color black
+
+      td
         vertical-align top
+      .time, .user
+        padding-left 7px
+        padding-right 7px
+
+      .time
+        font-style italic
+      .time:before
+        content "("
+      .time:after
+        content ")"
+
+      .user
+        font-weight bold
+      .user:after
+          content ":"
     .user
-      background-color pink
+      //background-color pink
     .message
-      background-color gray
+      //background-color gray
 
   .foot
-    background-color orange
+    //background-color orange
+    position absolute
+    bottom 0

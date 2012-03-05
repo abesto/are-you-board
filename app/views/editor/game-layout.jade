@@ -25,23 +25,35 @@ div.editor.row
         // eof #general
         div.tab-pane#boards
           div.row
-            div.left.span9
+            div.left.span9 No board selected
             div.right.span3.well(style='padding:9px')
               fieldset(style='margin-bottom:9px')
                 legend 
                   | Boards
                   input.btn.btn-primary.save(type='submit', value='Save', style='float:right')
                 ul.board-list
-                  li Fake board
                 div.btn-group
                   a.btn.dropdown-toggle(data-toggle="dropdown", href="#") Add a board 
                     span.caret
                   ul.dropdown-menu
                     li
-                      a(href="#", id="add-rectangle-board", rel="Board;RectangleBoard;8,8") Rectangle board
+                      a.add-board(href="#", data-board="rectangle", data-parameters='{"rows":8,"columns":8}') Rectangle board (8 &times; 8)
                 fieldset(style='margin-botton:9px')
                   legend Properties
                   div.properties
+                    a.btn.field-color(href='#', data-color='rgb(255,255,255)', data-color-format='rgb') Color fields
+
+                    br
+                    span Rows: 
+                    a.btn.btn-small.delete-row - 
+                    span.row-count
+                    a.btn.btn-small.add-row +
+
+                    br
+                    span Columns: 
+                    a.btn.btn-small.delete-column -
+                    span.column-count
+                    a.btn.btn-small.add-column +
         // eof #boards
       // eof tab-content
     // eof tabbable
