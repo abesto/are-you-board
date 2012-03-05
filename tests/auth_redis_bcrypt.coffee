@@ -10,6 +10,14 @@ module.exports =
       test.equal 'User not found.', err 
       test.done()
 
+  'Registration doesn\'t return hash': (test) ->
+    test.expect 2
+    credentials = cred()
+    auth.register credentials, (err, user) ->
+      test.equal null, err
+      test.ok user.hash is undefined
+      test.done()
+
   'Registration increments users id, sets nick': (test) ->
     test.expect 3
     credentials = cred()

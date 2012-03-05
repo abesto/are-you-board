@@ -39,7 +39,8 @@ exports.register = ({nick, password}, cb) ->
     (       cb) -> R.incr 'users:id', cb
     (id,    cb) -> user.user_id = id; R.hset 'users', user.nick, user.user_id, cb
     (xx,    cb) -> R.hmset "user:#{user.user_id}", user, cb
-  ],(err      ) -> cb err, user
+    (xx,    cb) -> exports.getUserData user.user_id, cb
+  ], cb
 
 exports.setPassword = ({user_id, password}, cb) ->
   async.waterfall [
