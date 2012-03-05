@@ -5,6 +5,8 @@
 # JSON ----/ (client, from server)
 
 exports.build = (input, apiTreeRoot=SS.shared) ->
+  if input instanceof Array
+    return (exports.build item, apiTreeRoot for item in input)
   constructorParts = input['_type'].split('.')
   constructor = apiTreeRoot
   while constructorParts.length > 0
