@@ -20,11 +20,22 @@ module.exports =
         test.equal credentials.nick, user.nick
         test.done()
 
+  'getUserData returns nick and id': (test) ->
+    test.expect 4
+    credentials = cred()
+    auth.register credentials, (err, user) ->
+      test.equal null, err
+      auth.getUserData user.user_id, (err, res) ->
+        test.equal null, err
+        test.equal user.user_id, res.user_id
+        test.equal user.nick, res.nick
+        test.done()
+
   'Authentication returns the user id': (test) ->
     test.expect 3
     credentials = cred()
     auth.register credentials, (err, user) ->
-      test.equal null, err,
+      test.equal null, err
       auth.authenticate credentials, (err, res) ->
         test.equal null, err
         test.equal user.user_id, res

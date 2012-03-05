@@ -48,7 +48,7 @@ exports.setPassword = ({user_id, password}, cb) ->
   ], cb
 
 exports.getUserData = (id, cb) -> 
-  R.hmget "user:#{id}", 'nick', 'id', (err, [nick, id]) -> 
-    cb err, {nick: nick, id: id}
+  R.hmget "user:#{id}", 'nick', 'user_id', (err, [nick, user_id]) -> 
+    cb err, {nick: nick, user_id: user_id}
 
 exports.hash_password = hash_password
