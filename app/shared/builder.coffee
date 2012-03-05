@@ -12,7 +12,7 @@ exports.build = (input, apiTreeRoot=SS.shared) ->
   while constructorParts.length > 0
     constructor = constructor[node = constructorParts.shift()]
     if not constructor then throw Error "API tree node '#{node}' not found while building '#{input._type}'"
-  output = new constructor()
+  output = new constructor input
   for key, value of input
-    output[key] = value
+    output[key] = value unless key of output
   return output

@@ -3,6 +3,8 @@ apiTree =
     tree:
       object: class TestObject
         f: -> @x += 1
+      another: class AnotherObject
+        constructor: ({x}) -> @x = x + 1
 
 builder = require '../app/shared/builder'
 
@@ -43,4 +45,15 @@ exports['Work recursively on arrays'] = (t) ->
   t.ok output[1] instanceof apiTree.test.tree.object
   t.equal 3, output[0][0].x
   t.equal 4, output[1].y
+  t.done()
+
+exports['Constructor gets input as argument, properties set by the constructor are not overwritten'] = (t) ->
+  t.expect 2
+  input =
+    _type: 'test.tree.another'
+    x: 3
+    y: 4
+  output = builder.build input, apiTree
+  t.equal 4, output.x
+  t.equal 4, output.y
   t.done()
