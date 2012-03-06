@@ -1,5 +1,5 @@
 async = require 'async'
-G = require('../../app/server/game').actions
+G = require('../../../app/server/game').actions
 
 module.exports =
   setUp: (cb) -> 

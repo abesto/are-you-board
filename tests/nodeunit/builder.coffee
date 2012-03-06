@@ -6,7 +6,7 @@ apiTree =
       another: class AnotherObject
         constructor: ({x}) -> @x = x + 1
 
-builder = require '../app/shared/builder'
+builder = require '../../app/shared/builder'
 
 
 exports['Output is of the appropriate class and has all input properties'] = (t) ->

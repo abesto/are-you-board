@@ -20,6 +20,6 @@
   },
 
   "scripts": {
-      "test": "coffee tests-all.coffee"
+      "test": "coffee tests/nodeunit.coffee"
   }
 }

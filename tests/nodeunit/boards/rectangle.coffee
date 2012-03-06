@@ -1,4 +1,4 @@
-board = require '../../app/shared/boards/rectangle'
+board = require '../../../app/shared/boards/rectangle'
 
 module.exports =
   setUp: (cb) ->

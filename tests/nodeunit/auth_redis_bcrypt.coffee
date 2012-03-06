@@ -1,4 +1,4 @@
-auth = require '../lib/server/auth_redis_bcrypt'
+auth = require '../../lib/server/auth_redis_bcrypt'
 
 credId = 0
 cred = -> {nick: credId++, password:'pwd'}
