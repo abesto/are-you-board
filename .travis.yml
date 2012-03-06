@@ -3,6 +3,10 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - "./node_modules/socketstream/bin/socketstream start &"
 
+branches:
+  only:
+    - master
+
 language: node_js
 node_js:
   - 0.6
