@@ -58,7 +58,7 @@ exports.init = ->
       edit res
 
   # Load existing games
-  SS.server.game.getByUser RUB.user.id, ({err, res}) ->
+  SS.server.game.getByUser RUB.user.user_id, ({err, res}) ->
     return notify err if err
     $tbody = $list.find 'tbody'
     for game in res
