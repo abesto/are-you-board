@@ -11,4 +11,4 @@ require("./casperjs/#{t}").run casper for t in [
   'register-login'
 ]
 
-casper.run()
+casper.run -> @exit @test.testResults.failed != 0
