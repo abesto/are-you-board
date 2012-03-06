@@ -17,5 +17,9 @@
 
   "optionalDependencies": {
       "hiredis": "*"
+  },
+
+  "scripts": {
+      "test": "cd tests && coffee ./nodeunit.coffee && echo Nodeunit tests done && echo && coffee casperjs/delete-user.coffee && phantomjs --ignore-ssl-errors=yes ./casperjs.coffee"
   }
 }

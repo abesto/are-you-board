@@ -1,0 +1,12 @@
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - "./node_modules/socketstream/bin/socketstream start &"
+
+branches:
+  only:
+    - master
+
+language: node_js
+node_js:
+  - 0.6
