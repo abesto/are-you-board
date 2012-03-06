@@ -16,6 +16,15 @@ div.game-list
             td(colspan=4)
               input(type='button', value='Create new game', style='margin:0', id='create-game').btn
 
+    div.modal.delete-dialog(style='display:none')
+      div.modal-header
+        a.close(data-dismiss="modal") &cross;
+        h3 Confirm game deletion
+      div.modal-body
+      div.modal-footer
+        a.btn.btn-danger(rel="delete") Delete
+        a.btn(rel="cancel") Cancel      
+
     div.span2
       | Helpful text here.
 

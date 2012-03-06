@@ -30,7 +30,18 @@ module.exports =
       test.deepEqual expected, game
       test.done()
 
-  'Game can be renamed': (test) ->
+  'Last modified date remains the same unless the game is modified': (test) ->
+    test.expect 3
+    G.create.call this, ({err, res:created}) ->
+      test.equal null, err
+      setTimeout( ->
+        G.get created.id, ({err, res:read}) ->
+          test.equal null, err
+          test.equal created.lastModified, read.lastModified
+          test.done()
+      ,1500)
+
+  'Game can be renamed, last modified date is updated': (test) ->
     test.expect 4
     G.create.call this, ({res:old}) ->
       G.update {id: old.id, name: 'Changed'}, ({err}) ->

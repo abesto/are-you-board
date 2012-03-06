@@ -58,15 +58,30 @@ exports.init = ->
       edit res
 
   # Load existing games
+  $dlg = $list.find '.delete-dialog'
   SS.server.game.getByUser RUB.user.user_id, ({err, res}) ->
     return notify err if err
     $tbody = $list.find 'tbody'
     for game in res
-      $item = $('#editor-game-list-item').tmpl(game:game)
-      $item.find('[rel=tooltip]').tooltip()
-      $item.find('.edit').click -> 
-        $tbody.find('[rel=tooltip]').tooltip 'hide'
-        edit game
-      $item.appendTo $tbody
+      do (game) ->
+        $item = $('#editor-game-list-item').tmpl(game:game)
+        $item.find('[rel=tooltip]').tooltip()
+        $item.find('.edit').click -> 
+          $tbody.find('[rel=tooltip]').tooltip 'hide'
+          edit game
+
+        $dlg.find('.btn[rel=cancel]').click -> $dlg.modal('hide')
+
+        $item.find('.delete').click ->
+          $dlg.find('.modal-body').text "You are about to delete the game '#{game.name}'. This can not be undone. Are you sure?"
+          $dlg.find('.btn[rel=delete]').one 'click', ->
+            SS.server.game.delete game.id, ({err, res}) ->
+              return notify err if err
+              $item.remove()
+              notify 'OK'
+            $dlg.modal('hide')
+          $dlg.modal()
+
+        $item.appendTo $tbody
 
   RUB.$content.html $list

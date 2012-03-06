@@ -6,7 +6,7 @@ cs = require 'coffee-script'
 # node.js style: cb(err, res)
 # socketstream style: cb({err:err, res:res}) because only a single return value is supported
 wrapAction = (action) -> 
-  # This hackery is needed because SocketStream checks the number of
+  # HACK: This is needed because SocketStream checks the number of
   # expected parameters of a function via fun.length
   signature = '(' + ('p'+i for i in [0...action.length]).join(',') + ')'
   fun = cs.compile """
