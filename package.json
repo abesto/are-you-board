@@ -17,5 +17,9 @@
 
   "optionalDependencies": {
       "hiredis": "*"
+  },
+
+  "scripts": {
+      "test": "coffee tests-all.coffee"
   }
 }
