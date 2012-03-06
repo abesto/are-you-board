@@ -77,3 +77,18 @@ module.exports =
           test.deepEqual games[1], one[1]
           test.deepEqual games[2], two[0]
           test.done()
+
+  'Game can be deleted, no junk left': (test) ->
+    test.expect 6
+    G.create.call this, ({err, res:game}) ->
+      test.equal null, err
+      G.delete game.id, ({err, res}) ->
+        test.equal null, err
+        R.exists "game:#{game.id}", (err, res) ->
+          test.equal null, err
+          test.equal false, res
+          R.sismember "games-of:100", game.id, (err, res) ->
+            test.equal null, err
+            test.equal false, res
+            test.done()
+

@@ -1,4 +1,5 @@
 # Create, edit and view game definitions
+# TODO: permission checks
 
 async = require 'async'
 A = require '../../lib/server/action_helpers'
@@ -24,7 +25,7 @@ packedFields = ['boards', 'moves', 'rules']
 packFields = A.packFieldsGen packedFields
 unpackFields = A.unpackFieldsGen packedFields
 
-rawActions =
+A.actions module, actions =
   create: (cb) ->
     game = clone emptyGame
     game.lastModified = Date.now()
@@ -46,11 +47,16 @@ rawActions =
   getByUser: (userId, cb) ->
     async.waterfall [
       (cb)      -> R.smembers "games-of:#{userId}", cb
-      (ids, cb) -> async.map ids, rawActions.get, cb
+      (ids, cb) -> async.map ids, actions.get, cb
     ], cb
 
   update: (game, cb) ->
     game.lastModified = Date.now()
     R.hmset "game:#{game.id}", packFields(game), cb
 
-A.actions module, rawActions
+  delete: (id, cb) ->
+    async.waterfall [
+      (cb) -> actions.get id, cb
+      (game, cb) -> R.srem "games-of:#{game.author}", id, cb
+      (xx,   cb) -> R.del "game:#{id}", cb
+    ], cb
