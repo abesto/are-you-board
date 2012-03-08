@@ -1,39 +1,29 @@
-exports.run = (casper) ->
-  # Wait for app to load
-  casper.then -> @waitForSelector '.login-form', -> @test.comment 'Application loaded'
-  # Go to registration form
-  casper.then ->
-    @click 'input[name=register]'
-    @waitForSelector '.register-form'
+exports.run = (casper, po) ->
+  casper.then -> casper.test.info "TEST: Registration, logout, login"
+  casper.then -> po.waitForInitialLoading -> casper.test.info 'Application loaded'
+  casper.then -> po.welcome.register()
 
-  # Register
   casper.then ->
-    @fill '.register-form',
-      nick: 'casper'
-      password: 'casper'
-      password2: 'casper'
-    @click 'input[name=register]'
-  casper.then -> @waitFor -> @exists('#logout') or @exists('.alert')
-  casper.then ->
-    if @exists '#chat'
-      @test.pass 'Registration completed, logged in automatically'
+    if po.navbar.haveLogin()
+      casper.test.pass 'Registration completed, logged in automatically'
     else
-      @die 'User "casper" is already registered, but I want to test registration; do something please.', 1
+      casper.test.fail 'Registration failed'
+      po.login ->
+        if po.navbar.haveLogin()
+          casper.test.info "Login succeeded, runnint remaining tests"
+        else
+          casper.die 'Login failed', 1
 
-  # Check that the UI shows the nickname
-  casper.then -> @test.assertEval (-> $('#current-user-nick').text() == 'casper'), 'Username appears in the navbar'
+  casper.then -> po.navbar.logout ->
+    if po.navbar.haveLogin()
+      casper.test.fail 'Logout'
+    else
+      casper.test.pass 'Logout'
 
-  # Logout, login
-  casper.then -> casper.click '#logout'
-  casper.then -> @waitForSelector '.login-form', -> @test.pass 'Logout redirected to login form'
-  casper.then -> 
-    @fill '.login-form',
-      nick: 'casper'
-      password: 'casper'
-    @click 'input[name=login]'
-    @waitForSelector '#logout'
+  casper.then -> po.welcome.login ->
+    if po.navbar.haveLogin()
+      casper.test.pass 'Login'
+    else
+      casper.die 'Login failed', 1
 
-  casper.then -> @test.pass 'Login worked'
-
-  # Check that the UI still shows the nickname
-  casper.then -> @test.assertEval (-> $('#current-user-nick').text() == 'casper'), 'Username still appears in the navbar'
+  casper.then casper.test.done
