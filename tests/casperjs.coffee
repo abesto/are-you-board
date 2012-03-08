@@ -2,7 +2,7 @@ phantom.casperPath = './casperjs/casperjs'
 phantom.injectJs phantom.casperPath + '/bin/bootstrap.js'
 
 casper = require('casper').create
-  #verbose: true
+  verbose: true
   #logLevel: 'debug'
 casper.defaultWaitTimeout = 30000
 
