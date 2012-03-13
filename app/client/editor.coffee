@@ -2,13 +2,13 @@
 edit = (game) ->
   game.boards = SS.shared.builder.build game.boards
   $editor = $('#editor-game-layout').tmpl(game:game)
-
-  # Game name, description
-  $editor.find('[name=name]').change -> game.name = $(this).val()
-  $editor.find('[name=description]').change -> game.description = $(this).val()
+  $name = $editor.find('input[name=name]')
+  $description = $editor.find('textarea[name=description]')
 
   # Save general data button
   $editor.find('form').submit ->
+    game.name = $name.val()
+    game.description = $description.val()
     SS.server.game.update game, ({err, res}) ->
       notify err || res
     false 

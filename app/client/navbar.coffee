@@ -7,9 +7,10 @@ class Navbar
     @$container.html $navbar
     for id, action of @items
       do (id, action) ->
-        $navbar.find('#'+id).click ->
+        $navbar.find('#'+id).click (e) ->
           $navbar.find('.active').removeClass('active')
           action()
+          e.preventDefault()
     if @defaultTab isnt null
       $navbar.find('#'+@defaultTab).click()
 

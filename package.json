@@ -20,6 +20,6 @@
   },
 
   "scripts": {
-      "test": "cd tests && coffee ./nodeunit.coffee && echo Nodeunit tests done && echo && coffee casperjs/delete-user.coffee && phantomjs --ignore-ssl-errors=yes ./casperjs.coffee"
+      "test": "cd tests && coffee ./nodeunit-runner.coffee && echo Nodeunit tests done && echo && coffee utils/delete-casperjs-user.coffee && casperjs/bin/casperjs --ignore-ssl-errors=yes ./casperjs-runner.coffee ./casperjs-suite"
   }
 }

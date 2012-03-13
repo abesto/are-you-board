@@ -1,8 +1,8 @@
-tr.game-list-item
-  td ${game.name}
-  td ${game.description}
-  td ${ Date(game.lastModified).toLocaleString() }
-  td
+tr.game-list-item(rel='${game.id}')
+  td.name ${game.name}
+  td.description ${game.description}
+  td.last-modified(rel='${game.lastModified}') ${ Date(game.lastModified).toLocaleString() }
+  td.actions
     span.edit.btn.btn-small(rel='tooltip', title='Edit ${game.name}', href='#')
       i.icon-cog
     span.delete.btn.btn-small(rel='tooltip', title='Delete ${game.name}', href='#')

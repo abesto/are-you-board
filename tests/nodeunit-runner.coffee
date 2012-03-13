@@ -1,4 +1,4 @@
-test = (name) -> require "./nodeunit/#{name}"
+test = (name) -> require "./nodeunit-suite/#{name}"
 require('nodeunit').reporters['default'].run
   Logic:
     'Test utils':

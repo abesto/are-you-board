@@ -1,0 +1,14 @@
+Current:
+* Update header when saving modified game name
+* Fix last modified display in game list
+* Upgrade to Bootstrap 2.0.2
+* Add feedback to editor save
+* Use Redis MULTI/EXEC in game.getByUser
+* Check: casper.evaluate returns "" instead of null, use in po.editor.list.get if possible
+* Generalize nodeunit runner
+
+Next: board editor - size, color
+* Functionality
+* Refactor
+
+Watch for: release of Socketstream 0.3
