@@ -5,7 +5,7 @@ validate = (field, $form, validators...) ->
   res = RUB.V.validate($form.find("[name=#{field}]").val(), validators...)
   return res.sanitized if res.valid
   $form.find('.alerts').html $('#common-alert').tmpl
-    normal: res.info
+    message: res.info
   return false 
 
 # Show login form

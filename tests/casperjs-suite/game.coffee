@@ -3,7 +3,6 @@ casper.po.run ->
     @test.comment "Game - create, rename, modify description, delete"
     @po.navbar.toTab 'editor'
 
-  # Create game
   @then -> @po.editor.list.createGame()
 
   name = desc = id = null
