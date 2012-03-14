@@ -96,4 +96,7 @@ module.exports = (casper) -> m =
       rename: (name, cb) -> 
         casper.fill 'form', name:name
       describe: (desc, cb) -> casper.fill 'form', description:desc
-      getId: -> casper.evaluate -> $('span.game-id').text()
+      get: -> casper.evaluate -> 
+        id: $('span.game-id').text()
+        name: $('span.game-name').text()
+

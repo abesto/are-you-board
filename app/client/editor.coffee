@@ -11,14 +11,16 @@ edit = (game) ->
     game.description = $description.val()
     SS.server.game.update game, ({err, res}) ->
       console.log err, res
-      if err then notify
+      if not err 
+        notify
+          title: 'Game saved'
+          class: 'success'
+        $('.game-name').text game.name
+      else notify
         title: 'Error saving game!'
         class: 'error'
         message: err
         sticky: true
-      else notify
-        message: 'Game saved'
-        class: 'success'
     false 
 
   # Boards

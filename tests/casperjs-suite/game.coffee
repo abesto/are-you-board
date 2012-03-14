@@ -14,10 +14,12 @@ casper.po.run ->
     inside homes is said to be mainly associated with violent or tragic events
     in the building's past such as murder, accidental death, or suicide."
     @test.assert @po.editor.game.here(), 'Created game, redirected to game editor'
-    id = @po.editor.game.getId()
+    id = @po.editor.game.get().id
     @po.editor.game.rename name
     @po.editor.game.describe desc
     @po.editor.save()
+
+  @then -> @test.assertEquals @po.editor.game.get().name, name, 'Game title updated on editor page after save'
     
   @then -> @po.navbar.toTab 'editor'
 
@@ -31,7 +33,7 @@ casper.po.run ->
     @po.editor.list.edit id
 
   @then ->
-    @test.assertEquals @po.editor.game.getId(), id, 'Switched back to game editor'
+    @test.assertEquals @po.editor.game.get().id, id, 'Switched back to game editor'
     @po.editor.game.rename name
     @po.editor.game.describe desc
     @po.editor.save()
