@@ -9,6 +9,7 @@ defaults =
 
 window.notify = exports.notify = (opts) ->
   opts = $.extend {}, defaults, opts
+  if opts.sticky then opts.closeButton = true
   $alert = $('#common-alert').tmpl opts
   $alert.addClass('alert-' + opts.class) unless opts.class is null
   $('.notifications').append $alert

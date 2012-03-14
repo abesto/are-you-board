@@ -1,7 +1,6 @@
 Current:
 * Update header when saving modified game name
 * Fix last modified display in game list
-* Add feedback to editor save
 
 Maintenance:
 * Upgrade to Bootstrap 2.0.2

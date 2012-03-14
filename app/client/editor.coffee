@@ -10,7 +10,15 @@ edit = (game) ->
     game.name = $name.val()
     game.description = $description.val()
     SS.server.game.update game, ({err, res}) ->
-      notify err || res
+      console.log err, res
+      if err then notify
+        title: 'Error saving game!'
+        class: 'error'
+        message: err
+        sticky: true
+      else notify
+        message: 'Game saved'
+        class: 'success'
     false 
 
   # Boards

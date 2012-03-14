@@ -17,6 +17,7 @@ casper.po.run ->
     id = @po.editor.game.getId()
     @po.editor.game.rename name
     @po.editor.game.describe desc
+    @po.editor.save()
     
   @then -> @po.navbar.toTab 'editor'
 
@@ -32,7 +33,8 @@ casper.po.run ->
   @then ->
     @test.assertEquals @po.editor.game.getId(), id, 'Switched back to game editor'
     @po.editor.game.rename name
-  @then -> @po.editor.game.describe desc
+    @po.editor.game.describe desc
+    @po.editor.save()
 
   @then -> @po.navbar.toTab 'editor', ->
     game = @po.editor.list.get id

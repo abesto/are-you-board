@@ -62,6 +62,10 @@ module.exports = (casper) -> m =
       casper.waitForSelector tabSelectors[name], cb
       
   editor:
+    save: ->
+      casper.click '#general .btn.save'
+      casper.waitForSelector '.alert-success'
+
     list:
       createGame: (cb) ->
         casper.click '#create-game'
@@ -91,8 +95,5 @@ module.exports = (casper) -> m =
       here: -> casper.exists 'span.game-id'
       rename: (name, cb) -> 
         casper.fill 'form', name:name
-        casper.click '#general .btn.save'
-      describe: (desc, cb) -> 
-        casper.fill 'form', description:desc
-        casper.click '#general .btn.save'
+      describe: (desc, cb) -> casper.fill 'form', description:desc
       getId: -> casper.evaluate -> $('span.game-id').text()
