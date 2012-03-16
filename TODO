@@ -1,6 +1,5 @@
 Maintenance:
 * Upgrade to Bootstrap 2.0.2
-* Generalize nodeunit runner
 
 Next: board editor - size, color
 * Functionality
