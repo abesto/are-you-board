@@ -12,11 +12,8 @@ validate = (field, $form, validators...) ->
 exports.loginForm = loginForm = (cb) ->
   $form = $('#user-login').tmpl()
   $form.submit ->
-    SS.server.user.login {nick:$form.find('[name=nick]').val(), password:$form.find('[name=password]').val()}, ({err, res}) ->
-      if err
-        $form.find('.alerts').html $('#common-alert').tmpl
-          normal: err
-      else
+    rpc SS.server.user.login, {nick:$form.find('[name=nick]').val(), password:$form.find('[name=password]').val()}, (err, res) ->
+      if not err
         $form.remove()
         SS.client.user.getCurrentUser cb
     false
@@ -51,7 +48,7 @@ registerForm = (cb) ->
     )
 
     # Register user
-    SS.server.user.register {nick:nick,password:password}, ({err, res}) ->
+    rpc SS.server.user.register, {nick:nick,password:password}, (err, res) ->
       if err
         # Server refused the request
         $form.find('.alerts').html $('#common-alert').tmpl
@@ -59,8 +56,7 @@ registerForm = (cb) ->
       else
         # Registration succeeded, log the user in
         $form.remove()
-        SS.server.user.login {nick:nick,password:password}, ->
-          SS.client.user.getCurrentUser cb
+        rpc SS.server.user.login, {nick:nick,password:password}, -> SS.client.user.getCurrentUser cb
     false
 
   RUB.$content.html $form
@@ -79,10 +75,8 @@ exports.edit = ->
       $form.find('.alerts').html $('#common-alert').tmpl
         normal: 'Please make sure the passwords match.'
       return false
-    SS.server.user.setPassword password, ({err, res}) ->
-      if err then $form.find('.alerts').html $('#common-alert').tmpl
-        normal: err
-      else $form.find('.alerts').html(
+    rpc SS.server.user.setPassword, password, (err, res) ->
+      if not err then $form.find('.alerts').html(
         $('#common-alert')
         .tmpl(normal: 'Your password has been changed.')
         .addClass('alert-success')
@@ -91,15 +85,15 @@ exports.edit = ->
 
 # Update RUB.user with the currently logged in user and call cb
 exports.getCurrentUser = (cb) ->
-  SS.server.user.getCurrentUser ({err, res}) ->
-    if not err
+  rpc SS.server.user.getCurrentUser, (err, res) ->
+    if not err and res
       RUB.user = res
     else
       RUB.user = null
     cb? RUB.user
 
-exports.logout = -> SS.server.user.logout ({err, res}) ->
-  if err
+exports.logout = -> rpc SS.server.user.logout, (err, res) ->
+  if not err
     delete RUB.user
     SS.client.navbar.render()
     loginForm SS.client.navbar.render

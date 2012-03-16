@@ -12,7 +12,7 @@ exports.init = ->
   $chat.find('form.chat-send').submit ->
     msg = $input.val()
     return if msg.trim().length == 0
-    SS.server.chat.send {msg: msg, channel: 'public'}
+    call SS.server.chat.send, {msg: msg, channel: 'public'}
     $input.val('')
     false
 

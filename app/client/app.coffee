@@ -18,3 +18,13 @@ exports.init = ->
   SS.client.user.getCurrentUser (res) ->
     if res then appInit()
     else SS.client.user.loginForm appInit
+
+window.rpc = (fn, args...) ->
+  cb = args.pop()
+  fn.call this, args..., ({res, err}) ->
+    if err then notify
+      sticky: true
+      class: 'error'
+      message: err
+      title: 'Oops! Something went wrong.'
+    cb err, res

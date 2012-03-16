@@ -9,19 +9,13 @@ edit = (game) ->
   $editor.find('form').submit ->
     game.name = $name.val()
     game.description = $description.val()
-    SS.server.game.update game, ({err, res}) ->
-      console.log err, res
+    rpc SS.server.game.update, game, (err, res) ->
       if not err 
         notify
           title: 'Game saved'
           message: "\"#{game.name}\" has been saved"
           class: 'success'
         $('.game-name').text game.name
-      else notify
-        title: 'Error saving game!'
-        class: 'error'
-        message: err
-        sticky: true
     false 
 
   # Boards
@@ -64,13 +58,13 @@ exports.init = ->
 
   # Create game button
   $list.find('#create-game').click ->
-    SS.server.game.create ({err, res}) ->
+    rpc SS.server.game.create, (err, res) ->
       return notify err if err
       edit res
 
   # Load existing games
   $dlg = $list.find '.delete-dialog'
-  SS.server.game.getByUser RUB.user.user_id, ({err, res}) ->
+  rpc SS.server.game.getByUser, RUB.user.user_id, (err, res) ->
     return notify err if err
     $tbody = $list.find 'tbody'
     for game in res
@@ -91,7 +85,7 @@ exports.init = ->
         $item.find('.delete').click ->
           $dlg.find('.modal-body').text "You are about to delete the game '#{game.name}'. This can not be undone. Are you sure?"
           $dlg.find('.btn[rel=delete]').one 'click', ->
-            SS.server.game.delete game.id, ({err, res}) ->
+            rpc SS.server.game.delete, game.id, (err, res) ->
               return notify err if err
               $item.remove()
               notify
