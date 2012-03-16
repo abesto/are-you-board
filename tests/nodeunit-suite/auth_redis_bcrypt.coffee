@@ -4,6 +4,9 @@ credId = 0
 cred = -> {nick: credId++, password:'pwd'}
 
 module.exports =
+  setUp: setUpRedis
+  tearDown: tearDownRedis
+
   'Error: User not found': (test) ->
     test.expect 1
     auth.authenticate {nick: 'nosuch', password:'nickname'}, (err, res) ->

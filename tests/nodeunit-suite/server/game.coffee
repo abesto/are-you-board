@@ -4,7 +4,9 @@ G = require('../../../app/server/game').actions
 module.exports =
   setUp: (cb) -> 
     @session = user_id: 100
-    cb()
+    setUpRedis cb
+
+  tearDown: tearDownRedis
 
   'Game can be created and read': (test) ->
     test.expect 3
