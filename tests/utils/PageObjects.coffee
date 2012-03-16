@@ -89,7 +89,7 @@ module.exports = (casper) -> m =
         casper.evaluate ((id) -> $(".game-list [rel=#{id}] .delete").click()), id:id
         casper.waitUntilVisible '.delete-dialog', ->
           casper.click '.btn[rel=delete]'
-          casper.waitWhileVisible '.delete-dialog', cb
+          casper.waitForSelector '.alert-success', cb
 
     game:
       here: -> casper.exists 'span.game-id'

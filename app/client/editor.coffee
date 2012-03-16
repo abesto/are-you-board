@@ -14,7 +14,7 @@ edit = (game) ->
       if not err 
         notify
           title: 'Game saved'
-          message: "\"#{game.name}\" has been saved at " + (new Date()).toLocaleTimeString()
+          message: "\"#{game.name}\" has been saved"
           class: 'success'
         $('.game-name').text game.name
       else notify
@@ -94,7 +94,10 @@ exports.init = ->
             SS.server.game.delete game.id, ({err, res}) ->
               return notify err if err
               $item.remove()
-              notify 'OK'
+              notify
+                title: 'Game deleted'
+                message: '"' + game.name + '" has been deleted'
+                class: 'success'
             $dlg.modal('hide')
           $dlg.modal()
 
