@@ -1,10 +1,12 @@
 Maintenance:
 * Upgrade to Bootstrap 2.0.2
-* Check: casper.evaluate returns "" instead of null, use in po.editor.list.get if possible
 * Generalize nodeunit runner
 
 Next: board editor - size, color
 * Functionality
 * Refactor
 
-Watch for: release of Socketstream 0.3
+Watch for:
+* release of Socketstream 0.3
+* Fix to PhantomJS issue #434 (https://code.google.com/p/phantomjs/issues/detail?id=434)
+    Once it's shipped to Travis-CI: Update po.editor.list.get to expect null instead of ""
