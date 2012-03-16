@@ -1,7 +1,7 @@
 tr.game-list-item(rel='${game.id}')
   td.name ${game.name}
   td.description ${game.description}
-  td.last-modified(rel='${game.lastModified}') ${ Date(game.lastModified).toLocaleString() }
+  td.last-modified(rel='${game.lastModified.getTime()}') ${ game.lastModified.toLocaleString() }
   td.actions
     span.edit.btn.btn-small(rel='tooltip', title='Edit ${game.name}', href='#')
       i.icon-cog

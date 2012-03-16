@@ -14,6 +14,7 @@ edit = (game) ->
       if not err 
         notify
           title: 'Game saved'
+          message: "\"#{game.name}\" has been saved at " + (new Date()).toLocaleTimeString()
           class: 'success'
         $('.game-name').text game.name
       else notify
@@ -74,6 +75,11 @@ exports.init = ->
     $tbody = $list.find 'tbody'
     for game in res
       do (game) ->
+
+        d = new Date()
+        d.setTime(game.lastModified)
+        game.lastModified = d
+        
         $item = $('#editor-game-list-item').tmpl(game:game)
         $item.find('[rel=tooltip]').tooltip()
         $item.find('.edit').click -> 

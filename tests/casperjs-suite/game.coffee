@@ -3,6 +3,7 @@ casper.po.run ->
     @test.comment "Game - create, rename, modify description, delete"
     @po.navbar.toTab 'editor'
 
+  # Game creation, edit from redirect
   @then -> @po.editor.list.createGame()
 
   name = desc = id = null
@@ -21,22 +22,27 @@ casper.po.run ->
 
   @then -> @test.assertEquals @po.editor.game.get().name, name, 'Game title updated on editor page after save'
     
+  # Edit from edit button, lastModified changes with save
   @then -> @po.navbar.toTab 'editor'
 
+  lastModified = 0
   @then ->
     game = @po.editor.list.get id
+    lastModified = game.lastModified
     @test.assertNot (game == ''), 'Game visible in games list'
     @test.assertEquals game.name, name, '  ... with the name entered in the editor...'
     @test.assertEquals game.description, desc, '  ... and the description entered in the editor.'
-    name = 'FOO'
-    desc = 'BAR'
     @po.editor.list.edit id
 
   @then ->
+    name = 'FOO'
+    desc = 'BAR'
     @test.assertEquals @po.editor.game.get().id, id, 'Switched back to game editor'
     @po.editor.game.rename name
     @po.editor.game.describe desc
-    @po.editor.save()
+    @wait 1100  # For lastModified test
+
+  @then @po.editor.save
 
   @then -> @po.navbar.toTab 'editor', ->
     game = @po.editor.list.get id
@@ -44,6 +50,17 @@ casper.po.run ->
     @test.assertEquals game.name, name, '  ... with the name changed in the editor...'
     @test.assertEquals game.description, desc, '  ... and the description changed in the editor.'
 
+  newLastModified = 0
+  @then ->
+    @test.assert(
+      (lastModified < (newLastModified = @po.editor.list.get(id).lastModified)),
+      'Last modified date/time changes after save')
+
+  @then -> @wait 1100
+  @then -> 
+    @test.assert(
+     (newLastModified == @po.editor.list.get(id).lastModified),
+     'Last modified date/time doesn\'t change by itself')
     @po.editor.list.delete id
 
   @then -> @test.assertEquals @po.editor.list.get(id), '', 'Deleted game'

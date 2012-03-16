@@ -82,7 +82,7 @@ module.exports = (casper) -> m =
           return {
             name: $row.find('td.name').text()
             description: $row.find('td.description').text()
-            lastModified: $row.find('td.last-modified').attr('rel')
+            lastModified: parseInt($row.find('td.last-modified').attr('rel'))
           }), id:id
 
       delete: (id, cb) ->
