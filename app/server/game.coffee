@@ -47,7 +47,11 @@ A.actions module, actions =
   getByUser: (userId, cb) ->
     async.waterfall [
       (cb)      -> R.smembers "games-of:#{userId}", cb
-      (ids, cb) -> async.map ids, actions.get, cb
+      (ids, cb) -> 
+        multi = R.multi()
+        multi.hgetall "game:#{id}" for id in ids
+        multi.exec cb
+      (data, cb) -> cb null, (unpackFields(game) for game in data)
     ], cb
 
   update: (game, cb) ->
