@@ -4,6 +4,9 @@ div.game-list
       vertical-align middle     
   
 div.editor
+  .right
+    border-radius 7px
+
   .nav-pills
     margin 0 auto
     padding 0
@@ -17,3 +20,23 @@ div.editor
       box-shadow inset 0 0 3px blue
     .field:hover
       box-shadow inset 0 0 3px green
+
+  .board-list 
+    margin 0
+    margin-bottom 13px
+    list-style none
+    li
+      border 2px solid transparent
+      border-radius 3px
+      padding 3px
+      height 29px
+      line-height 29px
+      .delete
+        float right
+    li:hover
+      background-color #ccc
+    li.selected
+      border 2px solid #333
+
+  .properties
+    margin-top 20px

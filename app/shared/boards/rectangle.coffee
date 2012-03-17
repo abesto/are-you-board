@@ -1,6 +1,5 @@
 exports.definition = class RectangleBoardDefinition
   constructor: ({rows: @rows, columns: @columns}) ->
-    @name = "Rectangle board (#{@rows} x #{@columns})"
     @_type = 'boards.rectangle.definition'
     @_css = {}
     @__defineGetter__ 'fields', -> @rows * @columns
@@ -43,23 +42,31 @@ exports.instance = class RectangleBoardInstance
     @_fields[key]
 
 exports.editor = class RectangleBoardEditor
-  constructor: (@$container) ->
+  constructor: (@$previewContainer, @$propertiesContainer) ->
 
   setBoard: (@board) ->
-    @$html = $('<table>').addClass('rectangle-board')
+    @$preview = $('<table>').addClass('rectangle-board')
+    @$properties = $('#editor-properties-rectangle').tmpl board:@board
+
+    editor = this
+    @$properties.find('input[name=name]').change -> 
+      editor.board.name = $(this).val()
+
     {rows, columns} = @board
     @board.rows = @board.columns = 0
     @addRow() while @board.rows < rows
     @addColumn() while @board.columns < columns
-    selecting = false
-    @$container.html @$html
+
+    @selecting = false
+    @$previewContainer.html @$preview
+    @$propertiesContainer.html @$properties
 
   _makeField: (row, column) -> 
     editor = this
     $field = $("<td data-row=\"#{row}\" data-column=\"#{column}\" class=\"field\"></td>")
       .mousedown (e) ->
         $this = $(this)
-        $this.siblings('.selected').removeClass 'selected' unless e.ctrlKey
+        editor.$preview.find('.selected').removeClass 'selected' unless e.ctrlKey
         $this.toggleClass 'selected'
         editor.selecting = true
         false
@@ -76,28 +83,28 @@ exports.editor = class RectangleBoardEditor
   addRow: ->
     $row = $('<tr>').attr('data-row', @board.rows).addClass('row')
     $row.append @_makeField @board.rows, column for column in [0...@board.columns]
-    @$html.append $row
+    @$preview.append $row
     @board.rows++
 
   addColumn: ->
     editor = this
-    @$html.find('.row').each ->
+    @$preview.find('.row').each ->
       $this = $(this)
       $this.append editor._makeField $this.attr('data-row'), editor.board.columns
     @board.columns++ 
 
   deleteRow: ->
     throw 'Can not delete the last row' if @board.rows == 1
-    @$html.find('.row:last-child').remove()
+    @$preview.find('.row:last-child').remove()
     @board.rows--
 
   deleteColumn: ->
     throw 'Can not delete the last column' if @board.columns == 1
-    @$html.find(".field[data-column=#{--@board.columns}]").remove()
+    @$preview.find(".field[data-column=#{--@board.columns}]").remove()
 
   css: (styles) ->
     editor = this
-    @$html.find('.field.selected').each ->
+    @$preview.find('.field.selected').each ->
       $this = $(this)
       $this.css styles
       editor.board.css

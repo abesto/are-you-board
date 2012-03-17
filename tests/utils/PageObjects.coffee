@@ -10,6 +10,7 @@
 tabSelectors =
   editor: '#create-game'
   chat: 'input[name=input-msg]'
+  'boards-tab': '#boards'
 
 nick = 'casper'
 password = 'casper'
@@ -100,3 +101,10 @@ module.exports = (casper) -> m =
         id: $('span.game-id').text()
         name: $('span.game-name').text()
 
+      toTab: (name) ->
+        casper.evaluate -> $("#content ##{name}").click name: name
+        casper.waitUntilVisible tabSelectors[name]
+
+      addBoard: (type) ->
+        board = casper.evaluate -> $(".add-board[data-board=#{type}]").click type:type
+        casper.waitForSelector ".board-list li[rel=#{board.id}]"

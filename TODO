@@ -1,5 +1,6 @@
 Current: board editor - size, color
-* Functionality, tests
+* Board deletion confirm dialog
+* Functionality, tests(?)
 * Refactor
 
 Watch for:

@@ -1,5 +1,15 @@
 div.editor.row
-  form(action='#')
+
+  div.modal.delete-dialog(style='display:none')
+    div.modal-header
+      a.close(data-dismiss="modal") &cross;
+      h3 Confirm game deletion
+    div.modal-body
+    div.modal-footer
+      a.btn.btn-danger(rel="delete") Delete
+      a.btn(rel="cancel") Cancel      
+      
+  form.form-horizontal(action='#')
     div.page-header
       h1 Editing 
         span.game-name ${game.name}
@@ -17,9 +27,9 @@ div.editor.row
       // eof nav-tabs
       div.tab-content 
         div.tab-pane.active#general
-            label Game name
+            label Game name 
               input(name='name', type='text', value='${game.name}')
-            label Description
+            label Description 
               textarea(name='description', rows='10').span12 ${game.description}
             input.btn.btn-primary.save(type='submit', value='Save')
         // eof #general
@@ -37,23 +47,9 @@ div.editor.row
                     span.caret
                   ul.dropdown-menu
                     li
-                      a.add-board(href="#", data-board="rectangle", data-parameters='{"rows":8,"columns":8}') Rectangle board (8 &times; 8)
-                fieldset(style='margin-botton:9px')
-                  legend Properties
-                  div.properties
-                    a.btn.field-color(href='#', data-color='rgb(255,255,255)', data-color-format='rgb') Color fields
+                      a.add-board(href="#", data-board="rectangle", data-parameters='{"rows":8,"columns":8}') Rectangle
 
-                    br
-                    span Rows: 
-                    a.btn.btn-small.delete-row - 
-                    span.row-count
-                    a.btn.btn-small.add-row +
-
-                    br
-                    span Columns: 
-                    a.btn.btn-small.delete-column -
-                    span.column-count
-                    a.btn.btn-small.add-column +
+                div.properties
         // eof #boards
       // eof tab-content
     // eof tabbable

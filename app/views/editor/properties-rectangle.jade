@@ -1,0 +1,15 @@
+label Name: 
+  input(type='text', name='name', value='${board.name}')
+
+label Color:
+  input.field-color(type='text', data-color='rgb(255,255,255)', data-color-format='rgb')
+
+label Rows: 
+  a.btn.btn-small.delete-row - 
+  span.row-count ${board.rows}
+  a.btn.btn-small.add-row +
+
+label Columns:  
+  a.btn.btn-small.delete-column -
+  span.column-count ${board.columns}
+  a.btn.btn-small.add-column +

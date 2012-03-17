@@ -1,9 +1,13 @@
 # Editing a game
 edit = (game) ->
+  window.game = game
   game.boards = SS.shared.builder.build game.boards
   $editor = $('#editor-game-layout').tmpl(game:game)
   $name = $editor.find('input[name=name]')
   $description = $editor.find('textarea[name=description]')
+  $deleteDialog = $('.modal')
+
+  $deleteDialog.find('.btn[rel=cancel]').click -> $deleteDialog.modal 'hide'
 
   # Save general data button
   $editor.find('form').submit ->
@@ -18,25 +22,44 @@ edit = (game) ->
         $('.game-name').text game.name
     false 
 
+
   # Boards
-  boardEditor = new SS.shared.boards.rectangle.editor $editor.find('.left')
+  boardEditor = new SS.shared.boards.rectangle.editor $editor.find('.left'), $editor.find('.properties')
+
+  editBoard = (board) ->
+    $editor.find('.board-list .selected').removeClass 'selected'
+    $editor.find(".board-list li[rel=#{board.id}]").addClass 'selected'
+    boardEditor.setBoard board
+
   addBoard = (board) ->
-    $editor.find('.board-list').append(
-      $('<li>').text(board.name).click ->
-        boardEditor.setBoard board
-        $editor.find(".#{type}-count").html boardEditor.board[type+'s']
-    )
+    $editor.find('.board-list').append $item = $('#editor-board-list-item')
+      .tmpl(board:board)
+      .click -> editBoard board
+    $item.find('.delete').click (event) ->
+      event.stopPropagation()
+      $editor.find(".board-list li[rel=#{board.id}]").remove()
+      game.boards.splice game.boards.indexOf(board), 1
+      #$deleteDialog.find('.modal-body').text 'FOO'
+      #$deleteDialog.modal().find('.btn[rel=delete]').one 'click', ->
+        #game.boards.splice board.id, 1
+        #$editor.find(".board-list li[rel=#{board.id}]").remove()
+    editBoard board
+
+  addBoard(board) for board in game.boards
+  editBoard game.boards[0] unless game.boards.length == 0
 
   $editor.find('.add-board').click ->
     $this = $(this)
     clazz = $this.attr('data-board')
     parameters = $this.attr('data-parameters')
     board = new SS.shared.boards[clazz].definition JSON.parse parameters
+    board.name = 'Rectangle board'
+    board.id = 0
+    while (true for existing in game.boards when existing.id == board.id).any()
+      board.id++
     game.boards.push board
     addBoard board
-    boardEditor.setBoard board
-
-  addBoard(board) for board in game.boards
+    board
 
   # Add, remove rows and columns
   for type in ['row', 'column']
