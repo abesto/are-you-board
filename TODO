@@ -1,8 +1,5 @@
-Maintenance:
-* Upgrade to Bootstrap 2.0.2
-
-Next: board editor - size, color
-* Functionality
+Current: board editor - size, color
+* Functionality, tests
 * Refactor
 
 Watch for:
