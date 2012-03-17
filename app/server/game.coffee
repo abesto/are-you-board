@@ -21,7 +21,7 @@ emptyGame =
   moves: []
   rules: []
 
-packedFields = ['boards', 'moves', 'rules']
+packedFields = ['boards', 'moves', 'rules', '_css']
 packFields = A.packFieldsGen packedFields
 unpackFields = A.unpackFieldsGen packedFields
 

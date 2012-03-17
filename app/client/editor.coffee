@@ -53,26 +53,11 @@ edit = (game) ->
     clazz = $this.attr('data-board')
     parameters = $this.attr('data-parameters')
     board = new SS.shared.boards[clazz].definition JSON.parse parameters
-    board.name = 'Rectangle board'
-    board.id = 0
     while (true for existing in game.boards when existing.id == board.id).any()
       board.id++
     game.boards.push board
     addBoard board
     board
-
-  # Add, remove rows and columns
-  for type in ['row', 'column']
-    do (type) ->
-      $counter = $editor.find(".#{type}-count")
-      for action in ['add', 'delete']
-        do (action) ->
-          $editor.find(".#{action}-#{type}").click ->
-            boardEditor[action + type[0].toUpperCase() + type[1..]]()
-            $counter.html boardEditor.board[type+'s']
-
-  $editor.find('.field-color').colorpicker().on 'changeColor', (event) ->
-    boardEditor.css 'background-color': event.color.toHex()
 
   RUB.$content.html $editor
 

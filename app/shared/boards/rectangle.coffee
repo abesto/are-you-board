@@ -1,18 +1,21 @@
 exports.definition = class RectangleBoardDefinition
-  constructor: ({rows: @rows, columns: @columns}) ->
+  constructor: (opts) ->
     @_type = 'boards.rectangle.definition'
-    @_css = {}
+    (this[key] = val) for key, val of opts
+
+    @_css ?= {}
+    @name ?= 'Rectangle board'
+
     @__defineGetter__ 'fields', -> @rows * @columns
 
-  _checkRowColumn: (row, column) -> row >= 0 && column >= 0 && row < @rows && column < @columns
+  _checkRowColumn: (row, column) -> 
+    row >= 0 && column >= 0 && row < @rows && column < @columns
 
   css: (opts) ->
     {row, column} = opts
     idx = "#{row},#{column}"
-    return @_css[idx]? unless style = opts.style
-    throw "row,col index (#{idx}}) out of bounds" unless @_checkRowColumn(row, column)
-    return @_css[idx] unless style
-    @_css[idx] = style
+    return @_css[idx] or {} unless opts.style
+    @_css[idx] = opts.style
 
 
 class RectangleField
@@ -48,6 +51,9 @@ exports.editor = class RectangleBoardEditor
     @$preview = $('<table>').addClass('rectangle-board')
     @$properties = $('#editor-properties-rectangle').tmpl board:@board
 
+    @$properties.find('.field-color').colorpicker().on 'changeColor', (event) =>
+      @css 'background-color': event.color.toHex()
+
     editor = this
     @$properties.find('input[name=name]').change -> 
       editor.board.name = $(this).val()
@@ -56,6 +62,16 @@ exports.editor = class RectangleBoardEditor
     @board.rows = @board.columns = 0
     @addRow() while @board.rows < rows
     @addColumn() while @board.columns < columns
+
+    # Add, remove rows and columns
+    for type in ['row', 'column']
+      do (type) =>
+        $counter = @$properties.find(".#{type}-count")
+        for action in ['add', 'delete']
+          do (action) =>
+            @$properties.find(".#{action}-#{type}").click =>
+              this[action + type[0].toUpperCase() + type[1..]]()
+              $counter.html @board[type+'s']
 
     @selecting = false
     @$previewContainer.html @$preview
@@ -110,4 +126,4 @@ exports.editor = class RectangleBoardEditor
       editor.board.css
         row: $this.attr('data-row')
         column: $this.attr('data-column')
-        style: $this.attr('style')
+        style: styles
