@@ -1,8 +1,15 @@
 Current: board editor - size, color
 * Board deletion confirm dialog
 * Set color input field to current color of selected fields if possible
-* Functionality, tests(?)
-* Refactor
+* Tests?
+
+Next: pieces - image manager, needs planning
+
+Then: moves editor - absolute path, design focus: transparently allow movement between boards
+
+Then: victory conditions - needs planning
+
+Then: save, undo, game version tracking policy - needs planning
 
 Watch for:
 * release of Socketstream 0.3
