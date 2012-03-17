@@ -1,5 +1,6 @@
 Current: board editor - size, color
 * Board deletion confirm dialog
+* Set color input field to current color of selected fields if possible
 * Functionality, tests(?)
 * Refactor
 

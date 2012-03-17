@@ -4,6 +4,7 @@ exports.definition = class RectangleBoardDefinition
     (this[key] = val) for key, val of opts
 
     @_css ?= {}
+    @id   ?= 0
     @name ?= 'Rectangle board'
 
     @__defineGetter__ 'fields', -> @rows * @columns
