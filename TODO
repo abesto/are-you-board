@@ -1,7 +1,8 @@
 Current: board editor - size, color
+* Tests
+* Update jQuery
 * Board deletion confirm dialog
 * Set color input field to current color of selected fields if possible
-* Tests?
 
 Next: pieces - image manager, needs planning
 
@@ -11,7 +12,11 @@ Then: victory conditions - needs planning
 
 Then: save, undo, game version tracking policy - needs planning
 
+Maintenance
+* Check for memory leaks (http://gent.ilcore.com/2011/08/finding-memory-leaks.html)
+
 Watch for:
 * release of Socketstream 0.3
+* release of RaphaelJS 1.5 on Travis CI
 * Fix to PhantomJS issue #434 (https://code.google.com/p/phantomjs/issues/detail?id=434)
     Once it's shipped to Travis-CI: Update po.editor.list.get to expect null instead of ""
