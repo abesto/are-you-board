@@ -1,18 +1,22 @@
-casper.po.run ->
-  @then -> @test.comment "Registration, logout, login"
-  @then -> @po.welcome.register()
+async = require '../../node_modules/async/lib/async'
 
-  @then ->
-    if @po.navbar.haveLogin()
-      @test.pass 'Registration completed, logged in automatically'
-    else
-      @test.fail 'Registration failed'
-      @po.welcome.login ->
-        if @po.navbar.haveLogin()
-          @test.info "Login succeeded, running remaining tests"
-        else
-          @die 'Login failed', 1
+casper.then -> 
+  casper.test.comment 'Registration, logout, login'
+  casper.test.assertEquals casper.po.name, 'login', 'On login page after startup'
 
-  @then -> @po.navbar.logout -> @test.assertNot @po.navbar.haveLogin(), 'Logout'
-  @then -> @po.welcome.login -> @test.assert @po.navbar.haveLogin(), 'Login'
-  @then -> @test.done()
+  async.waterfall [
+    (cb) -> casper.po.toRegister cb
+    (register, cb) -> 
+      register.register cb
+    (gameList, cb) -> 
+      casper.test.pass 'Registration completed, logged in automatically'
+      gameList.navbar.logout cb
+    (login, cb) ->
+      casper.test.pass 'Logout'
+      login.login cb
+    (gameList, cb) ->
+      casper.test.pass 'Login'
+      cb null, null
+  ], (err, res) ->
+    casper.test.fail err if err
+    casper.test.done()

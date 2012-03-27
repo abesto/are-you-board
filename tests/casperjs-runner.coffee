@@ -7,11 +7,11 @@ casper = require('casper').create
   #logLevel: 'debug'
 casper.defaultWaitTimeout = 30000
 
-casper.po = require('./utils/PageObjects')(casper)
-
-casper.test.on 'tests.complete', ->
-    @renderResults true, undefined, casper.cli.get('xunit') || undefined
+casper.po = require('./utils/PageObjects') casper
 
 casper.start 'http://localhost:3000'
-casper.then casper.po.waitForLoginForm
+casper.po.waitUntilVisible()
+casper.test.on 'tests.complete', ->
+  @renderResults true, undefined, casper.cli.get('xunit') || undefined
 casper.test.runSuites.apply casper.test, ['./casperjs-suite']
+casper.run()

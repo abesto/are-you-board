@@ -5,106 +5,155 @@
 #
 #    - https://code.google.com/p/selenium/wiki/PageObjects
 
-# Work around https://github.com/n1k0/casperjs/issues/63 by using evaluate
+module.exports = (casper) ->
+  nick = 'casper'
+  password = 'casper'
 
-tabSelectors =
-  editor: '#create-game'
-  chat: 'input[name=input-msg]'
-  'boards-tab': '#boards'
+  navbarTabs = {}
 
-nick = 'casper'
-password = 'casper'
+  pos = {}
 
-module.exports = (casper) -> m = 
-  run: (cb) -> 
-    cb.call(casper)
-    casper.run()
-
-  waitForLoginForm: ->
-    casper.waitForSelector '.login-form'
-
-  welcome:
-    login: (cb) ->
-      doLogin = ->
-        casper.fill '.login-form',
-          nick: 'casper'
-          password: 'casper'
-        casper.click 'input[name=login]'
-        casper.waitFor m.navbar.haveLogin, cb
-      if casper.exists 'input[name=back]'
-        casper.click 'input[name=back]'
-        casper.waitForSelector '.login-form', doLogin
-      else
-        doLogin()
-
-    register: ->
-      doRegister = ->
-        casper.fill '.register-form',
-          nick: nick
-          password: password
-          password2: password
-        casper.click 'input[name=register]'
-        casper.waitFor -> m.navbar.haveLogin() or casper.exists('.alert')
-      if casper.exists 'input[name=register]'
-        casper.click 'input[name=register]'
-        casper.waitForSelector '.register-form', doRegister
-      else
-        doRegister()
-
-  navbar:
+  navbar =
     logout: (cb) ->
       casper.evaluate -> $('#logout').click()
-      casper.waitFor (-> not m.navbar.haveLogin()), cb
+      casper.waitFor (-> not navbar.haveLogin()), (-> cb null, pos.login)
 
-    haveLogin: -> nick == casper.evaluate -> $('#current-user-nick').text()
+    haveLogin: (cb) -> 
+      result = nick == casper.evaluate -> $('#current-user-nick').text()
+      cb? result
+      result
 
     toTab: (name, cb) ->
-      casper.evaluate ((name) -> $('#' + name).click()), name:name
-      casper.waitForSelector tabSelectors[name], cb
-      
-  editor:
-    save: ->
-      casper.click '#general .btn.save'
-      casper.waitForSelector '.alert-success'
+      cb "Navbar tab #{name} not known", null unless name of navbarTabs
+      tab = navbarTabs[name]
+      casper.click tab.change
+      casper.waitUntilVisible tab.ready, -> cb null, tab.po
+  # eof navbar
 
-    list:
-      createGame: (cb) ->
-        casper.click '#create-game'
-        casper.waitForSelector '.editor', cb
+  class PageObject
+    constructor: (@name, mixin) ->
+      @navbar = navbar
+      for name, fun of mixin
+        this[name] = fun
 
-      edit: (id, cb) ->
-        casper.evaluate ((id) -> $(".game-list [rel=#{id}] .edit").click()), id:id
-        casper.waitForSelector '.editor', cb
+    waitUntilVisible: -> casper.waitUntilVisible @_selector
 
-      get: (id) ->
-        casper.evaluate ((id) ->
-          $row = $(".game-list [rel=#{id}]")
-          return "" if $row.length == 0
-          return {
+    _next: (cb, po, err=null) ->
+      t0 = Date.now()
+      msg = "Switching to PO #{po.name}"
+      casper.log msg, 'debug'
+      casper.waitForSelector po._selector, -> 
+        casper.log "#{msg}: done in #{Date.now() - t0}ms", 'debug'
+        cb err, po
+      po
+
+    _errorAlertMessage: -> 
+      ret = casper.evaluate -> $('.alert-error p:last-child').text()
+      casper.click '.alert-error a.close'
+      ret
+
+
+  pos.login = new PageObject 'login',
+    _selector: '.login-form'
+
+    login: (cb) ->
+      casper.fill '.login-form',
+        nick: nick
+        password: password
+      casper.click 'input[name=login]'
+      casper.waitFor (-> navbar.haveLogin() or casper.exists '.alert-error'), =>
+        @_next cb, pos.login, @_errorAlertMessage() unless navbar.haveLogin()
+        @_next cb, pos.editor.gameList
+
+    toRegister: (cb) ->
+      casper.click 'input[name=register]'
+      @_next cb, pos.register
+  # eof login
+
+
+  pos.register = new PageObject 'register',
+    _selector: '.register-form'
+
+    register: (cb) ->
+      casper.fill '.register-form',
+        nick: nick
+        password: password
+        password2: password
+      casper.click 'input[name=register]'
+      casper.waitFor (-> navbar.haveLogin() or casper.exists('.alert-error')), =>
+        return @_next cb, pos.register, @_errorAlertMessage() unless navbar.haveLogin()
+        @_next cb, pos.editor.gameList
+
+    toLogin: (cb) ->
+      casper.click 'input[name=back]'
+      @_next cb, pos.login
+  # eof register
+
+  pos.editor = {}
+  pos.editor.gameList = new PageObject 'editor.gameList',
+    _selector: '.game-list'
+
+    createGame: (cb) ->
+      casper.click '#create-game'
+      @_next cb, pos.editor.general
+
+    edit: (id, cb) ->
+      casper.evaluate ((id) -> $(".game-list [rel=#{id}] .edit").click()), id:id
+      @_next cb, pos.editor.general
+
+    get: (id) ->
+      casper.evaluate ((id) ->
+        $row = $(".game-list [rel=#{id}]")
+        return "" unless $row.length > 0
+        return {
             name: $row.find('td.name').text()
             description: $row.find('td.description').text()
             lastModified: parseInt($row.find('td.last-modified').attr('rel'))
           }), id:id
 
-      delete: (id, cb) ->
-        casper.evaluate ((id) -> $(".game-list [rel=#{id}] .delete").click()), id:id
-        casper.waitUntilVisible '.delete-dialog', ->
-          casper.click '.btn[rel=delete]'
-          casper.waitForSelector '.alert-success', cb
+    delete: (id, cb) ->
+      casper.evaluate ((id) -> $(".game-list tr[rel=#{id}] .delete").click()), id:id
+      casper.waitUntilVisible '.delete-dialog', ->
+        casper.click '.btn[rel=delete]'
+        casper.waitForSelector '.alert-success', -> cb? null, pos.editor.gameList
+  navbarTabs.editor =
+    change: '#editor'
+    ready: '#create-game'
+    po: pos.editor.gameList
 
-    game:
-      here: -> casper.exists 'span.game-id'
-      rename: (name, cb) -> 
-        casper.fill 'form', name:name
-      describe: (desc, cb) -> casper.fill 'form', description:desc
-      get: -> casper.evaluate -> 
+
+  pos.editor.general = new PageObject 'editor.general',
+    _selector: '#general'
+
+    save: (cb) ->
+      casper.click '#general .btn.save'
+      casper.waitForSelector '.alert-success', => @_next cb, this
+
+    enterName: (name, cb) -> 
+      casper.fill 'form', name:name
+      cb? null, this
+
+    enterDescription: (desc, cb) -> 
+      casper.fill 'form', description:desc
+      cb? null, this
+
+    getCurrent: (cb) -> 
+      ret = casper.evaluate -> 
         id: $('span.game-id').text()
         name: $('span.game-name').text()
+      cb? null, ret
+      ret
 
-      toTab: (name) ->
-        casper.evaluate -> $("#content ##{name}").click name: name
-        casper.waitUntilVisible tabSelectors[name]
+    toBoards: (cb) ->
+      casper.click "#content #board"
+      @_next cb, pos.editor.boards
 
-      addBoard: (type) ->
-        board = casper.evaluate -> $(".add-board[data-board=#{type}]").click type:type
-        casper.waitForSelector ".board-list li[rel=#{board.id}]"
+
+  pos.editor.boards = new PageObject 'editor.boards'
+    _selector: '#boards'
+
+    addBoard: (type) ->
+      board = casper.evaluate -> $(".add-board[data-board=#{type}]").click type:type
+      casper.waitForSelector ".board-list li[rel=#{board.id}]"
+
+  pos.login
