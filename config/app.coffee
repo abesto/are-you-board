@@ -13,7 +13,7 @@ exports.config =
   
   # HTTPS server (becomes primary server if enabled)
   https:
-    enabled:      true
+    enabled:      false
     port:         3001
     domain:       "localhost:3001"
 
