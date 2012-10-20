@@ -1,11 +1,16 @@
 {
-  "name": "Board games",
-  "description": "Board",
-  "version": "0.1.0",
-  "author": "Zoltán Nagy <abesto@abesto.net>",
+  "name": "app",
+  "description": "An awesome real time application",
+  "version": "0.0.1",
+  "author": "Me <me@mydomain.com>",
   "private": true,
-  "engines": { "node": ">= 0.4.0 < 0.5.0" },
+  "engines": { "node": ">= 0.6.0" },
   "dependencies": {
-    "socketstream": "~>0.2.0"
+    "socketstream": "0.3.x",
+    "ss-coffee": "0.1.x",
+    "ss-jade": "0.1.x",
+    "ss-stylus": "0.1.x",
+    "ss-hogan": "0.1.x",
+    "ss-console": "0.1.x"
   }
 }
