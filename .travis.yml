@@ -3,7 +3,7 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - "git submodule init && git submodule --quiet update"
   - "node ./app.js &"
-  - "wait 5"
+  - "sleep 3"
 
 branches:
   only:
@@ -11,4 +11,4 @@ branches:
 
 language: node_js
 node_js:
-  - 0.8.5
+  - 0.8
