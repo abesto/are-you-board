@@ -202,6 +202,9 @@
     },
     "redis": {
       "version": "0.8.1"
+    },
+    "underscore": {
+      "version": "1.4.2"
     }
   }
 }

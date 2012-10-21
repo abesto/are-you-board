@@ -12,7 +12,8 @@
     "ss-stylus": "0.1.x",
     "ss-hogan": "0.1.x",
     "ss-console": "0.1.x",
-    "redis": "latest"
+    "redis": "latest",
+    "underscore": "latest"
   },
 
   "optionalDependencies": {
