@@ -88,3 +88,10 @@ test 'piece can move a number of fields along the path of its player', ->
     field = @board.row(pos.row).column(pos.column)
     strictEqual piece, field.getPiece()
 
+test 'serialization format v1', ->
+  @board.start 0
+  @board.start 1
+  serialized = @board.serialize()
+  ok _.isString serialized
+  deserialized = LudoBoard.deserialize serialized
+  deepEqual @board, deserialized
