@@ -1,0 +1,14 @@
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - "git submodule init && git submodule --quiet update"
+  - "./node_modules/socketstream/bin/socketstream start &"
+
+branches:
+  only:
+    - master
+    - old
+
+language: node_js
+node_js:
+  - 0.8.5

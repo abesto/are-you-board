@@ -13,5 +13,13 @@
     "ss-hogan": "0.1.x",
     "ss-console": "0.1.x",
     "redis": "latest"
+  },
+
+  "optionalDependencies": {
+      "hiredis": "latest"
+  },
+
+  "scripts": {
+      "test": "phantomjs --ignore-ssl-errors=yes ./phantomjs-qunit-runner.js http://localhost:3000/tests"
   }
 }
