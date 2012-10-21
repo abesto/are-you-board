@@ -1,5 +1,5 @@
 {
-  "name": "app",
+  "name": "are-you-board",
   "version": "0.0.1",
   "dependencies": {
     "socketstream": {
@@ -199,6 +199,9 @@
           "version": "0.6.0-1"
         }
       }
+    },
+    "redis": {
+      "version": "0.8.1"
     }
   }
 }

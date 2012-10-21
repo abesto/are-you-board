@@ -1,8 +1,8 @@
 {
-  "name": "app",
-  "description": "An awesome real time application",
+  "name": "are-you-board",
+  "description": "Board games :)",
   "version": "0.0.1",
-  "author": "Me <me@mydomain.com>",
+  "author": "Zoltan Nagy <abesto@abesto.net>",
   "private": true,
   "engines": { "node": ">= 0.6.0" },
   "dependencies": {
@@ -11,6 +11,7 @@
     "ss-jade": "0.1.x",
     "ss-stylus": "0.1.x",
     "ss-hogan": "0.1.x",
-    "ss-console": "0.1.x"
+    "ss-console": "0.1.x",
+    "redis": "latest"
   }
 }

@@ -1,4 +1,5 @@
-Path = require '/Path'
+Path = require './Path'
+serialization = require './serialization'
 
 class Piece
   constructor: (@player) ->
@@ -16,15 +17,14 @@ class Piece
     @setField null
     newField.put this
 
-  toSerializable: (format) -> this['toSerializable' + format]()
-  toSerializable1: -> [@player, @pathPosition]
-
-  @fromSerializable: (format, obj) -> this['fromSerializable' + format] obj
-  @fromSerializable1: (obj) ->
-    [player, pathPosition] = obj
-    p = new Piece player
-    p.pathPosition = pathPosition
-    p
+serialization Piece, 1,
+  1:
+    to: -> [@player, @pathPosition]
+    from: (obj) ->
+      [player, pathPosition] = obj
+      p = new Piece player
+      p.pathPosition = pathPosition
+      p
 
 
 class Field
@@ -45,17 +45,17 @@ class Field
 
   getPiece: -> @piece
 
-  toSerializable: (format) -> this['toSerializable' + format]()
-  toSerializable1: ->
-    throw "You really don't want to serialize an empty field" if @isEmpty()
-    [@row, @column, @piece.toSerializable 1]
+serialization Field, 1,
+  1:
+    to: ->
+      throw "You really don't want to serialize an empty field" if @isEmpty()
+      [@row, @column, @piece.toSerializable()]
 
-  @fromSerializable: (format, board, obj) -> this['fromSerializable' + format] board, obj
-  @fromSerializable1: (board, obj) ->
-    [row, column, piece] = obj
-    f = new Field board, row, column
-    f.put Piece.fromSerializable 1, piece
-    f
+    from: (obj, board) ->
+      [row, column, piece] = obj
+      f = new Field board, row, column
+      f.put Piece.fromSerializable piece
+      f
 
 
 class Index
@@ -132,22 +132,16 @@ class LudoBoard
 
   startPosition: (player) -> _.find(LudoBoard.START_POSITIONS, (o) -> o.player == player)
 
-  serialize: (format = LudoBoard.SERIALIZATION_FORMAT) -> this['serializeV' + format]()
-  @deserialize: (json) ->
-    obj = JSON.parse json
-    LudoBoard['deserializeV' + obj.format] obj
 
-  serializeV1: -> JSON.stringify
-    format: 1
-    fields: (field.toSerializable(1) for field in _.flatten @fields when not field.isEmpty())
+serialization LudoBoard, 1,
+  1:
+    to: -> (field.toSerializable(1) for field in _.flatten @fields when not field.isEmpty())
+    from: (fields) ->
+      b = new LudoBoard()
+      for fieldObj in fields
+        field = Field.fromSerializable fieldObj, this
+        b.fields[field.row][field.column] = field
+      b
 
-  @deserializeV1: (obj) ->
-    console.log obj
-    throw "Format #{obj.format} object passed to deserializeV1" if obj.format != 1
-    b = new LudoBoard()
-    for fieldObj in obj.fields
-      field = Field.fromSerializable 1, this, fieldObj
-      b.fields[field.row][field.column] = field
-    b
 
 module.exports = LudoBoard

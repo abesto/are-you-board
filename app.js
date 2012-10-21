@@ -1,7 +1,9 @@
-// My SocketStream 0.3 app
-
 var http = require('http'),
     ss = require('socketstream');
+
+// Load underscore.js into global object
+// It's loaded with 'libs' on the client (libs/underscore-min.js)
+global._ = require('underscore');
 
 // Define a single-page client called 'main'
 ss.client.define('main', {
@@ -36,6 +38,10 @@ ss.client.templateEngine.use(require('ss-hogan'));
 
 // Minimize and pack assets if you type: SS_ENV=production node app.js
 if (ss.env === 'production') ss.client.packAssets();
+
+// Use Redis as session and pubsub backend
+ss.session.store.use('redis');
+ss.publish.transport.use('redis');
 
 // Start web server
 var server = http.Server(ss.http.middleware);
