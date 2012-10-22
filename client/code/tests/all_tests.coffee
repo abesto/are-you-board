@@ -1,7 +1,8 @@
 testModules = [
   'LudoBoard'
   'Path'
-  '/models/game'
+  'models/game'
+  'models/user'
 ]
 
 for module in testModules

@@ -1,4 +1,5 @@
 serialization = require './serialization'
+model = require './model'
 LudoBoard = require './LudoBoard'
 
 class Game
@@ -13,5 +14,7 @@ serialization Game, 1,
       g = new Game id, board
       g.createdAt = createdAt
       g
+
+model Game, 'game'
 
 module.exports = Game

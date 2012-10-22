@@ -7,6 +7,6 @@ exports.actions = (req, res, ss) ->
     redis.incr 'game', (err, id) ->
       game = new Game id, new LudoBoard()
       str = game.serialize()
-      res str
-      redis.set "game:#{id}", str
+      redis.set "game:#{id}", str, (err, ok) ->
+        res str
 
