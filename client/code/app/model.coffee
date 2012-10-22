@@ -1,6 +1,8 @@
 rpcWithDeserialize = (cls, name, method) -> (args...) ->
   callback = args.pop() if _.isFunction _.last(args)
-  ss.rpc "models.#{name}.#{method}", args..., (res) ->
+  rpcMethod = "models.#{name}.#{method}"
+  ss.rpc rpcMethod, args..., (err, res) ->
+    return console.log "RPC ERROR: #{rpcMethod}(#{args}) -> #{err}" if err
     callback? cls.deserialize res
 
 module.exports = (cls, name) ->
@@ -10,4 +12,7 @@ module.exports = (cls, name) ->
     name: name
 
   cls::save = (callback) ->
-    ss.rpc "models.#{name}.save", @id, @serialize(), callback
+    rpcMethod = "models.#{name}.save"
+    ss.rpc rpcMethod, @id, @serialize(), (err, res) ->
+      return console.log "RPC ERROR: #{rpcMethod}(#{args}) -> #{err}" if err
+      callback res

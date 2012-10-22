@@ -13,7 +13,8 @@
     "ss-hogan": "0.1.x",
     "ss-console": "0.1.x",
     "redis": "latest",
-    "underscore": "latest"
+    "underscore": "latest",
+    "winston": "latest"
   },
 
   "optionalDependencies": {
