@@ -7,3 +7,4 @@ module.exports = (cls, name) ->
   cls.model =
     create: rpcWithDeserialize cls, name, 'create'
     get: rpcWithDeserialize cls, name, 'get'
+    name: name
