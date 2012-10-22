@@ -1,5 +1,3 @@
-redis = require('redis').createClient()
-
 module.exports = (req, res, ss, cls, decorators={}) ->
   create: (args...) ->
     redis.incr cls.name, (err, id) ->

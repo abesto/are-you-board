@@ -5,6 +5,9 @@ var http = require('http'),
 // It's loaded with 'libs' on the client (libs/underscore-min.js)
 global._ = require('underscore');
 
+// Global redis collection used by the application
+global.redis = require('redis').createClient()
+
 // Define a single-page client called 'main'
 ss.client.define('main', {
   view: 'app.jade',
