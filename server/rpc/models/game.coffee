@@ -10,3 +10,6 @@ exports.actions = (req, res, ss) ->
       redis.set "game:#{id}", str, (err, ok) ->
         res str
 
+  get: (id) ->
+    redis.get "game:#{id}", (err, str) ->
+      res str

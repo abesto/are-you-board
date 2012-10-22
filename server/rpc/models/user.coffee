@@ -9,3 +9,7 @@ exports.actions = (req, res, ss) ->
       redis.set "user:#{id}", str, (err, ok) ->
         res str
 
+  get: (id) ->
+    redis.get "user:#{id}", (err, str) ->
+      res str
+
