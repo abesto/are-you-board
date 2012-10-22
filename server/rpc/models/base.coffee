@@ -13,3 +13,6 @@ module.exports = (req, res, ss, cls, decorators={}) ->
     redis.get "#{cls.name}:#{id}", (err, str) ->
       res str
 
+  save: (id, str) ->
+    redis.set "#{cls.name}:#{id}", str, (err, ok) ->
+      res ok

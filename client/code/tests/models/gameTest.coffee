@@ -19,11 +19,10 @@ test 'can get a game by id', ->
       start()
 
 test 'user can join a game', ->
-  return expect 0
   stop()
   Game.model.create (game) ->
     User.model.create 'testuser' + (new Date()).getTime(), (user) ->
-      game.join user, ->
+      game.join user, (res) ->
         ok game.isUserPlaying user
         Game.model.get game.id, (saved) ->
           deepEqual game, saved

@@ -8,3 +8,6 @@ module.exports = (cls, name) ->
     create: rpcWithDeserialize cls, name, 'create'
     get: rpcWithDeserialize cls, name, 'get'
     name: name
+
+  cls::save = (callback) ->
+    ss.rpc "models.#{name}.save", @id, @serialize(), callback
