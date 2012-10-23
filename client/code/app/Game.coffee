@@ -4,38 +4,31 @@ LudoBoard = require './LudoBoard'
 User = require './User'
 
 
-class Game
+model class Game
   constructor: (@id) ->
     @createdAt = new Date()
     @board = null
     @players = [null, null, null, null]
 
   join: (user, callback) ->
-    if _.contains @players, user
-      winston.warn "already_joined #{this} #{user}"
-      return callback 'already_joined'
-    idx = _.indexOf @players, null
-    if idx == -1
-      winston.warn "game_full #{this} #{user}"
-      return callback 'game_full'
-    @players[idx] = user
-    @save (err, res) =>
-      winston.info "join #{this} #{user}"
-      callback err, res
+    ss.rpc 'models.Game.join', @id, user.id, callback
 
   leave: (user, callback) ->
     idx = _.indexOf @players, user
     if idx == -1
-      winston.warn "leave_not_joined #{this} #{user}"
+      winston.warn "leave_not_joined #{user} #{this}"
       return callback 'leave_not_joined'
     @players[idx] = null
     @save (err, res) =>
-      winston.info "leave #{this} #{user}"
+      winston.info "leave #{user} #{this}"
       callback err, res
 
-  isUserPlaying: (user) -> user in @players
+  isUserPlaying:
+    (user) -> _.any @players, (u) -> u != null and u.id == user.id
 
-  playerCount: -> (_.filter @players, (o) -> o != null).length
+  playerCount: ->
+    console.log @players
+    (_.filter @players, (o) -> o != null).length
 
   toString: -> @id
 
@@ -50,11 +43,9 @@ serialization Game, 1,
 
     from: ([id, createdAt, board, players]) ->
       g = new Game id
-      g.board = LudoBoard.fromSerializable board
       g.createdAt = new Date createdAt
+      g.board = LudoBoard.fromSerializable board
       g.players = ((if _.isNull(player) then null else User.fromSerializable player) for player in players)
       g
-
-model Game, 'game'
 
 module.exports = Game

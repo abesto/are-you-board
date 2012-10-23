@@ -12,7 +12,7 @@ module.exports = (req, res, ss, cls, decorators={}) ->
           winston.error "redis_error SET_#{cls.name}:#{id} #{err}"
           return res err
         res null, str
-        winston.info "new_#{cls.model.name} #{obj}"
+        winston.info "new_#{cls.name} #{obj}"
 
   get: (id) ->
     redis.get "#{cls.name}:#{id}", (err, str) ->
