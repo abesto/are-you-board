@@ -24,16 +24,6 @@ ss.http.route('/', function(req, res){
   res.serveClient('main');
 });
 
-// Test client
-ss.client.define('tests', {
-    view: 'tests.jade',
-    css:  ['libs/qunit-1.10.0.css'],
-    code: ['libs', 'app', 'tests']
-});
-ss.http.route('/tests', function(req, res){
-    res.serveClient('tests');
-});
-
 // Code Formatters
 ss.client.formatters.add(require('ss-coffee'));
 ss.client.formatters.add(require('ss-jade'));
@@ -57,6 +47,16 @@ if (ss.env === 'production') {
     // To connect: ss-console <optional_host_or_port>
     var consoleServer = require('ss-console')(ss);
     consoleServer.listen(5000);
+    // Run tests on /tests
+    ss.client.define('tests', {
+        view: 'tests.jade',
+        css:  ['libs/qunit-1.10.0.css'],
+        code: ['libs', 'app', 'tests']
+    });
+    ss.http.route('/tests', function(req, res){
+        res.serveClient('tests');
+    });
+
 }
 
 // Start web server
