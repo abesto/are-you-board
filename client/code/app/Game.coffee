@@ -11,10 +11,14 @@ model class Game
     @players = [null, null, null, null]
 
   join: (user, callback) ->
-    ss.rpc 'models.Game.join', @id, user.id, callback
+    ss.rpc 'models.Game.join', @id, user.id, (err, ok) =>
+      return callback err if err
+      @load callback
 
   leave: (user, callback) ->
-    ss.rpc 'models.Game.leave', @id, user.id, callback
+    ss.rpc 'models.Game.leave', @id, user.id, (err, ok) =>
+      return callback err if err
+      @load callback
 
   userSide: (user) ->
     userInGame = _.find @players, (u) -> u != null and u.id == user.id
@@ -25,7 +29,6 @@ model class Game
     not _.isUndefined @userSide user
 
   playerCount: ->
-    console.log @players
     (_.filter @players, (o) -> o != null).length
 
   toString: -> @id
@@ -39,11 +42,10 @@ serialization Game, 1,
       ((if _.isNull(player) then null else player.toSerializable()) for player in @players)
     ]
 
-    from: ([id, createdAt, board, players]) ->
-      g = new Game id
-      g.createdAt = new Date createdAt
-      g.board = LudoBoard.fromSerializable board
-      g.players = ((if _.isNull(player) then null else User.fromSerializable player) for player in players)
-      g
+    from: (game, [id, createdAt, board, players]) ->
+      game.id = id
+      game.createdAt = new Date createdAt
+      game.board = LudoBoard.fromSerializable board
+      game.players = ((if _.isNull(player) then null else User.fromSerializable player) for player in players)
 
 module.exports = Game

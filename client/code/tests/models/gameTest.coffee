@@ -18,12 +18,11 @@ asyncTest 'can get a game by id', 1, ->
 
 asyncTest 'user can join a game', 3, ->
   async.parallel [Game.model.create, User.model.create], (err, [game, user]) ->
-    game.join user, (err, res) ->
-      ok !err
-      Game.model.get game.id, (err, game) ->
-        ok game.isUserPlaying user
-        strictEqual game.playerCount(), 1
-        start()
+    game.join user, (err) ->
+      strictEqual err, null
+      ok game.isUserPlaying user
+      strictEqual game.playerCount(), 1
+      start()
 
 asyncTest 'user can only join a game once', 1, ->
   async.parallel [Game.model.create, User.model.create], (err, [game, user]) ->
@@ -36,10 +35,10 @@ asyncTest 'at most 4 users can join a game', 12, ->
   join = (prevUser, user) -> (game, cb) ->
     ok game.isUserPlaying prevUser
     strictEqual game.playerCount(), expectedPlayerCount
-    game.join user, (err, res) ->
+    game.join user, (err, game) ->
       strictEqual err, null
       expectedPlayerCount++
-      Game.model.get game.id, cb
+      cb err, game
 
   async.parallel [
     Game.model.create
@@ -62,14 +61,14 @@ asyncTest 'at most 4 users can join a game', 12, ->
       start()
 
 asyncTest 'user can leave a game', 5, ->
-  async.parallel [Game.model.create, User.model.create], (err, [game0, user]) ->
-    game0.join user, (err, res) -> Game.model.get game0.id, (err, game1) ->
-      ok game1.isUserPlaying user
+  async.parallel [Game.model.create, User.model.create], (err, [game, user]) ->
+    game.join user, (err) ->
+      ok game.isUserPlaying user
       strictEqual err, null
-      game1.leave user, (err, res) -> Game.model.get game1.id, (err, game2) ->
+      game.leave user, (err) ->
         strictEqual err, null
-        ok not game2.isUserPlaying user
-        strictEqual game2.playerCount(), 0
+        ok not game.isUserPlaying user
+        strictEqual game.playerCount(), 0
         start()
 
 asyncTest 'error if leaving a a game without joining first', 1, ->

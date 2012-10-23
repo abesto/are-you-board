@@ -8,7 +8,8 @@ model class User
 serialization User, 1,
   1:
     to: -> [@id, @nick]
-    from: ([id, nick]) ->
-      new User id, nick
+    from: (user, [id, nick]) ->
+      user.id = id
+      user.nick = nick
 
 module.exports = User

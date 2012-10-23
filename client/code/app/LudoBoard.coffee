@@ -20,11 +20,9 @@ class Piece
 serialization Piece, 1,
   1:
     to: -> [@player, @pathPosition]
-    from: (obj) ->
-      [player, pathPosition] = obj
-      p = new Piece player
-      p.pathPosition = pathPosition
-      p
+    from: (piece, [player, pathPosition]) ->
+      piece.player = player
+      piece.pathPosition = pathPosition
 
 
 class Field
@@ -51,11 +49,10 @@ serialization Field, 1,
       throw "You really don't want to serialize an empty field" if @isEmpty()
       [@row, @column, @piece.toSerializable()]
 
-    from: (obj, board) ->
-      [row, column, piece] = obj
-      f = new Field board, row, column
-      f.put Piece.fromSerializable piece
-      f
+    from: (field, [row, column, piece], board) ->
+      for f in ['row', 'column', 'board']
+        field[f] = eval f
+      field.put Piece.fromSerializable piece
 
 
 class Index
@@ -136,12 +133,10 @@ class LudoBoard
 serialization LudoBoard, 1,
   1:
     to: -> (field.toSerializable(1) for field in _.flatten @fields when not field.isEmpty())
-    from: (fields) ->
-      b = new LudoBoard()
+    from: (board, fields) ->
       for fieldObj in fields
         field = Field.fromSerializable fieldObj, this
-        b.fields[field.row][field.column] = field
-      b
+        board.fields[field.row][field.column] = field
 
 
 module.exports = LudoBoard
