@@ -59,6 +59,9 @@ if (ss.env === 'production') {
 
 }
 
+// Global server-side model implementation
+global.model = require('./server/model.coffee');
+
 // Start web server
 var server = http.Server(ss.http.middleware);
 server.listen(3000);

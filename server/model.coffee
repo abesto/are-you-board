@@ -1,34 +1,36 @@
 module.exports = (cls, decorators={}) ->
-  create: (args..., cb) ->
-    redis.incr cls.name, (err, id) ->
-      if err
-        winston.error "redis_error INCR_#{cls.name} #{err}"
-        return cb err
-      obj = new cls id, args...
-      decorators.create? obj
-      str = obj.serialize()
-      redis.set "#{cls.name}:#{id}", str, (err, ok) ->
+  cls.model =
+    create: (args..., cb) ->
+      redis.incr cls.name, (err, id) ->
         if err
-          winston.error "redis_error SET_#{cls.name}:#{id} #{err}"
+          winston.error "redis_error INCR_#{cls.name} #{err}"
+          return cb err
+        obj = new cls id, args...
+        decorators.create? obj
+        str = obj.serialize()
+        redis.set "#{cls.name}:#{id}", str, (err, ok) ->
+          if err
+            winston.error "redis_error SET_#{cls.name}:#{id} #{err}"
+            return cb err
+          cb null, str
+          winston.info "new_#{cls.name} #{obj}"
+
+    get: (id, cb) ->
+      redis.get "#{cls.name}:#{id}", (err, str) ->
+        if err
+          winston.error "redis_error GET_#{cls.name}:#{id}, #{err}"
           return cb err
         cb null, str
-        winston.info "new_#{cls.name} #{obj}"
 
-  get: (id, cb) ->
-    redis.get "#{cls.name}:#{id}", (err, str) ->
+    getObject: (id, cb) ->
+      @get id, (err, str) ->
+        return cb err if err
+        cb null, cls.deserialize str
+
+  cls::save = (cb) ->
+    redis.set "#{cls.name}:#{@id}", @serialize(), (err, ok) ->
       if err
-        winston.error "redis_error GET_#{cls.name}:#{id}, #{err}"
-        return cb err
-      cb null, str
-
-  getObject: (id, cb) ->
-    @get id, (err, str) ->
-      return cb err if err
-      cb null, cls.deserialize str
-
-  save: (id, str, cb) ->
-    redis.set "#{cls.name}:#{id}", str, (err, ok) ->
-      if err
-        winston.error "redis_error SET_#{cls.name}:#{id}, #{err}"
+        winston.error "redis_error SET_#{cls.name}:#{@id}, #{err}"
         return cb err
       cb null, ok
+

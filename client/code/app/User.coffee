@@ -1,5 +1,4 @@
 serialization = require './serialization'
-model = require './model'
 
 model class User
   constructor: (@id, @nick) -> null

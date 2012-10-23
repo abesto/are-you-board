@@ -1,5 +1,4 @@
 serialization = require './serialization'
-model = require './model'
 LudoBoard = require './LudoBoard'
 User = require './User'
 
@@ -30,11 +29,32 @@ class Game
   toString: -> @id
 
   # Logic for RPC classes; not used on the client
+  _join: (user, res) ->
+    if @isUserPlaying user
+      winston.warn "already_joined #{user} #{this}"
+      return res 'already_joined'
+    idx = @firstFreeSide()
+    if _.isUndefined idx
+      winston.warn "game_full #{user} #{this}"
+      return res 'game_full'
+    @players[idx] = user
+    winston.info "join #{user} #{this}"
+    true
+
+  _leave: (user, res) ->
+    idx = @userSide user
+    if _.isUndefined idx
+      winston.warn "leave_not_joined #{user} #{this}"
+      return res 'leave_not_joined'
+    @players[idx] = null
+    winston.info "leave #{user} #{this}"
+    true
+
   _nextSide: ->
     for i in [@currentSide+1 ... @players.length].concat [0 .. @currentSide]
       if @players[i] != null
         @currentSide = i
-        return
+        return true
 
 
 serialization Game, 1,

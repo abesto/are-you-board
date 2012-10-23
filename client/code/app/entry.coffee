@@ -4,6 +4,9 @@ window.ss = require('socketstream')
 # Make 'winston' available to all modules and the browser console
 window.winston = require('/winston')
 
+# Global client-side model implementation
+window.model = require('/model')
+
 ss.server.on 'disconnect', ->
   console.log('Connection down :-(')
 
