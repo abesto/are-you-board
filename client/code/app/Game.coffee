@@ -3,6 +3,7 @@ model = require './model'
 LudoBoard = require './LudoBoard'
 User = require './User'
 
+
 class Game
   constructor: (@id) ->
     @createdAt = new Date()
@@ -10,7 +11,10 @@ class Game
     @players = [null, null, null, null]
 
   join: (user, callback) ->
-    @players.push user
+    idx = _.indexOf @players, null
+    if idx == -1
+      return callback 'game_full'
+    @players[idx] = user
     @save callback
 
   isUserPlaying: (user) -> user in @players

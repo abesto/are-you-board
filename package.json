@@ -14,7 +14,8 @@
     "ss-console": "0.1.x",
     "redis": "latest",
     "underscore": "latest",
-    "winston": "latest"
+    "winston": "latest",
+    "async": "latest"
   },
 
   "optionalDependencies": {

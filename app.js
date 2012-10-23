@@ -1,6 +1,7 @@
 var http = require('http'),
     ss = require('socketstream'),
-    redis = require('redis');
+    redis = require('redis'),
+    winston = require('winston');
 
 // Load underscore.js into global object
 // It's loaded with 'libs' on the client (libs/underscore-min.js)
@@ -8,6 +9,9 @@ global._ = require('underscore');
 
 // Global redis collection used by the application
 global.redis = redis.createClient();
+
+// Global winston instance
+global.winston = winston;
 
 // Define a single-page client called 'main'
 ss.client.define('main', {
@@ -45,6 +49,8 @@ ss.publish.transport.use('redis');
 // Minimize and pack assets if you type: SS_ENV=production node app.js
 if (ss.env === 'production') {
     ss.client.packAssets();
+    winston.add(winston.transports.File, { filename: 'app.log' });
+    winston.handleExceptions(winston.transports.File, { filename: 'exceptions.log' });
 } else {
     // Start Console Server (REPL)
     // To install client: sudo npm install -g ss-console
