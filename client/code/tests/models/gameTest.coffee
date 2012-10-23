@@ -4,19 +4,19 @@ LudoBoard = require '/LudoBoard'
 
 QUnit.module 'server.models.game'
 
-asyncTest 'can create new game', ->
+asyncTest 'can create new game', 2, ->
   Game.model.create (err, game) ->
     ok game instanceof Game
     ok game.board instanceof LudoBoard
     start()
 
-asyncTest 'can get a game by id', ->
+asyncTest 'can get a game by id', 1, ->
   Game.model.create (err, game) ->
     Game.model.get game.id, (err, saved) ->
       deepEqual game, saved
       start()
 
-asyncTest 'user can join a game', ->
+asyncTest 'user can join a game', 3, ->
   async.parallel [Game.model.create, User.model.create], (err, [game, user]) ->
     game.join user, (err, res) ->
       ok game.isUserPlaying user
