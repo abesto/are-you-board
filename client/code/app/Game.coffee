@@ -13,14 +13,28 @@ class Game
   join: (user, callback) ->
     idx = _.indexOf @players, null
     if idx == -1
-      winston.warn "join_full #{@id} #{user.id}"
+      winston.warn "game_full #{@id} #{user.id}"
       return callback 'game_full'
     @players[idx] = user
     @save (err, res) =>
       winston.info "join #{@id} #{user.id}"
       callback err, res
 
+  leave: (user, callback) ->
+    idx = _.indexOf @players, user
+    if idx == -1
+      winston.warn "leave_not_joined #{@id} #{user.id}"
+      return callback 'leave_not_joined'
+    @players[idx] = null
+    @save (err, res) =>
+      winston.info "leave #{@id} #{user.id}"
+      callback err, res
+
+
   isUserPlaying: (user) -> user in @players
+
+  playerCount: -> (_.filter @players, (o) -> o != null).length
+
 
 serialization Game, 1,
   1:
