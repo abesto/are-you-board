@@ -10,5 +10,8 @@ ss.server.on 'disconnect', ->
 ss.server.on 'reconnect', ->
   console.log('Connection back up :-)')
 
-require '/all_tests'
+# Flush database before running tests
+ss.rpc 'dangerous.flushdb', (err, res) ->
+  throw 'Failed to flush db before running tests: ' + err if err
+  require '/all_tests'
 
