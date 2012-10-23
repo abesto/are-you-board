@@ -4,21 +4,12 @@ LudoBoard = require './LudoBoard'
 User = require './User'
 
 
-model class Game
+class Game
   constructor: (@id) ->
     @createdAt = new Date()
     @board = null
     @players = [null, null, null, null]
-
-  join: (user, callback) ->
-    ss.rpc 'models.Game.join', @id, user.id, (err, ok) =>
-      return callback err if err
-      @load callback
-
-  leave: (user, callback) ->
-    ss.rpc 'models.Game.leave', @id, user.id, (err, ok) =>
-      return callback err if err
-      @load callback
+    @currentSide = -1
 
   firstFreeSide: ->
     idx = _.indexOf @players, null
@@ -38,6 +29,14 @@ model class Game
 
   toString: -> @id
 
+  # Logic for RPC classes; not used on the client
+  _nextSide: ->
+    for i in [@currentSide+1 ... @players.length].concat [0 .. @currentSide]
+      if @players[i] != null
+        @currentSide = i
+        return
+
+
 serialization Game, 1,
   1:
     to: -> [
@@ -45,12 +44,18 @@ serialization Game, 1,
       @createdAt.getTime()
       @board.toSerializable()
       ((if _.isNull(player) then null else player.toSerializable()) for player in @players)
+      @currentSide
     ]
 
-    from: (game, [id, createdAt, board, players]) ->
+    from: (game, [id, createdAt, board, players, currentSide]) ->
       game.id = id
       game.createdAt = new Date createdAt
       game.board = LudoBoard.fromSerializable board
       game.players = ((if _.isNull(player) then null else User.fromSerializable player) for player in players)
+      game.currentSide = currentSide
+
+
+model Game, 'join', 'leave', 'nextSide'
+
 
 module.exports = Game

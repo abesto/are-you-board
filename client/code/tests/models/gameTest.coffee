@@ -77,3 +77,27 @@ asyncTest 'error if leaving a a game without joining first', 1, ->
       strictEqual err, 'leave_not_joined'
       start()
 
+asyncTest 'nextSide sets currentSide to the next non-null player', 4, ->
+  async.parallel [
+    Game.model.create
+    User.model.create
+    User.model.create
+    User.model.create
+    User.model.create
+  ], (err, [game, u0, u1, u2, u3]) ->
+    currentSideIs = (side) -> (cb) ->
+      strictEqual game.currentSide, side
+      cb null
+    join = (u) -> (cb) -> game.join u, cb
+    leave = (u) -> (cb) -> game.leave u, cb
+    nextSide = (cb) -> game.nextSide cb
+    async.series [
+      join(u0), join(u1), join(u2), join(u3),
+      leave(u0), leave(u2),
+      nextSide, currentSideIs(1),
+      nextSide, currentSideIs(3),
+      nextSide, currentSideIs(1)], (err) ->
+        strictEqual err, null
+        start()
+
+

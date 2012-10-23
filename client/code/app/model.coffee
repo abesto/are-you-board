@@ -7,7 +7,7 @@ rpcWithDeserialize = (cls, method) -> (args...) ->
       callback? err
     callback? err, cls.deserialize res
 
-module.exports = (cls) ->
+module.exports = (cls, rpcMethods...) ->
   cls.model =
     create: rpcWithDeserialize cls, 'create'
     get: rpcWithDeserialize cls, 'get'
@@ -17,3 +17,13 @@ module.exports = (cls) ->
     ss.rpc rpcMethod, @id, @serialize(), (err, res) ->
       winston.error "RPC ERROR: #{rpcMethod}(#{args}) -> #{err}" if err
       callback err, res
+
+  for method in rpcMethods
+    do (method) ->
+      cls.prototype[method] = (args...) ->
+        callback = args.pop() if _.isFunction _.last args
+        args = (arg.id for arg in args)
+        ss.rpc "models.#{cls.name}.#{method}", @id, args..., (err, ok) =>
+          return callback err if err
+          @load callback
+
