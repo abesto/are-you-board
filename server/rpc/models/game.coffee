@@ -3,16 +3,18 @@ Game = require '../../../client/code/app/Game'
 User = require '../../../client/code/app/User'
 LudoBoard = require '../../../client/code/app/LudoBoard'
 
+model = require '../../model'
+
 exports.actions = (req, res, ss) ->
   actions = base req, res, ss, Game,
     create: (game) ->
       game.board = new LudoBoard()
 
   actions.join = (gameId, userId) ->
-    redis.get "Game:#{gameId}", (err, gameStr) ->
+    model(Game).get gameId, (err, gameStr) ->
       return res err if err
       game = Game.deserialize gameStr
-      redis.get "User:#{userId}", (err, userStr) ->
+      model(User).get userId, (err, userStr) ->
         return res err if err
         user = User.deserialize userStr
         if game.isUserPlaying user
