@@ -11,9 +11,12 @@ class Game
     @players = [null, null, null, null]
 
   join: (user, callback) ->
+    if _.contains @players, user
+      winston.warn "already_joined #{this} #{user}"
+      return callback 'already_joined'
     idx = _.indexOf @players, null
     if idx == -1
-      winston.warn "game_full #{@this} #{user}"
+      winston.warn "game_full #{this} #{user}"
       return callback 'game_full'
     @players[idx] = user
     @save (err, res) =>

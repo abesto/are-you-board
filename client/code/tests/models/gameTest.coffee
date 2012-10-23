@@ -25,6 +25,13 @@ asyncTest 'user can join a game', 3, ->
         strictEqual game.playerCount(), 1
         start()
 
+asyncTest 'user can only join a game once', 1, ->
+  async.parallel [Game.model.create, User.model.create], (err, [game, user]) ->
+    game.join user, (err, res) -> game.join user, (err, res) ->
+      strictEqual err, 'already_joined'
+      start()
+
+
 asyncTest 'at most 4 users can join a game', 10, ->
   async.parallel [
     Game.model.create
