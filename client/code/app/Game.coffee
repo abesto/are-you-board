@@ -13,9 +13,12 @@ class Game
   join: (user, callback) ->
     idx = _.indexOf @players, null
     if idx == -1
+      winston.warn "join_full #{@id} #{user.id}"
       return callback 'game_full'
     @players[idx] = user
-    @save callback
+    @save (err, res) ->
+      winston.info "join #{@id} #{user.id}"
+      callback err, res
 
   isUserPlaying: (user) -> user in @players
 
