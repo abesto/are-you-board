@@ -12,30 +12,28 @@ exports.actions = (req, res, ss) ->
       game.board = new LudoBoard()
 
   actions.join = (gameId, userId) ->
-    model(Game).get gameId, (err, gameStr) ->
+    async.parallel [
+      (cb) -> model(Game).getObject gameId, cb
+      (cb) -> model(User).getObject userId, cb
+    ], (err, [game, user]) ->
       return res err if err
-      game = Game.deserialize gameStr
-      model(User).get userId, (err, userStr) ->
-        return res err if err
-        user = User.deserialize userStr
-        if game.isUserPlaying user
-          winston.warn "already_joined #{user} #{game}"
-          return res 'already_joined'
-        idx = _.indexOf game.players, null
-        if idx == -1
-          winston.warn "game_full #{user} #{game}"
-          return res 'game_full'
-        game.players[idx] = user
-        winston.info "join #{user} #{game}"
-        actions.save game.id, game.serialize()
+      if game.isUserPlaying user
+        winston.warn "already_joined #{user} #{game}"
+        return res 'already_joined'
+      idx = game.firstFreeSide()
+      if _.isUndefined idx
+        winston.warn "game_full #{user} #{game}"
+        return res 'game_full'
+      game.players[idx] = user
+      winston.info "join #{user} #{game}"
+      actions.save game.id, game.serialize()
 
   actions.leave = (gameId, userId) ->
     async.parallel [
-      (cb) -> model(Game).get gameId, cb
-      (cb) -> model(User).get userId, cb
+      (cb) -> model(Game).getObject gameId, cb
+      (cb) -> model(User).getObject userId, cb
     ], (err, [gameStr, userStr]) ->
-      game = Game.deserialize gameStr
-      user = User.deserialize userStr
+      return res err if err
       idx = game.userSide user
       if _.isUndefined idx
         winston.warn "leave_not_joined #{user} #{game}"

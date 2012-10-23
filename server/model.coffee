@@ -21,6 +21,11 @@ module.exports = (cls, decorators={}) ->
         return cb err
       cb null, str
 
+  getObject: (id, cls, cb) ->
+    @get id, (err, str) ->
+      return cb err if err
+      cb cls.deserialize str
+
   save: (id, str, cb) ->
     redis.set "#{cls.name}:#{id}", str, (err, ok) ->
       if err

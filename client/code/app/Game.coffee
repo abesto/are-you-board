@@ -20,6 +20,11 @@ model class Game
       return callback err if err
       @load callback
 
+  firstFreeSide: ->
+    idx = _.indexOf @players, null
+    return if idx == -1
+    idx
+
   userSide: (user) ->
     userInGame = _.find @players, (u) -> u != null and u.id == user.id
     return if _.isUndefined userInGame
