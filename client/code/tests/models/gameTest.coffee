@@ -61,13 +61,15 @@ asyncTest 'at most 4 users can join a game', 12, ->
       strictEqual game.playerCount(), expectedPlayerCount
       start()
 
-asyncTest 'user can leave a game', 3, ->
-  async.parallel [Game.model.create, User.model.create], (err, [game, user]) ->
-    game.join user, (err, res) ->
-      ok !err
-      game.leave user, (err, res) ->
-        ok !game.isUserPlaying user
-        strictEqual game.playerCount(), 0
+asyncTest 'user can leave a game', 5, ->
+  async.parallel [Game.model.create, User.model.create], (err, [game0, user]) ->
+    game0.join user, (err, res) -> Game.model.get game0.id, (err, game1) ->
+      ok game1.isUserPlaying user
+      strictEqual err, null
+      game1.leave user, (err, res) -> Game.model.get game1.id, (err, game2) ->
+        strictEqual err, null
+        ok not game2.isUserPlaying user
+        strictEqual game2.playerCount(), 0
         start()
 
 asyncTest 'error if leaving a a game without joining first', 1, ->

@@ -14,17 +14,15 @@ model class Game
     ss.rpc 'models.Game.join', @id, user.id, callback
 
   leave: (user, callback) ->
-    idx = _.indexOf @players, user
-    if idx == -1
-      winston.warn "leave_not_joined #{user} #{this}"
-      return callback 'leave_not_joined'
-    @players[idx] = null
-    @save (err, res) =>
-      winston.info "leave #{user} #{this}"
-      callback err, res
+    ss.rpc 'models.Game.leave', @id, user.id, callback
 
-  isUserPlaying:
-    (user) -> _.any @players, (u) -> u != null and u.id == user.id
+  userSide: (user) ->
+    userInGame = _.find @players, (u) -> u != null and u.id == user.id
+    return if _.isUndefined userInGame
+    _.indexOf @players, userInGame
+
+  isUserPlaying: (user) ->
+    not _.isUndefined @userSide user
 
   playerCount: ->
     console.log @players
