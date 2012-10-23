@@ -2,7 +2,8 @@ serialization = require './serialization'
 model = require './model'
 
 class User
-  constructor: (@id, @nick) ->
+  constructor: (@id, @nick) -> null
+  toString: -> "#{@id}:#{@nick}"
 
 serialization User, 1,
   1:
