@@ -4,11 +4,17 @@ User = require './User'
 
 
 class Game
+  @STATE_JOINING = 1
+  @STATE_DICE = 2
+  @STATE_MOVE = 3
+
   constructor: (@id) ->
     @createdAt = new Date()
     @board = null
     @players = [null, null, null, null]
     @currentSide = -1
+    @dice = 0
+    @state = Game.STATE_JOINING
 
   firstFreeSide: ->
     idx = _.indexOf @players, null
@@ -28,7 +34,6 @@ class Game
 
   toString: -> @id
 
-  # Logic for RPC classes; not used on the client
 serialization Game, 1,
   1:
     to: -> [
@@ -37,17 +42,21 @@ serialization Game, 1,
       @board.toSerializable()
       ((if _.isNull(player) then null else player.toSerializable()) for player in @players)
       @currentSide
+      @dice
+      @state
     ]
 
-    from: (game, [id, createdAt, board, players, currentSide]) ->
+    from: (game, [id, createdAt, board, players, currentSide, dice, state]) ->
       game.id = id
       game.createdAt = new Date createdAt
       game.board = LudoBoard.fromSerializable board
       game.players = ((if _.isNull(player) then null else User.fromSerializable player) for player in players)
       game.currentSide = currentSide
+      game.dice = dice
+      game.state = state
 
 
-model Game, 'join', 'leave', 'nextSide'
+model Game, 'join', 'leave', 'nextSide', 'start', 'rollDice', 'move'
 
 
 module.exports = Game

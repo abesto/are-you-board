@@ -20,6 +20,9 @@ module.exports = (cls, decorators={}) ->
         if err
           winston.error "redis_error GET_#{cls.name}:#{id}, #{err}"
           return cb err
+        if str == null
+          winston.error "redis_not_found GET_#{cls.name}:#{id}"
+          return cb 'not_found'
         cb null, str
 
     getObject: (id, cb) ->

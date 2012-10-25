@@ -4,6 +4,9 @@ base = require './base'
 
 Game = require('../../../client/code/app/Game')
 Game::_join = (user, res) ->
+  if @state != Game.STATE_JOINING
+    winston.warn 'join_started_game'
+    return res 'game_started'
   if @isUserPlaying user
     winston.warn "already_joined #{user} #{this}"
     return res 'already_joined'
@@ -30,6 +33,30 @@ Game::_nextSide = ->
       @currentSide = i
       return true
 
+Game::_rollDice = (res) ->
+  if @state != Game.STATE_DICE
+    winston.warn "wrong_state rollDice #{Game.STATE_DICE} #{@state}"
+    return res 'wrong_state'
+  @dice = 1 + Math.floor(Math.random() * 6)
+  @state = Game.STATE_MOVE
+  true
+
+Game::_start = (res) ->
+  if @state != Game.STATE_JOINING
+    winston.warn "wrong_state start #{Game.STATE_JOINING} #{@state}"
+    return res 'wrong_state'
+  @state = Game.STATE_DICE
+  @_nextSide()
+  true
+
+Game::_move = (res) ->
+  if @state != Game.STATE_MOVE
+    winston.warn "wrong_state move #{Game.STATE_MOVE} #{@state}"
+    return res 'wrong_state'
+  @state = Game.STATE_DICE
+  @_nextSide()
+  true
+
 
 User = require '../../../client/code/app/User'
 LudoBoard = require '../../../client/code/app/LudoBoard'
@@ -48,7 +75,9 @@ exports.actions = (req, res, ss) ->
 
   actions.join = update true, (game, user, res) -> game._join user, res
   actions.leave = update true, (game, user, res) -> game._leave user, res
-  actions.nextSide = update false, (game) -> game._nextSide()
+  actions.start = update false, (game) -> game._start res
+  actions.rollDice = update false, (game) -> game._rollDice res
+  actions.move = update false, (game) -> game._move res
 
   actions
 

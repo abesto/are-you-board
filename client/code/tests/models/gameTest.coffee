@@ -4,6 +4,24 @@ LudoBoard = require '/LudoBoard'
 
 QUnit.module 'server.models.game'
 
+asyncTestWithGameAndUsers = (name, assertCount, playerCount, cb) ->
+  cmds = [Game.model.create].concat (User.model.create for i in [0 ... playerCount])
+  asyncTest name, assertCount + 1, ->
+    async.parallel cmds, (err, items) ->
+      strictEqual err, null
+      game = items[0]
+      _.bindAll game
+      @join = (u) -> (cb) -> game.join u, cb
+      @leave = (u) -> (cb) -> game.leave u, cb
+      @stateIs = (s) -> (cb) ->
+        strictEqual game.state, s, "state is #{s}"
+        cb null
+      @sideIs = (side) -> (cb) ->
+        strictEqual game.currentSide, side, "side is #{side}"
+        cb null
+      @move = (piece) -> (cb) -> game.move piece, cb
+      cb items...
+
 asyncTest 'can create new game', 2, ->
   Game.model.create (err, game) ->
     ok game instanceof Game
@@ -16,21 +34,19 @@ asyncTest 'can get a game by id', 1, ->
       deepEqual game, saved
       start()
 
-asyncTest 'user can join a game', 3, ->
-  async.parallel [Game.model.create, User.model.create], (err, [game, user]) ->
-    game.join user, (err) ->
-      strictEqual err, null
-      ok game.isUserPlaying user
-      strictEqual game.playerCount(), 1
-      start()
+asyncTestWithGameAndUsers 'user can join a game', 3, 1, (game, user) ->
+  game.join user, (err) ->
+    strictEqual err, null
+    ok game.isUserPlaying user
+    strictEqual game.playerCount(), 1
+    start()
 
-asyncTest 'user can only join a game once', 1, ->
-  async.parallel [Game.model.create, User.model.create], (err, [game, user]) ->
-    game.join user, (err, res) -> game.join user, (err, res) ->
-      strictEqual err, 'already_joined'
-      start()
+asyncTestWithGameAndUsers 'user can only join a game once', 1, 1, (game, user) ->
+  game.join user, (err, res) -> game.join user, (err, res) ->
+    strictEqual err, 'already_joined'
+    start()
 
-asyncTest 'at most 4 users can join a game', 12, ->
+asyncTestWithGameAndUsers 'at most 4 users can join a game', 12, 5, (game, u0, u1, u2, u3, u4) ->
   expectedPlayerCount = 1
   join = (prevUser, user) -> (game, cb) ->
     ok game.isUserPlaying prevUser
@@ -40,14 +56,7 @@ asyncTest 'at most 4 users can join a game', 12, ->
       expectedPlayerCount++
       cb err, game
 
-  async.parallel [
-    Game.model.create
-    User.model.create
-    User.model.create
-    User.model.create
-    User.model.create
-    User.model.create
-  ], (err, [game, u0, u1, u2, u3, u4]) -> async.waterfall [
+  async.waterfall [
       (cb) ->  game.join u0, (err, res) -> Game.model.get game.id, cb
       join u0, u1
       join u1, u2
@@ -77,27 +86,58 @@ asyncTest 'error if leaving a a game without joining first', 1, ->
       strictEqual err, 'leave_not_joined'
       start()
 
-asyncTest 'nextSide sets currentSide to the next non-null player', 4, ->
-  async.parallel [
-    Game.model.create
-    User.model.create
-    User.model.create
-    User.model.create
-    User.model.create
-  ], (err, [game, u0, u1, u2, u3]) ->
-    currentSideIs = (side) -> (cb) ->
-      strictEqual game.currentSide, side
-      cb null
-    join = (u) -> (cb) -> game.join u, cb
-    leave = (u) -> (cb) -> game.leave u, cb
-    nextSide = (cb) -> game.nextSide cb
-    async.series [
-      join(u0), join(u1), join(u2), join(u3),
-      leave(u0), leave(u2),
-      nextSide, currentSideIs(1),
-      nextSide, currentSideIs(3),
-      nextSide, currentSideIs(1)], (err) ->
-        strictEqual err, null
-        start()
+asyncTestWithGameAndUsers 'game starts in STATE_JOINING state', 1, 0, (game) ->
+  strictEqual game.state, Game.STATE_JOINING
+  start()
 
+asyncTestWithGameAndUsers 'can only move in STATE_MOVE', 2, 1, (game, user) ->
+  async.series [ @join(user), @move(0) ], (err) ->
+    strictEqual err, 'wrong_state'
+    async.series [ game.start, @move(0)], (err) ->
+      strictEqual err, 'wrong_state'
+      start()
+
+asyncTestWithGameAndUsers 'can roll dice only in STATE_DICE', 2, 1, (game, user) ->
+  async.series [ @join(user), game.rollDice ], (err) ->
+    strictEqual err, 'wrong_state'
+    async.series [ game.start, game.rollDice, game.rollDice ], (err) ->
+      strictEqual err, 'wrong_state'
+      start()
+
+asyncTestWithGameAndUsers 'can start only in STATE_JOINING', 2, 1, (game, user) ->
+  async.series [ @join(user), game.start, game.start ], (err) ->
+    strictEqual err, 'wrong_state'
+    async.series [ game.rollDice, game.start ], (err) ->
+      strictEqual err, 'wrong_state'
+      start()
+
+asyncTestWithGameAndUsers 'no joining after a game has started', 1, 3, (game, u0, u1, u2) ->
+  async.series [
+    @join(u0), @join(u1),
+    game.start,
+    @join(u2)
+  ], (err) ->
+    strictEqual err, 'game_started'
+    start()
+
+asyncTestWithGameAndUsers 'rollDice sets the current dice roll value', 2, 1, (game) ->
+  game.start (err, res) ->
+    strictEqual err, null
+    game.rollDice (err) ->
+      ok (game.dice <= 6 and game.dice >= 1)
+      start()
+
+asyncTestWithGameAndUsers 'rollDice, move step the game through states and sides', 15, 3, (game, u0, u1, u2) ->
+  async.series [
+    @join(u0), @join(u1), @join(u2)
+    game.start,    @stateIs(Game.STATE_DICE), @sideIs(0),
+    game.rollDice, @stateIs(Game.STATE_MOVE), @sideIs(0),
+    @move(0),      @stateIs(Game.STATE_DICE), @sideIs(1),
+    game.rollDice, @stateIs(Game.STATE_MOVE), @sideIs(1),
+    @move(0),      @stateIs(Game.STATE_DICE), @sideIs(2),
+    game.rollDice, @stateIs(Game.STATE_MOVE), @sideIs(2),
+    @move(0),      @stateIs(Game.STATE_DICE), @sideIs(0)
+  ], (err) ->
+    strictEqual err, null
+    start()
 
