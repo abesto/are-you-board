@@ -55,7 +55,6 @@ asyncTestWithGameAndUsers 'at most 4 users can join a game', 12, 5, (game, u0, u
       strictEqual err, null
       expectedPlayerCount++
       cb err, game
-
   async.waterfall [
       (cb) ->  game.join u0, (err, res) -> Game.model.get game.id, cb
       join u0, u1
@@ -90,26 +89,32 @@ asyncTestWithGameAndUsers 'game starts in STATE_JOINING state', 1, 0, (game) ->
   strictEqual game.state, Game.STATE_JOINING
   start()
 
-asyncTestWithGameAndUsers 'can only move in STATE_MOVE', 2, 1, (game, user) ->
-  async.series [ @join(user), @move(0) ], (err) ->
+asyncTestWithGameAndUsers 'can only move in STATE_MOVE', 2, 2, (game, u0, u1) ->
+  async.series [ @join(u0), @join(u1), @move(0) ], (err) ->
     strictEqual err, 'wrong_state'
     async.series [ game.start, @move(0)], (err) ->
       strictEqual err, 'wrong_state'
       start()
 
-asyncTestWithGameAndUsers 'can roll dice only in STATE_DICE', 2, 1, (game, user) ->
-  async.series [ @join(user), game.rollDice ], (err) ->
+asyncTestWithGameAndUsers 'can roll dice only in STATE_DICE', 2, 2, (game, u0, u1) ->
+  async.series [ @join(u0), @join(u1), game.rollDice ], (err) ->
     strictEqual err, 'wrong_state'
     async.series [ game.start, game.rollDice, game.rollDice ], (err) ->
       strictEqual err, 'wrong_state'
       start()
 
-asyncTestWithGameAndUsers 'can start only in STATE_JOINING', 2, 1, (game, user) ->
-  async.series [ @join(user), game.start, game.start ], (err) ->
+asyncTestWithGameAndUsers 'can start only in STATE_JOINING', 2, 2, (game, u0, u1) ->
+  async.series [ @join(u0), @join(u1), game.start, game.start ], (err) ->
     strictEqual err, 'wrong_state'
     async.series [ game.rollDice, game.start ], (err) ->
       strictEqual err, 'wrong_state'
       start()
+
+asyncTestWithGameAndUsers 'can\'t start with less than 2 players', 1, 1, (game, user) ->
+  async.series [ @join(user), game.start ], (err) ->
+    strictEqual err, 'not_enough_players 1 2'
+    start()
+
 
 asyncTestWithGameAndUsers 'no joining after a game has started', 1, 3, (game, u0, u1, u2) ->
   async.series [
@@ -120,12 +125,11 @@ asyncTestWithGameAndUsers 'no joining after a game has started', 1, 3, (game, u0
     strictEqual err, 'game_started'
     start()
 
-asyncTestWithGameAndUsers 'rollDice sets the current dice roll value', 2, 1, (game) ->
-  game.start (err, res) ->
+asyncTestWithGameAndUsers 'rollDice sets the current dice roll value', 2, 2, (game, u0, u1) ->
+  async.series [@join(u0), @join(u1), game.start, game.rollDice ], (err) ->
     strictEqual err, null
-    game.rollDice (err) ->
-      ok (game.dice <= 6 and game.dice >= 1)
-      start()
+    ok (game.dice <= 6 and game.dice >= 1)
+    start()
 
 asyncTestWithGameAndUsers 'rollDice, move step the game through states and sides', 15, 3, (game, u0, u1, u2) ->
   async.series [

@@ -8,6 +8,8 @@ class Game
   @STATE_DICE = 2
   @STATE_MOVE = 3
 
+  @REQUIRED_PLAYERS = 2
+
   constructor: (@id) ->
     @createdAt = new Date()
     @board = null

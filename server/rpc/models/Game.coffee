@@ -45,6 +45,10 @@ Game::_start = (res) ->
   if @state != Game.STATE_JOINING
     winston.warn "wrong_state start #{Game.STATE_JOINING} #{@state}"
     return res 'wrong_state'
+  playerCount = _.filter(@players, (p) -> p != null).length
+  if playerCount < Game.REQUIRED_PLAYERS
+    winston.warn "not_enough_players #{playerCount} #{Game.REQUIRED_PLAYERS}"
+    return res "not_enough_players #{playerCount} #{Game.REQUIRED_PLAYERS}"
   @state = Game.STATE_DICE
   @_nextSide()
   true
