@@ -11,7 +11,11 @@ suite 'User model', ->
   test "can't create a user without nickname", (done) ->
     User.model.create (err) ->
       err.should.equal 'nick_required'
-      done()
+      User.model.create '', (err) ->
+        err.should.equal 'nick_required'
+        User.model.create null, (err) ->
+          err.should.equal 'nick_required'
+          done()
 
   test "nick can't contain \":\"", (done) ->
     User.model.create 'a:b', (err) ->
