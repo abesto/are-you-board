@@ -3,9 +3,10 @@ rpcWithDeserialize = (cls, method) -> (args...) ->
   rpcMethod = "models.#{cls.name}.#{method}"
   ss.rpc rpcMethod, args..., (err, res) ->
     if err
-      winston.error "RPC ERROR: #{rpcMethod}(#{args}) -> #{err}" if err
+      winston.error "#{err} rpc:#{rpcMethod}(#{args})" if err
       callback? err
-    callback? err, cls.deserialize res
+    else
+      callback? err, cls.deserialize res
 
 module.exports = (cls, rpcMethods...) ->
   cls.model =

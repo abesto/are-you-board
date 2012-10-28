@@ -31,6 +31,9 @@ module.exports = (cls, decorators={}) ->
         if err
           winston.error "redis_error INCR_#{cls.name} #{err}"
           return cb err
+        if _.isFunction decorators.validateCreate
+          err = decorators.validateCreate args...
+          return cb err if err
         obj = new cls id, args...
         decorators.create? obj
         str = obj.serialize()

@@ -22,7 +22,7 @@ suite 'Game model', ->
 
   beforeEach (done) ->
     createUser = (cb) =>
-      User.model.create "test-GameModel:#{userCount++}", cb
+      User.model.create "test-GameModel-#{userCount++}", cb
     async.parallel [
       Game.model.create,
       createUser, createUser, createUser, createUser, createUser
