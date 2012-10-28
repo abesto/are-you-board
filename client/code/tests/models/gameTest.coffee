@@ -144,4 +144,3 @@ asyncTestWithGameAndUsers 'rollDice, move step the game through states and sides
   ], (err) ->
     strictEqual err, null
     start()
-

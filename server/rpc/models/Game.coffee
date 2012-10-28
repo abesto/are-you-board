@@ -66,7 +66,7 @@ User = require '../../../client/code/app/User'
 LudoBoard = require '../../../client/code/app/LudoBoard'
 
 exports.actions = (req, res, ss) ->
-  update = (withUser, fun) -> (gameId, userId) ->
+  update = (withUser, fun) -> (gameId, userId) -> Game.model.withLock gameId, res, (res) ->
     getters = [(cb) -> Game.model.getObject gameId, cb]
     getters.push((cb) -> User.model.getObject userId, cb) if withUser
     async.parallel getters, (err, args) ->

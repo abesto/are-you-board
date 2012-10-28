@@ -28,4 +28,4 @@ module.exports = (cls, currentFormat, defs) ->
       return callback err if err
       serialized = obj.toSerializable()
       defs[getFormat(serialized)].from this, serialized, args...
-      callback null, this
+      callback err, this

@@ -29,9 +29,6 @@ ss.client.formatters.add(require('ss-coffee'));
 ss.client.formatters.add(require('ss-jade'));
 ss.client.formatters.add(require('ss-stylus'));
 
-// Use server-side compiled Hogan (Mustache) templates. Others engines available
-// ss.client.templateEngine.use(require('ss-hogan'));
-
 // Use Redis as session and pubsub backend
 ss.session.store.use('redis');
 ss.publish.transport.use('redis');
@@ -47,6 +44,7 @@ if (ss.env === 'production') {
     // To connect: ss-console <optional_host_or_port>
     var consoleServer = require('ss-console')(ss);
     consoleServer.listen(5000);
+
     // Run tests on /tests
     ss.client.define('tests', {
         view: 'tests.jade',
@@ -56,11 +54,13 @@ if (ss.env === 'production') {
     ss.http.route('/tests', function(req, res){
         res.serveClient('tests');
     });
-
 }
 
 // Global server-side model implementation
 global.model = require('./server/model.coffee');
+
+// Load global helpers
+require('./client/code/app/utils.coffee')(global)
 
 // Start web server
 var server = http.Server(ss.http.middleware);

@@ -58,7 +58,7 @@ serialization Game, 1,
       game.state = state
 
 
-model Game, 'join', 'leave', 'nextSide', 'start', 'rollDice', 'move'
+model Game, 'join', 'leave', 'start', 'rollDice', 'move'
 
 
 module.exports = Game
