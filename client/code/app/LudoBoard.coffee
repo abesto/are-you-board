@@ -140,3 +140,5 @@ serialization LudoBoard, 1,
 
 
 module.exports = LudoBoard
+module.exports.Field = Field
+module.exports.Piece = Piece

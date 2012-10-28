@@ -19,10 +19,14 @@
   },
 
   "optionalDependencies": {
-      "hiredis": "latest"
+    "hiredis": "latest"
+  },
+
+  "devDependencies": {
+    "mocha-phantomjs": "latest"
   },
 
   "scripts": {
-      "test": "phantomjs --ignore-ssl-errors=yes ./phantomjs-qunit-runner.js http://localhost:3000/tests"
+      "test": "node_modules/mocha-phantomjs/bin/mocha-phantomjs http://localhost:3000/mocha --ignore-ssl-errors=yes"
   }
 }

@@ -45,14 +45,14 @@ if (ss.env === 'production') {
     var consoleServer = require('ss-console')(ss);
     consoleServer.listen(5000);
 
-    // Run tests on /tests
-    ss.client.define('tests', {
-        view: 'tests.jade',
-        css:  ['libs/qunit-1.10.0.css'],
-        code: ['libs', 'app', 'tests']
+    // Run mocha tests on /mocha
+    ss.client.define('mocha', {
+        view: 'mocha.jade',
+        css:  ['libs/mocha-1.6.0.css'],
+        code: ['libs', 'app', 'mocha']
     });
-    ss.http.route('/tests', function(req, res){
-        res.serveClient('tests');
+    ss.http.route('/mocha', function(req, res){
+        res.serveClient('mocha');
     });
 }
 
