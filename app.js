@@ -60,7 +60,10 @@ if (ss.env === 'production') {
 global.model = require('./server/model.coffee');
 
 // Load global helpers
-require('./client/code/app/utils.coffee')(global)
+require('./client/code/app/utils.coffee')(global);
+
+// Load constants
+global.constants = require('./client/code/app/constants.coffee');
 
 // Start web server
 var server = http.Server(ss.http.middleware);

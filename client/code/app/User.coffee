@@ -1,8 +1,11 @@
 serialization = require './serialization'
 
-model class User
+class User
   constructor: (@id, @nick) -> null
   toString: -> "#{@id}:#{@nick}"
+
+constants.apply User
+model User
 
 serialization User, 1,
   1:

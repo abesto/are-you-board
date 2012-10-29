@@ -1,15 +1,10 @@
 serialization = require './serialization'
 LudoBoard = require './LudoBoard'
 User = require './User'
+LudoRules = require './LudoRules'
 
 
 class Game
-  @STATE_JOINING = 1
-  @STATE_DICE = 2
-  @STATE_MOVE = 3
-
-  @REQUIRED_PLAYERS = 2
-
   constructor: (@id) ->
     @createdAt = new Date()
     @board = null
@@ -36,6 +31,8 @@ class Game
 
   toString: -> @id
 
+  isStarted: -> @state != Game.STATE_JOINING
+
 serialization Game, 1,
   1:
     to: -> [
@@ -58,7 +55,8 @@ serialization Game, 1,
       game.state = state
 
 
-model Game, 'join', 'leave', 'start', 'rollDice', 'move'
-
+constants.apply Game
+model Game
+LudoRules.wrap Game, Game.MODEL_METHODS...
 
 module.exports = Game

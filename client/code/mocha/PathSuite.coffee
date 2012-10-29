@@ -7,7 +7,7 @@ chai.Assertion.overwriteMethod 'equal', (_super) -> (expectedSteps) ->
     path.position(index).should.deep.equal expected
     path[index].should.deep.equal expected
 
-suite 'Path', ->
+describe 'Path', ->
   before ->
     @string = '3u4drr1l3u11d'
     @originRow = 3
@@ -34,34 +34,34 @@ suite 'Path', ->
       [2, 5], [3, 5], [4, 5], [5, 5], [6, 5], [7, 5], [8, 5], [9, 5], [10, 5], [11, 5], [12, 5]
     ])
 
-  test 'has correct defaults', ->
+  it 'has correct defaults', ->
     p = new Path
     p.should.be.an.instanceof Path
     p.string.should.equal ''
     p.origin.row.should.equal 0
     p.origin.column.should.equal 0
 
-  test 'handles constructor parameters', ->
+  it 'handles constructor parameters', ->
     @p.string.should.equal @string
     @p.origin.row.should.equal @originRow
     @p.origin.column.should.equal @originColumn
 
-  test 'has length set', ->
+  it 'has length set', ->
     @p.should.have.length 25
 
-  test 'returns the same for #position and []', ->
+  it 'returns the same for #position and []', ->
     for i in [0 ... @p.length]
       @p.position(i).should.equal @p[i]
     Should.not.exist @p.position(@p.length)
     Should.not.exist @p[@p.length]
 
-  test 'has position 0 as the origin', ->
+  it 'has position 0 as the origin', ->
     @p.position(0).should.eql {row: @originRow, column: @originColumn}
 
-  test 'creates steps correctly', ->
+  it 'creates steps correctly', ->
     @p.should.equal @steps
 
-  test 'can be rotated', ->
+  it 'can be rotated', ->
     cases = [
       {rotation: 0, string: 'uurrdd'}
       {rotation: 90, string: 'rrddll'}
@@ -74,7 +74,7 @@ suite 'Path', ->
         rotation: rotation
       p.should.equal new Path string: string
 
-  test 'can be appended: ends are fitted, strings appended', ->
+  it 'can be appended: ends are fitted, strings appended', ->
     p0 = @p
     offset = p0.length
     p1 = new Path string: 'rd'
@@ -90,12 +90,12 @@ suite 'Path', ->
     p0.should.equal @steps
     p0.string.should.equal @string + 'rddl'
 
-  test '#clone creates a shared-nothing copy', ->
+  it '#clone creates a shared-nothing copy', ->
     p1 = @p.clone()
     p1.append new Path string: '10r'
     @p.should.have.length @steps.length
     p1.should.have.length @steps.length + 10
 
-  test 'pop removes the last step', ->
+  it 'pop removes the last step', ->
     @p.pop().should.deep.equal @steps.pop()
     @p.should.equal @steps

@@ -7,6 +7,9 @@ window.winston = require('/winston')
 # Global client-side model implementation
 window.model = require('/model')
 
+# Constants
+window.constants = require('/constants')
+
 ss.server.on 'disconnect', ->
   console.log('Connection down :-(')
 
@@ -18,12 +21,12 @@ ss.server.on 'ready', ->
     # Wait for the DOM to finish loading
     jQuery ->
       mocha.setup
-        ui: 'tdd'
+        ui: 'bdd'
         reporter: 'html'
       window.Should = chai.Should()
 
       require '/helpers'
-      suites = ['LudoBoard', 'Path', 'models/Game', 'models/User']
+      suites = ['LudoBoard', 'Path', 'models/Game', 'models/User', 'LudoRules']
       require "/#{suite}Suite" for suite in suites
 
       if window.mochaPhantomJS

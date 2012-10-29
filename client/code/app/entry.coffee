@@ -7,6 +7,9 @@ window.winston = require('/winston')
 # Global client-side model implementation
 window.model = require('/model')
 
+# Constants
+window.constants = require('/constants')
+
 ss.server.on 'disconnect', ->
   console.log('Connection down :-(')
 

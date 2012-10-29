@@ -1,0 +1,15 @@
+module.exports = constants =
+  apply: (cls) ->
+    throw new Error("No constants for class #{cls.name}") unless cls.name of constants
+    for key, value of constants[cls.name]
+      cls[key] = value
+
+  Game:
+    STATE_JOINING: 1
+    STATE_DICE: 2
+    STATE_MOVE: 3
+    REQUIRED_PLAYERS: 2
+    MODEL_METHODS: ['join', 'leave', 'start', 'rollDice', 'move']
+
+  User:
+    MODEL_METHODS: []
