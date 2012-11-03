@@ -1,7 +1,7 @@
 proxy = (method) -> (args...) -> ss.rpc "winston.#{method}", args...
 module.exports = do ->
   o = {}
-  for method in ['log', 'info', 'warn', 'error']
+  for method in ['log', 'info', 'warn', 'error', 'debug']
     o[method] = proxy method
   return o
 

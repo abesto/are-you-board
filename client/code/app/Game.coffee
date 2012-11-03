@@ -54,18 +54,18 @@ class Game
   join: (user, cb) ->
     idx = @firstFreeSide()
     @players[idx] = user
-    winston.info "join", {user: user.toString(), game: this.toString()}
+    winston.info "join", @logMeta {user: user.toString()}
     cb? null, this
 
   leave: (user, cb) ->
     idx = @userSide user
     @players[idx] = null
-    winston.info "leave", {user: user.toString(), game: this.toString()}
+    winston.info "leave", @logMeta {user: user.toString()}
     cb? null, this
 
   rollDice: (cb) ->
-    winston.info "rollDice #{@currentSide}"
     @dice = 1 + Math.floor(Math.random() * 6)
+    winston.debug "rollDice", @logMeta {dice: @dice}
     @state = Game.STATE_MOVE
     cb? null, this
 
@@ -75,10 +75,13 @@ class Game
     cb? null, this
 
   startPiece: (cb) ->
-    winston.info "startPiece", {game: this.toString(), side: @currentSide}
+    winston.info "startPiece", @logMeta()
     @state = Game.STATE_DICE
     @nextSide()
     cb null, @board.start(@currentSide)
+
+  logMeta: (obj={}) ->
+    _.extend obj, {side: @currentSide, user: @players[@currentSide]?.toString(), game: @toString()}
 
 
 serialization Game, 1,
