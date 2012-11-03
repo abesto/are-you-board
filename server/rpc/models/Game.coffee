@@ -71,10 +71,10 @@ exports.actions = (req, res, ss) ->
         return res err if err
         game.save res
 
-  actions.startPiece = (gameId, side) ->
+  actions.startPiece = (gameId) ->
     Game.model.getObject gameId, (err, game) ->
       return res err if err
-      game.startPiece side, (err) ->
+      game.startPiece (err) ->
         return res err if err
         game.save res
 

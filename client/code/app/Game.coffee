@@ -74,11 +74,11 @@ class Game
     @nextSide()
     cb? null, this
 
-  startPiece: (side, cb) ->
-    winston.info "startPiece #{side} #{@currentSide}"
+  startPiece: (cb) ->
+    winston.info "startPiece", {game: this.toString(), side: @currentSide}
     @state = Game.STATE_DICE
     @nextSide()
-    cb null, @board.start(side)
+    cb null, @board.start(@currentSide)
 
 
 serialization Game, 1,

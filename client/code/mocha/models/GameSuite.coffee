@@ -127,7 +127,7 @@ runGameTests = ->
           roll wantit, cb
     async.series [@join(@u0, @u1, @u2, @u3), @game.start], (err) =>
       Should.not.exist err
-      roll ((n) -> n == 6), => @game.startPiece @game.currentSide, done
+      roll ((n) -> n == 6), => @game.startPiece done
 
 
 describe 'Game', ->

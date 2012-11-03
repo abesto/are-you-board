@@ -29,7 +29,8 @@ describe 'LudoRules', ->
       @rules.can.join(@user).should.allow
     it "doesn't allow any pieces to be started", ->
       for side in [0 ... 4]
-        @rules.can.startPiece(side).should.deny "wrong_state"
+        @game.currentSide = side
+        @rules.can.startPiece().should.deny "wrong_state"
 
   describe "a new game with 2 players", ->
     beforeEach ->
@@ -44,7 +45,8 @@ describe 'LudoRules', ->
       @rules.can.rollDice().should.deny "wrong_state"
     it "doesn't allow any pieces to be started", ->
       for side in [0 ... 4]
-        @rules.can.startPiece(side).should.deny "wrong_state"
+        @game.currentSide = side
+        @rules.can.startPiece().should.deny "wrong_state"
 
   describe "a new game with 4 players", ->
     beforeEach ->
@@ -58,7 +60,8 @@ describe 'LudoRules', ->
       @rules.can.rollDice().should.deny "wrong_state"
     it "doesn't allow any pieces to be started", ->
       for side in [0 ... 4]
-        @rules.can.startPiece(side).should.deny "wrong_state"
+        @game.currentSide = side
+        @rules.can.startPiece().should.deny "wrong_state"
 
   describe "a game with 3 players in STATE_DICE", ->
     beforeEach ->
@@ -73,7 +76,8 @@ describe 'LudoRules', ->
       @rules.can.rollDice().should.allow
     it "doesn't allow any pieces to be started", ->
       for side in [0 ... 4]
-        @rules.can.startPiece(side).should.deny "wrong_state"
+        @game.currentSide = side
+        @rules.can.startPiece().should.deny "wrong_state"
 
   describe "a game with 3 players in STATE_MOVE with current side 2", ->
     beforeEach ->
@@ -88,28 +92,26 @@ describe 'LudoRules', ->
     it "doesn't allow rolling the dice", ->
       @rules.can.rollDice().should.deny "wrong_state"
 
-    it "doesn't allow any pieces to be started, except for side 2 when the last dice roll was 6", ->
-      for side in [0,1,3]
-        @rules.can.startPiece(side).should.deny "wrong_side"
+    it "doesn't allow any pieces to be started, except for when the last dice roll was 6", ->
       for dice in [1..5]
         @game.dice = dice
-        @rules.can.startPiece(2).should.deny "dice_not_6"
+        @rules.can.startPiece().should.deny "dice_not_6"
       @game.dice = 6
-      @rules.can.startPiece(2).should.allow
+      @rules.can.startPiece().should.allow
 
     it "doesn't allow starting a piece if doing so would put it on a field occupied by a piece of the same player", ->
       @game.dice = 6
       board = @game.board
       field = board.field(board.startPosition(2))
       field.put new LudoBoard.Piece(2)
-      @rules.can.startPiece(2).should.deny "cant_take_own_piece"
+      @rules.can.startPiece().should.deny "cant_take_own_piece"
 
     it "allows starting a piece if doing so would put it on a field occupied by a piece of another player", ->
       @game.dice = 6
       board = @game.board
       field = board.field(board.startPosition(2))
       field.put new LudoBoard.Piece(3)
-      @rules.can.startPiece(2).should.allow
+      @rules.can.startPiece().should.allow
 
     it "only allows moving pieces of the current player", ->
       @game.dice = 1

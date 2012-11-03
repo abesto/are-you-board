@@ -49,9 +49,9 @@ class Validator
       meta: expected: constants.Game.STATE_DICE, actual: @game.state
     }
 
-  startPiece: (side) ->
+  startPiece: () ->
     board = @game.board
-    field = board.field board.startPosition side
+    field = board.field board.startPosition @game.currentSide
     @check 'startPiece',
       {
         check: -> @game.state == constants.Game.STATE_MOVE
@@ -59,16 +59,11 @@ class Validator
         meta: expected: constants.Game.STATE_MOVE, actual: @game.state
       }
       {
-        check: -> side == @game.currentSide
-        msg: 'wrong_side'
-        meta: expected: @game.side, actual: side
-      }
-      {
         check: -> @game.dice == 6
         msg: 'dice_not_6'
       }
       {
-        check: -> field.isEmpty() or field.getPiece().player != side
+        check: -> field.isEmpty() or field.getPiece().player != @game.currentSide
         msg: 'cant_take_own_piece'
       }
 
