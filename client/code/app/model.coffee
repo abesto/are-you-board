@@ -10,6 +10,9 @@ rpcWithDeserialize = (cls, method) -> (args...) ->
 
 module.exports = (cls) ->
   cls.model =
+    wrappersDisabled: false
+    disableWrappers: -> cls.model.wrappersDisabled = true
+    enableWrappers: -> cls.model.wrappersDisabled = false
     create: rpcWithDeserialize cls, 'create'
     get: rpcWithDeserialize cls, 'get'
 
@@ -21,10 +24,14 @@ module.exports = (cls) ->
 
   for method in cls.MODEL_METHODS
     do (method) ->
+      original = cls.prototype[method]
       cls.prototype[method] = (args...) ->
-        callback = args.pop() if _.isFunction _.last args
-        args = (arg.id for arg in args)
-        ss.rpc "models.#{cls.name}.#{method}", @id, args..., (err, ok) =>
-          return callback err if err
-          @load callback
+        callback = _.last args if _.isFunction _.last args
+        if cls.model.wrappersDisabled
+          original.call this, args...
+        else
+          args = ((if arg.constructor.model? then arg.id else arg) for arg in args)
+          ss.rpc "models.#{cls.name}.#{method}", @id, args..., (err, ok) =>
+            return callback err if err
+            @load callback
 

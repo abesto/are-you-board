@@ -33,6 +33,54 @@ class Game
 
   isStarted: -> @state != Game.STATE_JOINING
 
+  nextSide: ->
+    for i in [@currentSide+1 ... @players.length].concat [0 .. @currentSide]
+      if @players[i] != null
+        return @currentSide = i
+
+  getPiece: (id) -> @board.pieces[id]
+
+  skip: (cb) ->
+    @state = Game.STATE_DICE
+    @nextSide()
+    cb? null, this
+
+  move: (piece, cb) ->
+    @state = Game.STATE_DICE
+    piece.move @dice, @board
+    @nextSide()
+    cb? null, this
+
+  join: (user, cb) ->
+    idx = @firstFreeSide()
+    @players[idx] = user
+    winston.info "join", {user: user.toString(), game: this.toString()}
+    cb? null, this
+
+  leave: (user, cb) ->
+    idx = @userSide user
+    @players[idx] = null
+    winston.info "leave", {user: user.toString(), game: this.toString()}
+    cb? null, this
+
+  rollDice: (cb) ->
+    winston.info "rollDice #{@currentSide}"
+    @dice = 1 + Math.floor(Math.random() * 6)
+    @state = Game.STATE_MOVE
+    cb? null, this
+
+  start: (cb) ->
+    @state = Game.STATE_DICE
+    @nextSide()
+    cb? null, this
+
+  startPiece: (side, cb) ->
+    winston.info "startPiece #{side} #{@currentSide}"
+    @state = Game.STATE_DICE
+    @nextSide()
+    cb null, @board.start(side)
+
+
 serialization Game, 1,
   1:
     to: -> [

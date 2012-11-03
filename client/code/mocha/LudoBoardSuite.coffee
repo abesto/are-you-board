@@ -65,9 +65,12 @@ describe 'LudoBoard', ->
 
   it 'pieces can be started', ->
     for {player, row, column} in startingPositions
-      @board.start(player).player.should.equal player
+      piece = @board.start(player)
+      piece.player.should.equal player
       @board.row(row).column(column).isEmpty().should.be.false
       @board.row(row).column(column).getPiece().getPlayer().should.equal player
+      @board.row(row).column(column).getPiece().should.equal piece
+      piece.pathPosition.should.equal 0
 
   it 'piece can be removed', ->
     @board.start(0)
@@ -93,13 +96,13 @@ describe 'LudoBoard', ->
       pos = _.find startingPositions, (o) -> o.player == player
       field = @board.row(pos.row).column(pos.column)
 
-      piece.move(1)
+      piece.move 1, @board
       field.isEmpty().should.be.true
       pos = @board.paths[player][1]
       field = @board.row(pos.row).column(pos.column)
       piece.should.equal field.getPiece()
 
-      piece.move(2)
+      piece.move 2, @board
       field.isEmpty().should.be.true
       pos = @board.paths[player][3]
       field = @board.row(pos.row).column(pos.column)

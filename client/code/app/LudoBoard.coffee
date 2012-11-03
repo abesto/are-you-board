@@ -2,25 +2,31 @@ Path = require './Path'
 serialization = require './serialization'
 
 class Piece
-  constructor: (@player) ->
+  constructor: (@player, @id) ->
     @field = null
     @pathPosition = 0
 
   getPlayer: -> @player
   isOnBoard: -> @field != null
-  setField: (f) -> @field = f
+  setField: (f) ->
+    @field = f
 
-  move: (n) ->
+  move: (n, board) ->
+    throw new Error("Piece#move must be called with board as the second argument") unless board == @field.board
     @pathPosition += n
     newField = @field.board.field @field.board.paths[@player][@pathPosition]
     @field.removePiece()
     @setField null
     newField.put this
 
+  remove: -> @field.removePiece()
+
+
 serialization Piece, 1,
   1:
-    to: -> [@player, @pathPosition]
-    from: (piece, [player, pathPosition]) ->
+    to: -> [@id, @player, @pathPosition]
+    from: (piece, [id, player, pathPosition]) ->
+      piece.id = id
       piece.player = player
       piece.pathPosition = pathPosition
 
@@ -103,10 +109,12 @@ class LudoBoard
       (new Field(this, row, column) for column in [0 ... LudoBoard.COLUMNS]) \
       for row in [0 ... LudoBoard.ROWS]
     )
-    @paths = []
+    @pieces = {}
     @buildPaths()
+    @pieceCount = 0
 
   buildPaths: ->
+    @paths = []
     for player in [0 ... 4]
       {row, column} = @startPosition player
       @paths.push new Path
@@ -123,20 +131,30 @@ class LudoBoard
 
   start: (player) ->
     {row:row, column:column} = @startPosition player
-    piece = new Piece(player)
+    piece = new Piece(player, @pieceCount++)
     @row(row).column(column).put piece
+    @pieces[piece.id] = piece
     piece
 
   startPosition: (player) -> _.find(LudoBoard.START_POSITIONS, (o) -> o.player == player)
+
+  move: (piece, steps) ->
+    throw new Error("Piece doesn't belong to this board") unless piece.field.board == this
+    piece.move steps
 
 
 serialization LudoBoard, 1,
   1:
     to: -> (field.toSerializable(1) for field in _.flatten @fields when not field.isEmpty())
     from: (board, fields) ->
+      board.pieceCount = 0
       for fieldObj in fields
         field = Field.fromSerializable fieldObj, this
         board.fields[field.row][field.column] = field
+        unless field.isEmpty()
+          piece = field.getPiece()
+          board.pieces[piece.id] = piece
+          board.pieceCount = Math.max board.pieceCount, piece.id + 1
 
 
 module.exports = LudoBoard
