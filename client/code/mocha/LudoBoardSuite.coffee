@@ -108,7 +108,7 @@ describe 'LudoBoard', ->
       field = @board.row(pos.row).column(pos.column)
       piece.should.equal field.getPiece()
 
-  it 'serialization format v1 - waiting for https://github.com/chaijs/chai/pull/104', ->
+  it 'serialization format v1', ->
     @board.start 0
     @board.start 1
     serialized = @board.serialize()
