@@ -27,7 +27,7 @@ runGameTests = ->
 
   beforeEach (done) ->
     createUser = (cb) =>
-      User.model.create "test-GameModel-#{userCount++}", cb
+      User.model.create "test-GameModel-#{userCount++}", 'pwd', cb
     async.parallel [
       Game.model.create,
       createUser, createUser, createUser, createUser, createUser

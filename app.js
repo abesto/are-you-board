@@ -1,17 +1,5 @@
 var http = require('http'),
-    ss = require('socketstream'),
-    redis = require('redis'),
-    winston = require('winston');
-
-// Load underscore.js into global object
-// It's loaded with 'libs' on the client (libs/underscore-min.js)
-global._ = require('underscore');
-
-// Global redis collection used by the application
-global.redis = redis.createClient();
-
-// Global winston instance
-global.winston = winston;
+    ss = require('socketstream');
 
 // Define a single-page client called 'main'
 ss.client.define('main', {
@@ -28,6 +16,9 @@ ss.http.route('/', function(req, res){
 ss.client.formatters.add(require('ss-coffee'));
 ss.client.formatters.add(require('ss-jade'));
 ss.client.formatters.add(require('ss-stylus'));
+
+// Set up global helpers
+require('./server/setup').loadAppGlobals();
 
 // Use Redis as session and pubsub backend
 ss.session.store.use('redis');

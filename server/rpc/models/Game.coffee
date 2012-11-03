@@ -18,8 +18,9 @@ exports.actions = (req, res, ss) ->
         game.save res
 
   actions = base req, res, ss, Game,
-    create: (game) ->
+    create: (game, cb) ->
       game.board = new LudoBoard()
+      cb()
 
   actions.join = (gameId, userId) -> Game.model.withLock gameId, res, (res) ->
     async.parallel [

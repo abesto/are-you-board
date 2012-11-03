@@ -37,14 +37,20 @@ module.exports = (cls) ->
           err = cls.model.decorators.validateCreate args...
           return cb err if err
         obj = new cls id, args...
-        cls.model.decorators.create? obj
-        str = obj.serialize()
-        redis.set cls.model.key(id), str, (err, ok) ->
-          if err
-            winston.error "redis_error", {op: "SET #{cls.model.key(id)}", err: err}
-            return cb err
-          cb null, str
-          winston.info "new_#{cls.name}", {id: obj.id}
+
+        saveSerialized = ->
+          str = obj.serialize()
+          redis.set cls.model.key(id), str, (err, ok) ->
+            if err
+              winston.error "redis_error", {op: "SET #{cls.model.key(id)}", err: err}
+              return cb err
+            cb null, str
+            winston.info "new_#{cls.name}", {id: obj.id}
+
+        if cls.model.decorators.create?
+          cls.model.decorators.create? obj, saveSerialized
+        else
+          saveSerialized()
 
     get: (id, cb) ->
       redis.get "#{cls.name}:#{id}", (err, str) ->

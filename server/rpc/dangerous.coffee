@@ -3,3 +3,4 @@
 exports.actions = (req, res, ss) ->
   return {} if ss.env == 'production'
   flushdb: -> redis.flushdb res if ss.env != 'production'
+  redis: (method, args...) -> redis[method] args..., res
