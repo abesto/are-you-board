@@ -48,7 +48,7 @@ module.exports = (cls) ->
             winston.info "new_#{cls.name}", {id: obj.id}
 
         if cls.model.decorators.create?
-          cls.model.decorators.create? obj, saveSerialized
+          cls.model.decorators.create? obj, saveSerialized, args...
         else
           saveSerialized()
 

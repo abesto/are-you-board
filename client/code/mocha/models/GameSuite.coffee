@@ -10,7 +10,7 @@ chai.Assertion.overwriteMethod 'eql', (_super) -> (other) ->
 
 runGameTests = ->
   userCount = 0
-  before ->
+  before (done) ->
     @join = (users...) =>
       f = (u) => (asyncCb) => @game.join u, asyncCb
       doJoins = (cb) -> async.parallel (f(u) for u in users), cb
@@ -21,17 +21,15 @@ runGameTests = ->
         (cb) => @game.move piece, cb
       else
         @game.move piece, cb
-
-  after ->
-    Game.LudoRules.enableWrappers()
-
-  beforeEach (done) ->
     createUser = (cb) =>
       User.model.create "test-GameModel-#{userCount++}", 'pwd', cb
     async.parallel [
-      Game.model.create,
       createUser, createUser, createUser, createUser, createUser
-    ], (err, [@game, @u0, @u1, @u2, @u3, @u4]) =>
+    ], (err, [@u0, @u1, @u2, @u3, @u4]) => done err
+
+  beforeEach (done) ->
+    Game.model.create (err, @game) =>
+      Should.not.exist err
       _.bindAll @game
       done err
 

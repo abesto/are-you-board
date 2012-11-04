@@ -8,7 +8,7 @@ class Validator
     for item in items
       continue if item.check.call this
       item.meta ?= {}
-      item.meta.game = @game.id
+      item.meta.game = @game.toString()
       item.meta.method = "game.#{method}"
       return [false, item.msg, item.meta]
     [true]
@@ -28,18 +28,18 @@ class Validator
   join: (user) -> @check 'join',
     {
       msg: 'wrong_state'
-      meta: actual: @game.state, expected: constants.Game.STATE_JOINING, user: user.id
+      meta: actual: @game.state, expected: constants.Game.STATE_JOINING, user: user.toString()
       check: -> @game.state == constants.Game.STATE_JOINING
     }
     {
       check: -> not @game.isUserPlaying user
       msg: 'already_joined'
-      meta: user: user.id
+      meta: user: user.toString()
     }
     {
       check: -> @game.playerCount() < 4
       msg: 'game_full'
-      meta: user: user.id
+      meta: user: user.toString()
     }
 
   rollDice: -> @check 'rollDice',

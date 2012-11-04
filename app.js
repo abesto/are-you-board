@@ -47,9 +47,6 @@ if (ss.env === 'production') {
     });
 }
 
-// Global server-side model implementation
-global.model = require('./server/model.coffee');
-
 // Load global helpers
 require('./client/code/app/utils.coffee')(global);
 

@@ -81,7 +81,7 @@ class Game
     cb null, @board.start(@currentSide)
 
   logMeta: (obj={}) ->
-    _.extend obj, {side: @currentSide, user: @players[@currentSide]?.toString(), game: @toString()}
+    _.defaults obj, {side: @currentSide, user: @players[@currentSide]?.toString(), game: @toString()}
 
 
 serialization Game, 1,

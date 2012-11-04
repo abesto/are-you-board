@@ -1,6 +1,5 @@
 auth = require '../auth'
-require('../setup').loadAppGlobals()
-require('../setup').loadTestGlobals()
+User = require '../../client/code/app/User'
 
 credId = 0
 cred = -> {nick: credId++, password:'pwd'}
@@ -15,43 +14,28 @@ describe 'BCrypt authentication', ->
       err.should.equal 'User not found.'
       done()
 
-  it "allows setting of a "
-
-  it 'recognizes correct password': (done) ->
-    auth.register @cred, (err, user) ->
+  it "#authenticate succeeds with password set by #setPassword", (done) ->
+    ss.rpc 'models.User.create', @cred.nick, @cred.password, ([err, rawUser]) =>
       should.not.exist err
-      auth.authenticate @cred, (err, res) ->
+      user = User.deserialize rawUser
+      auth.setPassword {user_id: user.id, password: 'password1'}, (err, res) =>
         should.not.exist err
-        user.id.shoul
-        test.equal null, err
-        test.equal user.user_id, res
-        test.done()
+        auth.authenticate {nick: @cred.nick, password: 'password1'}, done
 
-  'Invalid password': (test) ->
-    test.expect 2
-    credentials = cred()
-    auth.register credentials, (err, res) ->
-      test.equal null, err
-      auth.authenticate {nick:credentials.nick, password:'notthis'}, (err, res) ->
-        test.equal 'Invalid password.', err
-        test.done()
+  it '#authenticate succeeds with the password set by user creation via RPC', (done) ->
+    ss.rpc 'models.User.create', 'nick', 'password0', ([err, rawUser]) =>
+      should.not.exist err
+      user = User.deserialize rawUser
+      auth.authenticate {nick: user.nick, password: 'password0'}, (err, res) =>
+        should.not.exist err
+        user.id.should.equal parseInt(res)
+        done()
 
-  'Nick already exists': (test) ->
-    test.expect 2
-    credentials = cred()
-    auth.register credentials, (err, res) ->
-      test.equal null, err
-      auth.register credentials, (err, res) ->
-        test.equal 'Sorry, that nick is already taken.', err
-        test.done()
+  it "#authenticate fails witn invalid password", (done) ->
+    ss.rpc 'models.User.create', 'nick', 'password0', ([err, rawUser]) =>
+      should.not.exist err
+      user = User.deserialize rawUser
+      auth.authenticate {nick: user.nick, password:'notthis'}, (err, res) ->
+        err.should.equal 'Invalid password.'
+        done()
 
-  'Change password': (test) ->
-    test.expect 3
-    credentials = cred()
-    auth.register credentials, (err, res) ->
-      test.equal null, err
-      auth.setPassword {user_id:res.user_id, password:'newpwd'}, (err, res) ->
-        test.equal null, err
-        auth.authenticate {nick:credentials.nick, password:'newpwd'}, (err, res) ->
-          test.equal null, err
-          test.done()
