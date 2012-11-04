@@ -11,7 +11,7 @@ describe 'BCrypt authentication', ->
 
   it "reports error when user doesn't exist", (done) ->
     auth.authenticate {nick: 'nosuch', password:'nickname'}, (err, res) ->
-      err.should.equal 'User not found.'
+      err.should.equal 'invalid_credentials'
       done()
 
   it "#authenticate succeeds with password set by #setPassword", (done) ->
@@ -36,6 +36,6 @@ describe 'BCrypt authentication', ->
       should.not.exist err
       user = User.deserialize rawUser
       auth.authenticate {nick: user.nick, password:'notthis'}, (err, res) ->
-        err.should.equal 'Invalid password.'
+        err.should.equal 'invalid_credentials'
         done()
 
