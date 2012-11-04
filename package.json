@@ -24,7 +24,10 @@
   },
 
   "devDependencies": {
-    "mocha-phantomjs": "latest"
+    "mocha-phantomjs": "latest",
+    "mocha": "latest",
+    "coffee-script": "latest",
+    "chai": "latest"
   },
 
   "scripts": {
