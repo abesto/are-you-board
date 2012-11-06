@@ -1,12 +1,21 @@
 # Dangerous methods that are exposed only in development mode, for use by tests / test setup
 
 if require('socketstream').env != 'production'
-  console.log 'Starting Redis monitor connection...'
+  console.log 'Patching redis client to log commands and results...'
   monitorBuffer = []
-  monitorConnection = require('redis').createClient()
-  monitorConnection.monitor()
-  monitorConnection.on 'monitor', (timestamp, args) ->
-    monitorBuffer.push args.join ' '
+
+  for cmd in require('redis/lib/commands')
+    do (cmd) ->
+      original = redis[cmd]
+      redis[cmd] = (args...) ->
+        cb = args.pop() if _.isFunction _.last args
+        original.call this, args..., (err, res) ->
+          line = "    #{cmd} #{args.join ' '}\n    "
+          if err
+            monitorBuffer.push(line + 'err: ' + err)
+          else
+            monitorBuffer.push(line + res)
+          cb? err, res
 
 exports.actions = (req, res, ss) ->
   return {} if ss.env == 'production'
