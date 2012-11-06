@@ -20,10 +20,10 @@ module.exports = (cls) ->
     do (method) ->
       original = cls.prototype[method]
       cls.prototype[method] = (args...) ->
-        callback = _.last args if _.isFunction _.last args
         if cls.model.wrappersDisabled
           original.call this, args...
         else
+          callback = args.pop() if _.isFunction _.last args
           args = ((if arg.constructor.model? then arg.id else arg) for arg in args)
           ss.rpc "models.#{cls.name}.#{method}", @id, args..., (err, res) =>
             return callback err if err
