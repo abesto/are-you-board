@@ -23,10 +23,12 @@ testSelector = (test) ->
 
 # Patch ss.rpc to capture RPC calls for current test
 originalRpc = ss.rpc
-ss.rpc = (method, args..., cb) ->
+ss.rpc = (method, args...) ->
+  if _.isFunction _.last args
+    cb = args.pop()
   if TestMeta.length
     toSave = _.filter args, (o) -> !_.isFunction o
-    _.last(TestMeta).log.push '<- ' + method + '(' + (_.map(toSave, (o) -> JSON.stringify o)).join(", ") + ')'
+    _.last(TestMeta).log.push '<- ' + method + '(' + (_.map(args, (o) -> JSON.stringify o)).join(", ") + ')'
   originalRpc method, args..., (err, res) ->
     originalRpc 'dangerous.monitor', (redislog) ->
       _.last(TestMeta).log.push redislog.join('\n') if TestMeta.length
@@ -35,7 +37,7 @@ ss.rpc = (method, args..., cb) ->
       else
         line = "-> #{res}"
       _.last(TestMeta).log.push line + '\n' if TestMeta.length
-      cb err, res
+      cb? err, res
 
 
 # Make 'winston' available to all modules and the browser console
