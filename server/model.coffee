@@ -74,9 +74,10 @@ module.exports = (cls) ->
   cls::withLock = (args...) -> cls.model.withLock @id, args...
 
   cls::save = (cb) ->
-    redis.set "#{cls.name}:#{@id}", @serialize(), (err, ok) ->
+    serialized = @serialize()
+    redis.set "#{cls.name}:#{@id}", serialized, (err, ok) ->
       if err
         winston.error "redis_error", {op: "SET #{@key()}", err: err}
         return cb err
-      cb null, ok
+      cb null, serialized
 

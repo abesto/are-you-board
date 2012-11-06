@@ -16,12 +16,6 @@ module.exports = (cls) ->
     create: rpcWithDeserialize cls, 'create'
     get: rpcWithDeserialize cls, 'get'
 
-  cls::save = (callback) ->
-    rpcMethod = "models.#{cls.name}.save"
-    ss.rpc rpcMethod, @id, @serialize(), (err, res) ->
-      winston.error "RPC ERROR: #{rpcMethod}(#{args}) -> #{err}" if err
-      callback err, res
-
   for method in cls.MODEL_METHODS
     do (method) ->
       original = cls.prototype[method]
@@ -31,7 +25,8 @@ module.exports = (cls) ->
           original.call this, args...
         else
           args = ((if arg.constructor.model? then arg.id else arg) for arg in args)
-          ss.rpc "models.#{cls.name}.#{method}", @id, args..., (err, ok) =>
+          ss.rpc "models.#{cls.name}.#{method}", @id, args..., (err, res) =>
             return callback err if err
-            @load callback
+            @load JSON.parse res
+            callback err, this
 
