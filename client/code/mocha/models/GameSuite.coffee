@@ -13,7 +13,7 @@ runGameTests = ->
   before (done) ->
     @join = (users...) =>
       f = (u) => (asyncCb) => @game.join u, asyncCb
-      doJoins = (cb) -> async.parallel (f(u) for u in users), cb
+      doJoins = (cb) -> async.series (f(u) for u in users), cb
       return doJoins users.pop() if _.isFunction _.last users
       doJoins
     @move = (piece, cb) =>
@@ -23,7 +23,7 @@ runGameTests = ->
         @game.move piece, cb
     createUser = (cb) =>
       User.model.create "test-GameModel-#{userCount++}", 'pwd', cb
-    async.parallel [
+    async.series [
       createUser, createUser, createUser, createUser, createUser
     ], (err, [@u0, @u1, @u2, @u3, @u4]) => done err
 

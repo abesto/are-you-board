@@ -20,15 +20,13 @@ ss.client.formatters.add(require('ss-stylus'));
 // Set up global helpers
 require('./server/setup').loadAppGlobals();
 
-// Use Redis as session and pubsub backend
-ss.session.store.use('redis');
-ss.publish.transport.use('redis');
-
 // Minimize and pack assets if you type: SS_ENV=production node app.js
 if (ss.env === 'production') {
     ss.client.packAssets();
     winston.add(winston.transports.File, { filename: 'app.log' });
     winston.handleExceptions(winston.transports.File, { filename: 'exceptions.log' });
+    ss.session.store.use('redis');
+    ss.publish.transport.use('redis');
 } else {
     // Start Console Server (REPL)
     // To install client: sudo npm install -g ss-console
@@ -39,7 +37,7 @@ if (ss.env === 'production') {
     // Run mocha tests on /mocha
     ss.client.define('mocha', {
         view: 'mocha.jade',
-        css:  ['libs/mocha-1.6.0.css'],
+        css:  ['libs'],
         code: ['libs', 'app', 'mocha']
     });
     ss.http.route('/mocha', function(req, res){

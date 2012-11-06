@@ -591,7 +591,7 @@ module.exports = function(suite){
     context.describe = context.context = function(title, fn){
       var suite = Suite.create(suites[0], title);
       suites.unshift(suite);
-      fn();
+      fn.call(suite);
       suites.shift();
       return suite;
     };
@@ -606,7 +606,7 @@ module.exports = function(suite){
       var suite = Suite.create(suites[0], title);
       suite.pending = true;
       suites.unshift(suite);
-      fn();
+      fn.call(suite);
       suites.shift();
     };
 
@@ -903,7 +903,7 @@ module.exports = function(suite){
     context.suite = function(title, fn){
       var suite = Suite.create(suites[0], title);
       suites.unshift(suite);
-      fn();
+      fn.call(suite);
       suites.shift();
       return suite;
     };
@@ -936,6 +936,14 @@ module.exports = function(suite){
     context.test.only = function(title, fn){
       var test = context.test(title, fn);
       mocha.grep(test.fullTitle());
+    };
+
+    /**
+     * Pending test case.
+     */
+
+    context.test.skip = function(title){
+      context.test(title);
     };
   });
 };
@@ -1212,6 +1220,18 @@ Mocha.prototype.slow = function(slow){
 };
 
 /**
+ * Makes all tests async (accepting a callback)
+ *
+ * @return {Mocha}
+ * @api public
+ */
+
+Mocha.prototype.asyncOnly = function(){
+  this.options.asyncOnly = true;
+  return this;
+};
+
+/**
  * Run tests and invoke `fn()` when complete.
  *
  * @param {Function} fn
@@ -1226,6 +1246,7 @@ Mocha.prototype.run = function(fn){
   var runner = new exports.Runner(suite);
   var reporter = new this._reporter(runner);
   runner.ignoreLeaks = options.ignoreLeaks;
+  runner.asyncOnly = options.asyncOnly;
   if (options.grep) runner.grep(options.grep, options.invert);
   if (options.globals) runner.globals(options.globals);
   if (options.growl) this._growl(runner, reporter);
@@ -1306,14 +1327,14 @@ function parse(str) {
  */
 
 function format(ms) {
-  if (ms == d) return (ms / d) + ' day';
-  if (ms > d) return (ms / d) + ' days';
-  if (ms == h) return (ms / h) + ' hour';
-  if (ms > h) return (ms / h) + ' hours';
-  if (ms == m) return (ms / m) + ' minute';
-  if (ms > m) return (ms / m) + ' minutes';
-  if (ms == s) return (ms / s) + ' second';
-  if (ms > s) return (ms / s) + ' seconds';
+  if (ms == d) return Math.round(ms / d) + ' day';
+  if (ms > d) return Math.round(ms / d) + ' days';
+  if (ms == h) return Math.round(ms / h) + ' hour';
+  if (ms > h) return Math.round(ms / h) + ' hours';
+  if (ms == m) return Math.round(ms / m) + ' minute';
+  if (ms > m) return Math.round(ms / m) + ' minutes';
+  if (ms == s) return Math.round(ms / s) + ' second';
+  if (ms > s) return Math.round(ms / s) + ' seconds';
   return ms + ' ms';
 }
 }); // module: ms.js
@@ -1532,6 +1553,8 @@ function Base(runner) {
   if (!runner) return;
   this.runner = runner;
 
+  runner.stats = stats;
+
   runner.on('start', function(){
     stats.start = new Date;
   });
@@ -1723,7 +1746,7 @@ function Doc(runner) {
     ++indents;
     console.log('%s<section class="suite">', indent());
     ++indents;
-    console.log('%s<h1>%s</h1>', indent(), suite.title);
+    console.log('%s<h1>%s</h1>', indent(), utils.escape(suite.title));
     console.log('%s<dl>', indent());
   });
 
@@ -1736,7 +1759,7 @@ function Doc(runner) {
   });
 
   runner.on('pass', function(test){
-    console.log('%s  <dt>%s</dt>', indent(), test.title);
+    console.log('%s  <dt>%s</dt>', indent(), utils.escape(test.title));
     var code = utils.escape(utils.clean(test.fn.toString()));
     console.log('%s  <dd><pre><code>%s</code></pre></dd>', indent(), code);
   });
@@ -1897,7 +1920,7 @@ exports = module.exports = HTML;
  * Stats template.
  */
 
-var statsTemplate = '<ul id="stats">'
+var statsTemplate = '<ul id="mocha-stats">'
   + '<li class="progress"><canvas width="40" height="40"></canvas></li>'
   + '<li class="passes"><a href="#">passes:</a> <em>0</em></li>'
   + '<li class="failures"><a href="#">failures:</a> <em>0</em></li>'
@@ -1925,7 +1948,7 @@ function HTML(runner, root) {
     , failuresLink = items[2].getElementsByTagName('a')[0]
     , duration = items[3].getElementsByTagName('em')[0]
     , canvas = stat.getElementsByTagName('canvas')[0]
-    , report = fragment('<ul id="report"></ul>')
+    , report = fragment('<ul id="mocha-report"></ul>')
     , stack = [report]
     , progress
     , ctx
@@ -1992,7 +2015,7 @@ function HTML(runner, root) {
     window.scrollTo(0, document.body.scrollHeight);
 
     // TODO: add to stats
-    var percent = stats.tests / total * 100 | 0;
+    var percent = stats.tests / this.total * 100 | 0;
     if (progress) progress.update(percent).draw(ctx);
 
     // update stats
@@ -2003,11 +2026,11 @@ function HTML(runner, root) {
 
     // test
     if ('passed' == test.state) {
-      var el = fragment('<li class="test pass %e"><h2>%e<span class="duration">%ems</span></h2></li>', test.speed, test.title, test.duration);
+      var el = fragment('<li class="test pass %e"><h2>%e<span class="duration">%ems</span> <a href="?grep=%e" class="replay">‣</a></h2></li>', test.speed, test.title, test.duration, encodeURIComponent(test.fullTitle()));
     } else if (test.pending) {
       var el = fragment('<li class="test pass pending"><h2>%e</h2></li>', test.title);
     } else {
-      var el = fragment('<li class="test fail"><h2>%e</h2></li>', test.title);
+      var el = fragment('<li class="test fail"><h2>%e <a href="?grep=%e" class="replay">‣</a></h2></li>', test.title, encodeURIComponent(test.fullTitle()));
       var str = test.err.stack || test.err.toString();
 
       // FF / Opera do not add the message
@@ -2043,7 +2066,8 @@ function HTML(runner, root) {
       pre.style.display = 'none';
     }
 
-    stack[0].appendChild(el);
+    // Don't call .appendChild if #mocha-report was already .shift()'ed off the stack.
+    if (stack[0]) stack[0].appendChild(el);
   });
 }
 
@@ -2052,7 +2076,7 @@ function HTML(runner, root) {
  */
 
 function error(msg) {
-  document.body.appendChild(fragment('<div id="error">%s</div>', msg));
+  document.body.appendChild(fragment('<div id="mocha-error">%s</div>', msg));
 }
 
 /**
@@ -2680,7 +2704,7 @@ function Markdown(runner) {
   runner.on('suite', function(suite){
     ++level;
     var slug = utils.slug(suite.fullTitle());
-    buf += '<a name="' + slug + '" />' + '\n';
+    buf += '<a name="' + slug + '"></a>' + '\n';
     buf += title(suite.title) + '\n';
   });
 
@@ -3461,7 +3485,8 @@ require.register("runnable.js", function(module, exports, require){
  */
 
 var EventEmitter = require('browser/events').EventEmitter
-  , debug = require('browser/debug')('mocha:runnable');
+  , debug = require('browser/debug')('mocha:runnable')
+  , milliseconds = require('./ms');
 
 /**
  * Save timer references to avoid Sinon interfering (see GH-237).
@@ -3508,13 +3533,14 @@ Runnable.prototype.constructor = Runnable;
 /**
  * Set & get timeout `ms`.
  *
- * @param {Number} ms
+ * @param {Number|String} ms
  * @return {Runnable|Number} ms or self
  * @api private
  */
 
 Runnable.prototype.timeout = function(ms){
   if (0 == arguments.length) return this._timeout;
+  if ('string' == typeof ms) ms = milliseconds(ms);
   debug('timeout %d', ms);
   this._timeout = ms;
   if (this.timer) this.resetTimeout();
@@ -3524,13 +3550,14 @@ Runnable.prototype.timeout = function(ms){
 /**
  * Set & get slow `ms`.
  *
- * @param {Number} ms
+ * @param {Number|String} ms
  * @return {Runnable|Number} ms or self
  * @api private
  */
 
 Runnable.prototype.slow = function(ms){
   if (0 === arguments.length) return this._slow;
+  if ('string' == typeof ms) ms = milliseconds(ms);
   debug('timeout %d', ms);
   this._slow = ms;
   return this;
@@ -3653,7 +3680,11 @@ Runnable.prototype.run = function(fn){
     }
     return;
   }
-  
+
+  if (this.asyncOnly) {
+    return done(new Error('--async-only option in use without declaring `done()`'));
+  }
+
   // sync
   try {
     if (!this.pending) this.fn.call(ctx);
@@ -3679,6 +3710,19 @@ var EventEmitter = require('browser/events').EventEmitter
   , filter = utils.filter
   , keys = utils.keys
   , noop = function(){};
+
+/**
+ * Non-enumerable globals.
+ */
+
+var globals = [
+  'setTimeout',
+  'clearTimeout',
+  'setInterval',
+  'clearInterval',
+  'XMLHttpRequest',
+  'Date'
+];
 
 /**
  * Expose `Runner`.
@@ -3714,7 +3758,7 @@ function Runner(suite) {
   this.on('test end', function(test){ self.checkGlobals(test); });
   this.on('hook end', function(hook){ self.checkGlobals(hook); });
   this.grep(/.*/);
-  this.globals(utils.keys(global).concat(['errno']));
+  this.globals(this.globalProps().concat(['errno']));
 }
 
 /**
@@ -3766,6 +3810,25 @@ Runner.prototype.grepTotal = function(suite) {
 };
 
 /**
+ * Return a list of global properties.
+ *
+ * @return {Array}
+ * @api private
+ */
+
+Runner.prototype.globalProps = function() {
+  var props = utils.keys(global);
+
+  // non-enumerables
+  for (var i = 0; i < globals.length; ++i) {
+    if (~props.indexOf(globals[i])) continue;
+    props.push(globals[i]);
+  }
+
+  return props;
+};
+
+/**
  * Allow the given `arr` of globals.
  *
  * @param {Array} arr
@@ -3791,7 +3854,7 @@ Runner.prototype.globals = function(arr){
 Runner.prototype.checkGlobals = function(test){
   if (this.ignoreLeaks) return;
   var ok = this._globals;
-  var globals = keys(global);
+  var globals = this.globalProps();
   var isNode = process.kill;
   var leaks;
 
@@ -3971,6 +4034,8 @@ Runner.prototype.runTest = function(fn){
   var test = this.test
     , self = this;
 
+  if (this.asyncOnly) test.asyncOnly = true;
+
   try {
     test.on('error', function(err){
       self.fail(test, err);
@@ -3992,7 +4057,7 @@ Runner.prototype.runTest = function(fn){
 
 Runner.prototype.runTests = function(suite, fn){
   var self = this
-    , tests = suite.tests
+    , tests = suite.tests.slice()
     , test;
 
   function next(err) {
@@ -4160,6 +4225,8 @@ function filterLeaks(ok, globals) {
   return filter(globals, function(key){
     var matched = filter(ok, function(ok){
       if (~ok.indexOf('*')) return 0 == key.indexOf(ok.split('*')[0]);
+      // Opera and IE expose global variables for HTML element IDs (issue #243)
+      if (/^mocha-/.test(key)) return true;
       return key == ok;
     });
     return matched.length == 0 && (!global.navigator || 'onerror' !== key);
@@ -4896,6 +4963,7 @@ process.on = function(e, fn){
 
     var query = Mocha.utils.parseQuery(window.location.search || '');
     if (query.grep) mocha.grep(query.grep);
+    if (query.invert) mocha.invert();
 
     return Mocha.prototype.run.call(mocha, function(){
       Mocha.utils.highlightTags('code');
