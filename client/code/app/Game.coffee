@@ -113,7 +113,6 @@ serialization Game, 1,
             getters.push (cb) -> User.model.get player, cb
 
       async.parallel getters, (err, players) ->
-        console.log players
         return cb err if err
         game.players = players
         cb null, game

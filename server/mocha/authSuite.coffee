@@ -17,25 +17,28 @@ describe 'BCrypt authentication', ->
   it "#authenticate succeeds with password set by #setPassword", (done) ->
     ss.rpc 'models.User.create', @cred.nick, @cred.password, ([err, rawUser]) =>
       should.not.exist err
-      user = User.deserialize rawUser
-      auth.setPassword {user_id: user.id, password: 'password1'}, (err, res) =>
+      User.deserialize rawUser, (err, user) =>
         should.not.exist err
-        auth.authenticate {nick: @cred.nick, password: 'password1'}, done
+        auth.setPassword {user_id: user.id, password: 'password1'}, (err, res) =>
+          should.not.exist err
+          auth.authenticate {nick: @cred.nick, password: 'password1'}, done
 
   it '#authenticate succeeds with the password set by user creation via RPC', (done) ->
     ss.rpc 'models.User.create', 'nick', 'password0', ([err, rawUser]) =>
       should.not.exist err
-      user = User.deserialize rawUser
-      auth.authenticate {nick: user.nick, password: 'password0'}, (err, res) =>
+      User.deserialize rawUser, (err, user) ->
         should.not.exist err
-        user.id.should.equal parseInt(res)
-        done()
+        auth.authenticate {nick: user.nick, password: 'password0'}, (err, res) =>
+          should.not.exist err
+          user.id.should.equal parseInt(res)
+          done()
 
   it "#authenticate fails witn invalid password", (done) ->
     ss.rpc 'models.User.create', 'nick', 'password0', ([err, rawUser]) =>
       should.not.exist err
-      user = User.deserialize rawUser
-      auth.authenticate {nick: user.nick, password:'notthis'}, (err, res) ->
-        err.should.equal 'invalid_credentials'
-        done()
+      User.deserialize rawUser, (err, user) ->
+        should.not.exist err
+        auth.authenticate {nick: user.nick, password:'notthis'}, (err, res) ->
+          err.should.equal 'invalid_credentials'
+          done()
 
