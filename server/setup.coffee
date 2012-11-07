@@ -4,11 +4,12 @@ exports.redis = -> require('redis').createClient()
 exports.winston = -> require('winston')
 exports.underscore = -> require('underscore')
 exports.model = -> require('./model');
+exports.async = -> require('async')
 
 exports.chai = -> require('chai')
 
 exports.loadAppGlobals = ->
-  for item in ['redis', 'winston', 'model']
+  for item in ['redis', 'winston', 'model', 'async']
     global[item] = exports[item]()
   global._ = exports.underscore()
 

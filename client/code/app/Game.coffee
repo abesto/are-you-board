@@ -90,20 +90,33 @@ serialization Game, 1,
       @id
       @createdAt.getTime()
       @board.toSerializable()
-      ((if _.isNull(player) then null else player.toSerializable()) for player in @players)
+      ((if _.isNull(player) then null else player.id) for player in @players)
       @currentSide
       @dice
       @state
     ]
 
-    from: (game, [id, createdAt, board, players, currentSide, dice, state]) ->
+    from: (game, [id, createdAt, board, players, currentSide, dice, state], cb) ->
       game.id = id
       game.createdAt = new Date createdAt
       game.board = LudoBoard.fromSerializable board
-      game.players = ((if _.isNull(player) then null else User.fromSerializable player) for player in players)
       game.currentSide = currentSide
       game.dice = dice
       game.state = state
+
+      getters = []
+      for player in players
+        do (player) ->
+          if _.isNull player
+            getters.push (cb) -> cb null, null
+          else
+            getters.push (cb) -> User.model.get player, cb
+
+      async.parallel getters, (err, players) ->
+        console.log players
+        return cb err if err
+        game.players = players
+        cb null, game
 
 
 constants.apply Game

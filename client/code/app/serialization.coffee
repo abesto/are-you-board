@@ -22,5 +22,5 @@ module.exports = (cls, currentFormat, defs) ->
   cls::serialize = (format = currentFormat) -> JSON.stringify @toSerializable format
   cls.deserialize = (json, args...) -> cls.fromSerializable JSON.parse(json), args...
 
-  cls::load = (serialized) ->
-    defs[getFormat(serialized)].from this, serialized
+  cls::load = (serialized, args...) ->
+    defs[getFormat(serialized)].from this, serialized, args...

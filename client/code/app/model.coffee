@@ -1,12 +1,11 @@
-rpcWithDeserialize = (cls, method) -> (args...) ->
-  callback = args.pop() if _.isFunction _.last(args)
+rpcWithDeserialize = (cls, method) -> (args..., callback) ->
   rpcMethod = "models.#{cls.name}.#{method}"
   ss.rpc rpcMethod, args..., (err, res) ->
     if err
       winston.error "#{err} rpc:#{rpcMethod}(#{args})" if err
-      callback? err
+      callback err
     else
-      callback? err, cls.deserialize res
+      cls.deserialize res, callback
 
 module.exports = (cls) ->
   cls.model =
@@ -27,6 +26,5 @@ module.exports = (cls) ->
           args = ((if arg.constructor.model? then arg.id else arg) for arg in args)
           ss.rpc "models.#{cls.name}.#{method}", @id, args..., (err, res) =>
             return callback err if err
-            @load JSON.parse res
-            callback err, this
+            @load JSON.parse(res), callback
 

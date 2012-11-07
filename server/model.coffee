@@ -52,7 +52,7 @@ module.exports = (cls) ->
         else
           saveSerialized()
 
-    get: (id, cb) ->
+    getSerialized: (id, cb) ->
       redis.get "#{cls.name}:#{id}", (err, str) ->
         if err
           winston.error "redis_error", {op: "GET #{cls.model.key(id)}", err: err}
@@ -62,10 +62,10 @@ module.exports = (cls) ->
           return cb 'not_found'
         cb null, str
 
-    getObject: (id, cb) ->
-      @get id, (err, str) ->
+    get: (id, cb) ->
+      @getSerialized id, (err, str) ->
         return cb err if err
-        cb null, cls.deserialize str
+        cls.deserialize str, cb
 
     withLock: (id, args...) -> redis.withLock @key(id), args...
 

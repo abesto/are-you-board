@@ -10,8 +10,9 @@ model User
 serialization User, 1,
   1:
     to: -> [@id, @nick]
-    from: (user, [id, nick]) ->
+    from: (user, [id, nick], cb) ->
       user.id = id
       user.nick = nick
+      cb null, user
 
 module.exports = User

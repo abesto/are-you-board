@@ -20,6 +20,7 @@ runGameTests = ->
 
   it 'user can join a game', (done) ->
     @game.join @u0, (err) =>
+      console.log @game
       Should.not.exist err
       @game.isUserPlaying(@u0).should.equal true
       @game.playerCount().should.equal 1
@@ -133,8 +134,8 @@ describe 'Game', ->
         @serializedEmptyGame = -> JSON.parse serialized
         done err, @game
 
-    beforeEach ->
-      @game.load @serializedEmptyGame()
+    beforeEach (done) ->
+      @game.load @serializedEmptyGame(), done
 
     after -> Game.model.enableWrappers()
 
