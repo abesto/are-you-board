@@ -1,12 +1,15 @@
 User = require '/User'
 
 describe 'User RPC', ->
-  it 'can create a new user', (done) ->
-    nick = 'testuser' + (new Date()).getTime()
-    User.model.create nick, 'pwd', (err, user) ->
-      user.should.be.an.instanceof User
-      user.nick.should.equal nick
-      done()
+  before (done) ->
+    @nick = 'testuser' + (new Date()).getTime()
+    @password = 'testpassword'
+    User.model.create @nick, @password, (err, @user) =>
+      done err, @user
+
+  it 'can create a new user', ->
+    @user.should.be.an.instanceof User
+    @user.nick.should.equal @nick
 
   it "requires nick to create a user", (done) ->
     User.model.create (err) ->
@@ -28,10 +31,9 @@ describe 'User RPC', ->
       done()
 
   it "adds the user to the 'users_by_nick' hash", (done) ->
-    nick = 'hashtest'
-    User.model.create nick, 'pwd', (err, user) ->
-      Should.not.exist err
-      ss.rpc 'dangerous.redis', 'hget', 'users_by_nick', nick, (err, id) ->
-        user.id.should.equal parseInt(id)
-        done()
+    ss.rpc 'dangerous.redis', 'hget', 'users_by_nick', @nick, (err, id) =>
+      @user.id.should.equal parseInt(id)
+      done()
+
+
 
