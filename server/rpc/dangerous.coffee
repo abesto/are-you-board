@@ -2,7 +2,12 @@
 
 if require('socketstream').env != 'production'
   console.log 'Patching redis client to log commands and results...'
+
+  monitoringStarted = false
   monitorBuffer = []
+  monitorBuffer.push = (item) ->
+    Array::push.call this, item if monitoringStarted
+
 
   for cmd in require('redis/lib/commands')
     do (cmd) ->
@@ -19,10 +24,11 @@ if require('socketstream').env != 'production'
 
 exports.actions = (req, res, ss) ->
   return {} if ss.env == 'production'
-  flushdb: -> redis.flushdb res if ss.env != 'production'
+  flushdb: -> redis.flushdb res
   redis: (method, args...) -> redis[method] args..., res
+  startMonitoring: -> res null, monitoringStarted = true
   monitor: ->
     ret = monitorBuffer[0 ... monitorBuffer.length]
-    monitorBuffer = []
+    monitorBuffer.length = 0
     res ret
 

@@ -49,29 +49,34 @@ window.model = require('/model')
 # Constants
 window.constants = require('/constants')
 
+async.series [
+  (cb) -> ss.server.on 'ready', cb
+  (cb) -> ss.rpc 'dangerous.flushdb', cb
+  (cb) -> ss.rpc 'dangerous.startMonitoring', cb
+], (err, res) ->
+  return document.write "Startup failed: #{err}" if err
+  jQuery ->
+    window.s = mocha.setup
+      ui: 'bdd'
+      reporter: 'html'
+    window.Should = chai.Should()
 
-ss.server.on 'ready', -> ss.rpc 'dangerous.flushdb', (err, res) -> jQuery ->
-  window.s = mocha.setup
-    ui: 'bdd'
-    reporter: 'html'
-  window.Should = chai.Should()
+    require '/helpers'
+    suites = ['LudoBoard', 'Path', 'models/Game', 'models/User', 'LudoRules']
+    require "/#{suite}Suite" for suite in suites
 
-  require '/helpers'
-  suites = ['LudoBoard', 'Path', 'models/Game', 'models/User', 'LudoRules']
-  require "/#{suite}Suite" for suite in suites
-
-  if window.mochaPhantomJS
-    mochaPhantomJS.run()
-  else
-    mochaRunner = mocha.run()
-    mochaRunner.on 'test', (test) ->
-      TestMeta.push
-        test: test
-        log: []
-    mochaRunner.on 'end', ->
-      for test in TestMeta
-        if test.log.length
-          $(testSelector(test.test) + ' + pre').append("\n\nRPC calls, Redis commands:\n" + test.log.join("\n"))
+    if window.mochaPhantomJS
+      mochaPhantomJS.run()
+    else
+      mochaRunner = mocha.run()
+      mochaRunner.on 'test', (test) ->
+        TestMeta.push
+          test: test
+          log: []
+      mochaRunner.on 'end', ->
+        for test in TestMeta
+          if test.log.length
+            $(testSelector(test.test) + ' + pre').append("\n\nRPC calls, Redis commands:\n" + test.log.join("\n"))
 
 
 
