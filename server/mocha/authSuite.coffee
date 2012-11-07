@@ -10,7 +10,7 @@ describe 'BCrypt authentication', ->
     @cred = cred()
 
   it "reports error when user doesn't exist", (done) ->
-    auth.authenticate {nick: 'nosuch', password:'nickname'}, (err, res) ->
+    auth.authenticate 'nosuch', 'nickname', (err, res) ->
       err.should.equal 'invalid_credentials'
       done()
 
@@ -28,7 +28,7 @@ describe 'BCrypt authentication', ->
       should.not.exist err
       User.deserialize rawUser, (err, user) ->
         should.not.exist err
-        auth.authenticate {nick: user.nick, password: 'password0'}, (err, res) =>
+        auth.authenticate user.nick, 'password0', (err, res) =>
           should.not.exist err
           user.id.should.equal parseInt(res)
           done()
