@@ -9,30 +9,6 @@ chai.Assertion.overwriteMethod 'eql', (_super) -> (other) ->
 
 
 runGameTests = ->
-  userCount = 0
-  before (done) ->
-    @join = (users...) =>
-      f = (u) => (asyncCb) => @game.join u, asyncCb
-      doJoins = (cb) -> async.series (f(u) for u in users), cb
-      return doJoins users.pop() if _.isFunction _.last users
-      doJoins
-    @move = (piece, cb) =>
-      if _.isUndefined cb
-        (cb) => @game.move piece, cb
-      else
-        @game.move piece, cb
-    createUser = (cb) =>
-      User.model.create "test-GameModel-#{userCount++}", 'pwd', cb
-    async.series [
-      createUser, createUser, createUser, createUser, createUser
-    ], (err, [@u0, @u1, @u2, @u3, @u4]) => done err
-
-  beforeEach (done) ->
-    Game.model.create (err, @game) =>
-      Should.not.exist err
-      _.bindAll @game
-      done err
-
   it 'can create new game', ->
     @game.should.be.an.instanceof Game
     @game.board.should.be.an.instanceof LudoBoard
@@ -129,12 +105,47 @@ runGameTests = ->
 
 
 describe 'Game', ->
+  userCount = 0
+  before (done) ->
+    @join = (users...) =>
+      f = (u) => (asyncCb) => @game.join u, asyncCb
+      doJoins = (cb) -> async.series (f(u) for u in users), cb
+      return doJoins users.pop() if _.isFunction _.last users
+      doJoins
+    @move = (piece, cb) =>
+      if _.isUndefined cb
+        (cb) => @game.move piece, cb
+      else
+        @game.move piece, cb
+    createUser = (cb) =>
+      User.model.create "test-GameModel-#{userCount++}", 'pwd', cb
+    async.series [
+      createUser, createUser, createUser, createUser, createUser
+    ], (err, [@u0, @u1, @u2, @u3, @u4]) => done err
+
   describe 'Offline: rule-checks and updates client', ->
-    before -> Game.model.disableWrappers()
+    before (done) ->
+      Game.model.disableWrappers()
+      Game.model.create (err, @game) =>
+        _.bindAll @game
+        Should.not.exist err
+        serialized = @game.serialize()
+        @serializedEmptyGame = -> JSON.parse serialized
+        done err, @game
+
+    beforeEach ->
+      @game.load @serializedEmptyGame()
+
     after -> Game.model.enableWrappers()
+
     runGameTests()
 
   describe 'Online: rule-checks and updates on server', ->
+    beforeEach (done) ->
+      Game.model.create (err, @game) =>
+        Should.not.exist err
+        _.bindAll @game
+        done err
     before -> Game.LudoRules.disableWrappers()
     after -> Game.LudoRules.enableWrappers()
     runGameTests()
