@@ -19,9 +19,9 @@ describe 'BCrypt authentication', ->
       should.not.exist err
       User.deserialize rawUser, (err, user) =>
         should.not.exist err
-        auth.setPassword {user_id: user.id, password: 'password1'}, (err, res) =>
+        auth.setPassword user.id, 'password1', (err, res) =>
           should.not.exist err
-          auth.authenticate {nick: @cred.nick, password: 'password1'}, done
+          auth.authenticate @cred.nick, 'password1', done
 
   it '#authenticate succeeds with the password set by user creation via RPC', (done) ->
     ss.rpc 'models.User.create', 'nick', 'password0', ([err, rawUser]) =>
@@ -38,7 +38,7 @@ describe 'BCrypt authentication', ->
       should.not.exist err
       User.deserialize rawUser, (err, user) ->
         should.not.exist err
-        auth.authenticate {nick: user.nick, password:'notthis'}, (err, res) ->
+        auth.authenticate user.nick, 'notthis', (err, res) ->
           err.should.equal 'invalid_credentials'
           done()
 

@@ -3,6 +3,8 @@ User = require '../../../client/code/app/User.coffee'
 auth = require '../../auth'
 
 exports.actions = (req, res, ss) ->
+  req.use 'session'
+
   actions = base req, res, ss, User,
     validateCreate: (nick, password) ->
       return 'nick_required' unless nick
@@ -13,6 +15,20 @@ exports.actions = (req, res, ss) ->
     create: (user, cb, nick, password) ->
       redis.hset 'users_by_nick', user.nick, user.id, (err, res) ->
         return cb err if err
-        auth.setPassword {user_id: user.id, password: password}, cb
+        auth.setPassword user.id, password, cb
 
+  actions.login = (nick, password) ->
+    auth.authenticate nick, password, (err, id) ->
+      return res err if err
+      req.session.setUserId id
+      User.model.getSerialized id, res
 
+  actions.getCurrent = ->
+    res 'not_logged_in' unless req.session.userId
+    User.model.getSerialized req.session.userId, res
+
+  actions.logout = ->
+    req.session.setUserId null
+    res null, null
+
+  actions

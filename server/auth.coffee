@@ -14,7 +14,7 @@ exports.hashPassword = hashPassword = (password, cb) ->
     (salt, cb) -> bcrypt.hash password, salt, cb
   ], cb
 
-exports.authenticate = ({nick, password}, cb) ->
+exports.authenticate = (nick, password, cb) ->
   id = null
   async.waterfall [
     (          cb) -> redis.hget 'users_by_nick', nick, cb
@@ -33,7 +33,7 @@ exports.authenticate = ({nick, password}, cb) ->
     (new_hash, cb) -> redis.set "user:#{id}:hash", new_hash, cb
   ], (err) -> cb err, id
 
-exports.setPassword = ({user_id, password}, cb) ->
+exports.setPassword = (user_id, password, cb) ->
   async.waterfall [
     (      cb) -> hashPassword password, cb
     (hash, cb) -> redis.set "user:#{user_id}:hash", hash, cb

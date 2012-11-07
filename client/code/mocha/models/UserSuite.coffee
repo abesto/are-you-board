@@ -35,5 +35,22 @@ describe 'User RPC', ->
       @user.id.should.equal parseInt(id)
       done()
 
+  it "returns error not_logged_in if there's no logged in user", (done) ->
+    User.model.getCurrent (err) ->
+      err.should.equal 'not_logged_in'
+      done()
+
+  it "returns user after successful login, remembers it, can log out", (done) ->
+    User.model.login @nick, @password, (err, user) =>
+      @user.id.should.equal user.id
+      User.model.getCurrent (err, user) =>
+        @user.id.should.equal user.id
+        User.model.logout -> User.model.getCurrent (err) ->
+          err.should.equal 'not_logged_in'
+          done()
+
+
+
+
 
 
