@@ -7,6 +7,8 @@ User = require '../../../client/code/app/User'
 LudoBoard = require '../../../client/code/app/LudoBoard'
 
 exports.actions = (req, res, ss) ->
+  req.use 'session'
+
   update = (paramGetter, fun) -> (gameId, paramId) -> Game.model.withLock gameId, res, (res) ->
     getters = [(cb) -> Game.model.get gameId, cb]
     getters.push(paramGetter(paramId)) if paramGetter
@@ -19,8 +21,11 @@ exports.actions = (req, res, ss) ->
 
   actions = base req, res, ss, Game,
     create: (game, cb) ->
-      game.board = new LudoBoard()
-      cb()
+      User.model.get req.session.userId, (err, creator) ->
+        return cb err if err
+        game.createdBy = creator
+        game.board = new LudoBoard()
+        cb()
 
   actions.join = (gameId, userId) -> Game.model.withLock gameId, res, (res) ->
     async.parallel [

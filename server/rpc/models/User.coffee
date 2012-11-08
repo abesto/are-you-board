@@ -1,6 +1,6 @@
 base = require './base'
 User = require '../../../client/code/app/User.coffee'
-auth = require '../../auth'
+auth = require '../../authentication'
 
 exports.actions = (req, res, ss) ->
   req.use 'session'
@@ -21,7 +21,10 @@ exports.actions = (req, res, ss) ->
     auth.authenticate nick, password, (err, id) ->
       return res err if err
       req.session.setUserId id
-      User.model.getSerialized id, res
+      User.model.get id, (err, user) ->
+        return res err if err
+        req.session.isSuperuser = user.isSuperuser
+        res err, user.serialize()
 
   actions.getCurrent = ->
     res 'not_logged_in' unless req.session.userId

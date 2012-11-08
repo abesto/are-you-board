@@ -7,6 +7,7 @@ LudoRules = require './LudoRules'
 class Game
   constructor: (@id) ->
     @createdAt = new Date()
+    @createdBy = null
     @board = null
     @players = [null, null, null, null]
     @currentSide = -1
@@ -88,7 +89,8 @@ serialization Game, 1,
   1:
     to: -> [
       @id
-      @createdAt.getTime()
+      @createdAt.getTime(),
+      @createdBy.id,
       @board.toSerializable()
       ((if _.isNull(player) then null else player.id) for player in @players)
       @currentSide
@@ -96,7 +98,7 @@ serialization Game, 1,
       @state
     ]
 
-    from: (game, [id, createdAt, board, players, currentSide, dice, state], cb) ->
+    from: (game, [id, createdAt, createdBy, board, players, currentSide, dice, state], cb) ->
       game.id = id
       game.createdAt = new Date createdAt
       game.board = LudoBoard.fromSerializable board
@@ -104,7 +106,7 @@ serialization Game, 1,
       game.dice = dice
       game.state = state
 
-      getters = []
+      getters = [(cb) -> User.model.get createdBy, cb]
       for player in players
         do (player) ->
           if _.isNull player
@@ -114,6 +116,7 @@ serialization Game, 1,
 
       async.parallel getters, (err, players) ->
         return cb err if err
+        game.createdBy = players.shift()
         game.players = players
         cb null, game
 

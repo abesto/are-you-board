@@ -1,3 +1,5 @@
+# Integration tests
+
 Game = require '/Game'
 User = require '/User'
 LudoBoard = require '/LudoBoard'
@@ -121,7 +123,11 @@ describe 'Game', ->
       User.model.create "test-GameModel-#{userCount++}", 'pwd', cb
     async.series [
       createUser, createUser, createUser, createUser, createUser
-    ], (err, [@u0, @u1, @u2, @u3, @u4]) => done err
+    ], (err, [@u0, @u1, @u2, @u3, @u4]) =>
+      @creator = @u0
+      User.model.login @creator.nick, "pwd", done
+
+  after (done) -> User.model.logout done
 
   describe 'Offline: rule-checks and updates client', ->
     before (done) ->

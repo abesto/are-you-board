@@ -45,12 +45,6 @@ if (ss.env === 'production') {
     });
 }
 
-// Load global helpers
-require('./client/code/app/utils.coffee')(global);
-
-// Load constants
-global.constants = require('./client/code/app/constants.coffee');
-
 // Start web server
 var server = http.Server(ss.http.middleware);
 server.listen(3000);

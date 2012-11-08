@@ -1,4 +1,4 @@
-auth = require '../auth'
+auth = require '../authentication'
 User = require '../../client/code/app/User'
 
 credId = 0

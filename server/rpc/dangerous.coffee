@@ -1,4 +1,5 @@
 # Dangerous methods that are exposed only in development mode, for use by tests / test setup
+User = require '../../client/code/app/User.coffee'
 
 if require('socketstream').env != 'production'
   console.log 'Patching redis client to log commands and results...'
@@ -31,4 +32,9 @@ exports.actions = (req, res, ss) ->
     ret = monitorBuffer[0 ... monitorBuffer.length]
     monitorBuffer.length = 0
     res ret
+  makeAdmin: (userId) ->
+    User.model.get userId, (err, user) ->
+      return res err if err
+      user.isSuperuser = true
+      user.save res
 
