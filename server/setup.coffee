@@ -5,7 +5,6 @@ exports.winston = -> require('winston')
 exports.underscore = -> require('underscore')
 exports.model = -> require('./model');
 exports.async = -> require('async')
-exports.sinon = -> require('sinon')
 exports.constants = -> require '../client/code/app/constants'
 
 
@@ -21,5 +20,4 @@ exports.loadTestGlobals = ->
   exports.loadAppGlobals()
   global.chai = exports.chai()
   global.should = exports.chai().Should()
-  global.sinon = exports.sinon()
 

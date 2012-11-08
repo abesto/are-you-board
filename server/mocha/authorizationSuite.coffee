@@ -11,7 +11,6 @@ chai.Assertion.addMethod 'deny', (msg) ->
 
 describe 'Authorization checks', ->
   before ->
-    @rpcStub = sinon.stub ss, 'rpc'
     @req = session: {}
     @authorization = new Authorization @req
     @a = _.bind @authorization.check, @authorization
