@@ -1,7 +1,10 @@
 serialization = require './serialization'
 
 class User
-  constructor: (@id, @nick) -> null
+  constructor: (@id, @nick) ->
+    @registeredAt = new Date()
+    @isSuperuser = false
+
   toString: -> "#{@id}:#{@nick}"
 
 constants.apply User
@@ -22,10 +25,12 @@ User.model.getCurrent = (cb) ->
 
 serialization User, 1,
   1:
-    to: -> [@id, @nick]
-    from: (user, [id, nick], cb) ->
+    to: -> [@id, @nick, @registeredAt.getTime(), @isSuperuser]
+    from: (user, [id, nick, registeredAt, isSuperuser], cb) ->
       user.id = id
       user.nick = nick
+      user.registeredAt = new Date registeredAt
+      user.isSuperuser = isSuperuser
       cb null, user
 
 module.exports = User
