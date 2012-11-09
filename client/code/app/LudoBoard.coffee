@@ -13,6 +13,8 @@ class Piece
 
   move: (n, board) ->
     throw new Error("Piece#move must be called with board as the second argument") unless board == @field.board
+    oldField = @field.board.field @field.board.paths[@player][@pathPosition]
+    throw new Error("Piece is not on the field where it should be according to pathPosition") unless oldField == @field
     @pathPosition += n
     newField = @field.board.field @field.board.paths[@player][@pathPosition]
     @field.removePiece()
@@ -38,7 +40,7 @@ class Field
   isEmpty: -> @piece == null
 
   put: (piece) ->
-    throw 'Tried to put a piece on an empty field' unless @isEmpty()
+    @board.removePiece @piece unless @isEmpty()
     throw 'Tried to place a piece that\'s already on another field' if piece.isOnBoard()
     @piece = piece
     @piece.setField this
@@ -140,11 +142,13 @@ class LudoBoard
     piece.remove()
     delete @pieces[piece.id]
 
+  hasPiece: (piece) -> !!@pieces[piece.id]
+
   startPosition: (player) -> _.find(LudoBoard.START_POSITIONS, (o) -> o.player == player)
 
   move: (piece, steps) ->
     throw new Error("Piece doesn't belong to this board") unless piece.field.board == this
-    piece.move steps
+    piece.move steps, this
 
 
 serialization LudoBoard, 1,
