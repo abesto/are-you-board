@@ -88,6 +88,7 @@ describe 'LudoBoard', ->
     piece1 = @board.start(1)
     @board.move piece0, 10
     @board.hasPiece(piece1).should.be.false
+    @board.hasPiece(piece0).should.be.true
 
   it 'paths are correct', ->
     for player in [0 ... 4]

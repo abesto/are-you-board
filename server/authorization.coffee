@@ -25,10 +25,16 @@ loginRequired = {
   msg: 'not_logged_in'
 }
 
-sameUser = {
+ownPiece = {
   check: (user) -> user.id == @req.session.userId
   msg: 'wrong_user'
   meta: (user) -> otherUser: user.id
+}
+
+currentPlayer = {
+  check: (game) -> game.players[game.currentSide].id == @req.session.userId
+  msg: 'not_current_player'
+  meta: (game) -> currentPlayer: game.players[game.currentSide].id
 }
 
 inGame = {
@@ -38,17 +44,22 @@ inGame = {
 }
 
 Authorization.check 'Game.create', loginRequired
-Authorization.check 'Game.join', loginRequired, sameUser
-Authorization.check 'Game.leave', loginRequired, sameUser
+Authorization.check 'Game.join', loginRequired, ownPiece
+Authorization.check 'Game.leave', loginRequired, ownPiece
 Authorization.check 'Game.start', loginRequired,
   {
     check: (game) -> game.createdBy == @req.session.userId
     msg: 'not_owner'
     meta: (game) -> owner: game.createdBy
   }
-Authorization.check 'Game.rollDice', loginRequired, inGame
-Authorization.check 'Game.move', loginRequired, inGame
-Authorization.check 'Game.skip', loginRequired, inGame
-Authorization.check 'Game.startPiece', loginRequired, inGame
+Authorization.check 'Game.rollDice', loginRequired, inGame, currentPlayer
+Authorization.check 'Game.move', loginRequired, inGame, currentPlayer,
+  {
+    check: (game, piece) -> piece.player == @req.session.userId
+    msg: 'not_own_piece'
+    meta: (game, piece) -> owner: piece.player
+  }
+Authorization.check 'Game.skip', loginRequired, inGame, currentPlayer
+Authorization.check 'Game.startPiece', loginRequired, inGame, currentPlayer
 
 module.exports = Authorization
