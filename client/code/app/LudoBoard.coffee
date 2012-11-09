@@ -136,6 +136,10 @@ class LudoBoard
     @pieces[piece.id] = piece
     piece
 
+  removePiece: (piece) ->
+    piece.remove()
+    delete @pieces[piece.id]
+
   startPosition: (player) -> _.find(LudoBoard.START_POSITIONS, (o) -> o.player == player)
 
   move: (piece, steps) ->

@@ -71,13 +71,20 @@ describe 'LudoBoard', ->
       @board.row(row).column(column).getPiece().getPlayer().should.equal player
       @board.row(row).column(column).getPiece().should.equal piece
       piece.pathPosition.should.equal 0
+      @board.pieces[piece.id].should.equal piece
 
   it 'piece can be removed', ->
-    @board.start(0)
+    piece = @board.start(0)
     field =  @board.row(4).column(0)
+    field.should.equal piece.field
     field.isEmpty().should.be.false
-    field.removePiece()
+    @board.removePiece(piece)
     field.isEmpty().should.be.true
+    Should.not.exist piece.field
+    Should.not.exist @board.pieces[piece.id]
+
+  it 'pieces can be taken', ->
+    @board.row(4)
 
   it 'paths are correct', ->
     for player in [0 ... 4]
