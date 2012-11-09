@@ -103,7 +103,19 @@ runGameTests = ->
           roll wantit, cb
     async.series [@join(@u0, @u1, @u2, @u3), @game.start], (err) =>
       Should.not.exist err
-      roll ((n) -> n == 6), => @game.startPiece done
+      roll ((n) -> n == 6), =>
+        player = @game.currentSide
+        oldPieces = _.clone @game.board.pieces
+        @game.startPiece (err) =>
+          return done err if err
+          newPieces = @game.board.pieces
+          diff = []
+          for id, piece of newPieces
+            if _.isUndefined oldPieces[id]
+              diff.push piece
+          diff.should.have.length 1
+          diff[0].player.should.equal player
+          done null
 
 
 describe 'Game', ->

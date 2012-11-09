@@ -78,8 +78,9 @@ class Game
   startPiece: (cb) ->
     winston.info "startPiece", @logMeta()
     @state = Game.STATE_DICE
+    piece = @board.start(@currentSide)
     @nextSide()
-    cb null, @board.start(@currentSide)
+    cb? null, this
 
   logMeta: (obj={}) ->
     _.defaults obj, {side: @currentSide, user: @players[@currentSide]?.toString(), game: @toString()}
