@@ -2,6 +2,8 @@
 window.ss = require('socketstream')
 window.TestMeta = []
 
+require('/utils')(window)
+
 buildSelector = (o) ->
   if o.constructor.name == 'Suite'
     headerTag = 'h1'

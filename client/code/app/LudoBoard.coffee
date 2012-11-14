@@ -1,4 +1,5 @@
 Path = require './Path'
+User = require './User'
 serialization = require './serialization'
 
 class Piece
@@ -33,22 +34,26 @@ serialization Piece, 1,
       piece.pathPosition = pathPosition
 
 
-class Field
+TypeSafe class Field
   constructor: (@board, @row, @column) ->
     @piece = null
 
+  isEmptyS: []
   isEmpty: -> @piece == null
 
+  putS:[TC.Instance(Piece)]
   put: (piece) ->
     @board.removePiece @piece unless @isEmpty()
     throw 'Tried to place a piece that\'s already on another field' if piece.isOnBoard()
     @piece = piece
     @piece.setField this
 
+  removePieceS: []
   removePiece: ->
     @piece.setField null
     @piece = null
 
+  getPieceS: []
   getPiece: -> @piece
 
 serialization Field, 1,
@@ -78,7 +83,7 @@ class Index
     @board.field(row: @index, column: subindex)
 
 
-class LudoBoard
+TypeSafe class LudoBoard
   @SERIALIZATION_FORMAT = 1
 
   @ROWS = 11
@@ -115,6 +120,7 @@ class LudoBoard
     @buildPaths()
     @pieceCount = 0
 
+  buildPathsS: []
   buildPaths: ->
     @paths = []
     for player in [0 ... 4]
@@ -126,11 +132,16 @@ class LudoBoard
         string: '4r4u2r4d4r2d4l4d2l4u4lu4r'
         rotation: 90 * player
 
+  fieldS:[TC.Object]
   field: ({row, column}) -> @fields[row][column]
 
+  rowS:[TC.Number]
   row: (index) -> new Index(this, index, Index.ROW)
+
+  columnS:[TC.Number]
   column: (index) -> new Index(this, index, Index.COLUMN)
 
+  startS:[TC.Number]
   start: (player) ->
     {row:row, column:column} = @startPosition player
     piece = new Piece(player, @pieceCount++)
@@ -138,14 +149,18 @@ class LudoBoard
     @pieces[piece.id] = piece
     piece
 
+  removePieceS:[TC.Instance(Piece)]
   removePiece: (piece) ->
     piece.remove()
     delete @pieces[piece.id]
 
+  hasPieceS:[TC.Instance(Piece)]
   hasPiece: (piece) -> !!@pieces[piece.id]
 
+  startPositionS:[TC.Number]
   startPosition: (player) -> _.find(LudoBoard.START_POSITIONS, (o) -> o.player == player)
 
+  moveS:[TC.Instance(Piece), TC.Number]
   move: (piece, steps) ->
     throw new Error("Piece doesn't belong to this board") unless piece.field.board == this
     piece.move steps, this

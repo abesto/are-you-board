@@ -14,7 +14,7 @@ chai.Assertion.addMethod 'deny', (msg) ->
 describe 'LudoRules', ->
   before ->
     Game.model.disableWrappers()
-    @user = {id:'fake-user-1'}
+    @user = new User('fake-user-1')
   after -> Game.model.enableWrappers()
 
   beforeEach ->

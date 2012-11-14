@@ -19,11 +19,13 @@ class Game
     return if idx == -1
     idx
 
+  userSideS:[TC.Instance(User)]
   userSide: (user) ->
     userInGame = _.find @players, (u) -> u != null and u.id == user.id
     return if _.isUndefined userInGame
     _.indexOf @players, userInGame
 
+  isUserPlayingS:[TC.Instance(User)]
   isUserPlaying: (user) ->
     not _.isUndefined @userSide user
 
@@ -39,42 +41,50 @@ class Game
       if @players[i] != null
         return @currentSide = i
 
+  getPieceS:[TC.Number]
   getPiece: (id) -> @board.pieces[id]
 
+  skipS:[TC.Callback]
   skip: (cb) ->
     @state = Game.STATE_DICE
     @nextSide()
     cb? null, this
 
+  moveS:[TC.Instance(LudoBoard.Piece), TC.Callback]
   move: (piece, cb) ->
     @state = Game.STATE_DICE
     piece.move @dice, @board
     @nextSide()
     cb? null, this
 
+  joinS:[TC.Instance(User), TC.Callback]
   join: (user, cb) ->
     idx = @firstFreeSide()
     @players[idx] = user
     winston.info "join", @logMeta {user: user.toString()}
     cb? null, this
 
+  leaveS:[TC.Instance(User), TC.Callback]
   leave: (user, cb) ->
     idx = @userSide user
     @players[idx] = null
     winston.info "leave", @logMeta {user: user.toString()}
     cb? null, this
 
+  rollDiceS:[TC.Callback]
   rollDice: (cb) ->
     @dice = 1 + Math.floor(Math.random() * 6)
     winston.debug "rollDice", @logMeta {dice: @dice}
     @state = Game.STATE_MOVE
     cb? null, this
 
+  startS:[TC.Callback]
   start: (cb) ->
     @state = Game.STATE_DICE
     @nextSide()
     cb? null, this
 
+  startPieceS:[TC.Callback]
   startPiece: (cb) ->
     winston.info "startPiece", @logMeta()
     @state = Game.STATE_DICE
@@ -82,6 +92,7 @@ class Game
     @nextSide()
     cb? null, this
 
+  logMetaS:[TC.Maybe TC.Object]
   logMeta: (obj={}) ->
     _.defaults obj, {side: @currentSide, user: @players[@currentSide]?.toString(), game: @toString()}
 
@@ -90,8 +101,8 @@ serialization Game, 1,
   1:
     to: -> [
       @id
-      @createdAt.getTime(),
-      @createdBy.id,
+      @createdAt.getTime()
+      @createdBy.id
       @board.toSerializable()
       ((if _.isNull(player) then null else player.id) for player in @players)
       @currentSide
@@ -122,6 +133,7 @@ serialization Game, 1,
         cb null, game
 
 
+TypeSafe Game
 constants.apply Game
 model Game
 LudoRules.wrap Game, Game.MODEL_METHODS...
