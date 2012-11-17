@@ -27,7 +27,7 @@ exports.actions = (req, res, ss) ->
         res err, user.serialize()
 
   actions.getCurrent = ->
-    res 'not_logged_in' unless req.session.userId
+    return res 'not_logged_in' unless req.session.userId
     User.model.getSerialized req.session.userId, res
 
   actions.logout = ->
