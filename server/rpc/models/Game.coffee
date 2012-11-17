@@ -35,6 +35,7 @@ exports.actions = (req, res, ss) ->
       return res err if err
       game.join user, (err) ->
         return res err if err
+        req.session.channel.subscribe "game:#{gameId}"
         game.save res
 
   actions.start = (gameId) -> Game.model.withLock gameId, res, (res) ->
@@ -54,6 +55,7 @@ exports.actions = (req, res, ss) ->
       return res err if err
       game.leave user, (err) ->
         return res err if err
+        req.session.channel.unsubscribe "game:#{gameId}"
         game.save res
 
   actions.rollDice = (gameId) -> Game.model.withLock gameId, res, (res) ->

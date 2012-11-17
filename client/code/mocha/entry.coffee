@@ -30,7 +30,7 @@ ss.rpc = (method, args...) ->
     cb = args.pop()
   if TestMeta.length
     toSave = _.filter args, (o) -> !_.isFunction o
-    _.last(TestMeta).log.push '<- ' + method + '(' + (_.map(args, (o) -> JSON.stringify o)).join(", ") + ')'
+    _.last(TestMeta).log.push '<- ' + method + '(' + [JSON.stringify o for o in args].join(", ") + ')'
   originalRpc method, args..., (err, res) ->
     originalRpc 'dangerous.monitor', (redislog) ->
       _.last(TestMeta).log.push redislog.join('\n') if TestMeta.length

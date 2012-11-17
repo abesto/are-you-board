@@ -25,6 +25,8 @@ if require('socketstream').env != 'production'
 
 exports.actions = (req, res, ss) ->
   return {} if ss.env == 'production'
+  req.use 'session'
+
   flushdb: -> redis.flushdb res
   redis: (method, args...) -> redis[method] args..., res
   startMonitoring: -> res null, monitoringStarted = true
@@ -37,4 +39,7 @@ exports.actions = (req, res, ss) ->
       return res err if err
       user.isSuperuser = true
       user.save res
+  listPubsubChannels: ->
+    console.log req.session.channel.list()
+    res null, req.session.channel.list()
 
