@@ -23,7 +23,7 @@ exports.actions = (req, res, ss) ->
     create: (game, cb) ->
       User.model.get req.session.userId, (err, creator) ->
         return cb err if err
-        game.createdBy = creator
+        game.createdBy = creator.id
         game.board = new LudoBoard()
         cb()
 
