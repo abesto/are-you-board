@@ -21,7 +21,7 @@ class Game
 
   userSideS:[TC.Instance(User)]
   userSide: (user) ->
-    userInGame = _.find @players, (u) -> u != null and u.id == user.id
+    userInGame = _.find @players, (u) -> u != null and u == user.id
     return if _.isUndefined userInGame
     _.indexOf @players, userInGame
 
@@ -60,7 +60,7 @@ class Game
   joinS:[TC.Instance(User), TC.Callback]
   join: (user, cb) ->
     idx = @firstFreeSide()
-    @players[idx] = user
+    @players[idx] = user.id
     winston.info "join", @logMeta {user: user.toString()}
     cb? null, this
 
@@ -102,9 +102,9 @@ serialization Game, 1,
     to: -> [
       @id
       @createdAt.getTime()
-      @createdBy.id
+      @createdBy
       @board.toSerializable()
-      ((if _.isNull(player) then null else player.id) for player in @players)
+      @players
       @currentSide
       @dice
       @state
@@ -113,24 +113,13 @@ serialization Game, 1,
     from: (game, [id, createdAt, createdBy, board, players, currentSide, dice, state], cb) ->
       game.id = id
       game.createdAt = new Date createdAt
+      game.createdBy = createdBy
       game.board = LudoBoard.fromSerializable board
+      game.players = players
       game.currentSide = currentSide
       game.dice = dice
       game.state = state
-
-      getters = [(cb) -> User.model.get createdBy, cb]
-      for player in players
-        do (player) ->
-          if _.isNull player
-            getters.push (cb) -> cb null, null
-          else
-            getters.push (cb) -> User.model.get player, cb
-
-      async.parallel getters, (err, players) ->
-        return cb err if err
-        game.createdBy = players.shift()
-        game.players = players
-        cb null, game
+      cb null, game
 
 
 TypeSafe Game
