@@ -64,7 +64,7 @@ async.series [
     window.Should = chai.Should()
 
     require '/helpers'
-    suites = ['LudoBoard', 'Path', 'models/Game', 'models/User', 'LudoRules']
+    suites = ['LudoBoard', 'Path', 'models/Game', 'models/User', 'LudoRules', 'Repository']
     require "/#{suite}Suite" for suite in suites
 
     if window.mochaPhantomJS

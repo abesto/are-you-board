@@ -185,7 +185,7 @@ describe 'Game', ->
         ], done
 
       it 'join', (done) ->
-        ss.event.once "join:#{@game.id}", (userId) =>
+        ss.event.once "Game:join:#{@game.id}", (userId) =>
           userId.should.equal @u0.id
           done()
         @game.join @u0, (err) => Should.not.exist err
