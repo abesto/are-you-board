@@ -1,3 +1,5 @@
+Repository = require './Repository'
+
 module.exports = (window) ->
   window.timestamp = -> (new Date()).getTime()
 
@@ -13,16 +15,31 @@ module.exports = (window) ->
     if args.length > expectedMaxArguments
       expectedStr = if expectedMinArguments == expectedMaxArguments then 'exactly' else 'at most'
       throw new Error "#{name} expected at most #{expectedMinArguments} arguments, got #{args.length}"
-    for i in [0 ... args.length]
-      unless signature[i].call this, args[i]
-        throw new Error "Expected argument #{i} of #{name} to be #{signature[i].err}, got #{args[i]} of type #{typeof args[i]}"
-    fun.apply this, args
+
+    if signature.length > 0 and _.last(signature).type == 'Callback'
+      async.map [0 ... args.length], ((i, cb) =>
+        if signature[i].call this, args[i]
+          return cb null, args[i]
+        if signature[i].type == 'Instance' and signature[i].cls.model and _.isNumber(args[i])
+          return Repository.get signature[i].cls, args[i], cb
+        cb new Error("Expected argument #{i} of #{name} to be #{signature[i].err}, got #{args[i]} of type #{typeof args[i]}")
+      ), (err, transformed_args) =>
+        throw err if err
+        fun.apply this, transformed_args
+    else
+      for i in [0 ... args.length]
+        unless signature[i].call this, args[i]
+          throw new Error "Expected argument #{i} of #{name} to be #{signature[i].err}, got #{args[i]} of type #{typeof args[i]}"
+      fun.apply this, args
+
   window.TC.String = _.isString
   window.TC.String.err = 'string'
 
   window.TC.Instance = (cls) ->
     test = (o) -> o instanceof cls
     test.err = "instance of #{cls.name}"
+    test.type = 'Instance'
+    test.cls = cls
     test
 
   window.TC.Number = _.isNumber
@@ -43,6 +60,7 @@ module.exports = (window) ->
     f
 
   window.TC.Callback = TC.Maybe TC.Function
+  window.TC.Callback.type = 'Callback'
 
   window.TypeSafe = (cls) ->
     for name, fun of cls.prototype
