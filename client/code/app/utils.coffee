@@ -15,7 +15,7 @@ module.exports = (window) ->
       throw new Error "#{name} expected at most #{expectedMinArguments} arguments, got #{args.length}"
     for i in [0 ... args.length]
       unless signature[i].call this, args[i]
-        throw new Error "Expected argument #{i} of #{name} to be #{signature[i].err}, got #{args[i]}"
+        throw new Error "Expected argument #{i} of #{name} to be #{signature[i].err}, got #{args[i]} of type #{typeof args[i]}"
     fun.apply this, args
   window.TC.String = _.isString
   window.TC.String.err = 'string'

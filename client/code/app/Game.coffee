@@ -20,14 +20,20 @@ class Game
     idx
 
   userSideS:[TC.Instance(User)]
-  userSide: (user) ->
-    userInGame = _.find @players, (u) -> u != null and u == user.id
-    return if _.isUndefined userInGame
-    _.indexOf @players, userInGame
+  userSide: (user) -> @userIdSide user.id
+
+  userIdSideS: [TC.Number]
+  userIdSide: (userId) ->
+    side = @players.indexOf userId
+    return if side == -1
+    side
 
   isUserPlayingS:[TC.Instance(User)]
-  isUserPlaying: (user) ->
-    not _.isUndefined @userSide user
+  isUserPlaying: (user) -> @isUserIdPlaying user.id
+
+  isUserIdPlayingS: [TC.Number]
+  isUserIdPlaying: (userId) ->
+    not _.isUndefined @userIdSide userId
 
   playerCount: ->
     (_.filter @players, (o) -> o != null).length

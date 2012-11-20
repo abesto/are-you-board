@@ -164,8 +164,12 @@ describe 'Game', ->
         Should.not.exist err
         _.bindAll @game
         done err
-    before -> Game.LudoRules.disableWrappers()
-    after -> Game.LudoRules.enableWrappers()
+    before (done) ->
+      Game.LudoRules.disableWrappers()
+      ss.rpc 'dangerous.disableAuthorization', done
+    after (done) ->
+      Game.LudoRules.enableWrappers()
+      ss.rpc 'dangerous.enableAuthorization', done
 
     runGameTests()
 

@@ -1,5 +1,6 @@
 # Dangerous methods that are exposed only in development mode, for use by tests / test setup
-User = require '../../client/code/app/User.coffee'
+User = require '../../client/code/app/User'
+Authorization = require '../authorization'
 
 if require('socketstream').env != 'production'
   console.log 'Patching redis client to log commands and results...'
@@ -42,4 +43,12 @@ exports.actions = (req, res, ss) ->
   listPubsubChannels: ->
     console.log req.session.channel.list()
     res null, req.session.channel.list()
+
+  disableAuthorization: ->
+    Authorization.disable()
+    res()
+
+  enableAuthorization: ->
+    Authorization.enable()
+    res()
 
