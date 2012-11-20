@@ -51,7 +51,7 @@ describe 'Authorization checks that', ->
   describe "normal player who hasn't joined the game", ->
     before ->
       @req.session.userId = 1
-      @game = isUserPlaying: -> false
+      @game = isUserIdPlaying: -> false
 
 
     for method in ['rollDice', 'skip', 'startPiece', 'move']
@@ -61,7 +61,7 @@ describe 'Authorization checks that', ->
   describe "normal player who has joined the game, but isn't the current player", ->
     before ->
       @req.session.userId = 1
-      @game = {isUserPlaying: (-> true), currentSide: 0, players: [{id:2}]}
+      @game = {isUserIdPlaying: (-> true), currentSide: 0, players: [{id:2}]}
 
     for method in ['rollDice', 'skip', 'startPiece', 'move']
       it "can't #{method}", ->
@@ -70,7 +70,7 @@ describe 'Authorization checks that', ->
   describe "normal player who has joined the game and is the current player", ->
     before ->
       @req.session.userId = 1
-      @game = {isUserPlaying: (-> true), currentSide: 0, players: [{id:1}]}
+      @game = {isUserIdPlaying: (-> true), currentSide: 0, players: [{id:1}]}
 
     for method in ['rollDice', 'skip', 'startPiece']
       it "can #{method} ", ->
