@@ -3,7 +3,7 @@ class Authorization
   @disable: -> Authorization.enabled = false
   @enable: -> Authorization.enabled = true
 
-  constructor: (@req, @res) ->
+  constructor: (@req) ->
 
   @check = (name, items...) ->
     Authorization.prototype[name] = (args...) ->
@@ -24,10 +24,10 @@ class Authorization
 
   check: (name, args...) -> this[name] args...
 
-  checkRes: (name, args...) ->
+  checkRes: (res, name, args...) ->
     checkResult = @check name, args...
     return true if checkResult[0] or not Authorization.enabled
-    @res checkResult[1]
+    res checkResult[1]
     return false
 
 loginRequired = {

@@ -41,6 +41,8 @@ ss.rpc = (method, args...) ->
       _.last(TestMeta).log.push line + '\n' if TestMeta.length
       cb? err, res
 
+# Log all events
+ss.event.onAny (args...) -> _.last(TestMeta).log.push('E ' + args.join(' '))
 
 # Make 'winston' available to all modules and the browser console
 window.winston = require('/winston')

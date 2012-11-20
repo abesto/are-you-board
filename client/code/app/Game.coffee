@@ -2,6 +2,7 @@ serialization = require './serialization'
 LudoBoard = require './LudoBoard'
 User = require './User'
 LudoRules = require './LudoRules'
+Repository = require './Repository'
 
 
 class Game
@@ -75,6 +76,7 @@ class Game
     idx = @userSide user
     @players[idx] = null
     winston.info "leave", @logMeta {user: user.toString()}
+    Repository.delete Game, this
     cb? null, this
 
   rollDiceS:[TC.Callback]
@@ -83,6 +85,11 @@ class Game
     winston.debug "rollDice", @logMeta {dice: @dice}
     @state = Game.STATE_MOVE
     cb? null, this
+
+  rollDiceListenerS:[TC.Number, TC.Callback]
+  rollDiceListener: (dice, cb) ->
+    @dice = dice
+    cb? null, null
 
   startS:[TC.Callback]
   start: (cb) ->

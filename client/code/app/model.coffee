@@ -1,3 +1,5 @@
+Repository = require '/Repository'
+
 rpcWithDeserialize = (cls, method) -> (args..., callback) ->
   rpcMethod = "models.#{cls.name}.#{method}"
   ss.rpc rpcMethod, args..., (err, res) ->
@@ -5,7 +7,10 @@ rpcWithDeserialize = (cls, method) -> (args..., callback) ->
       winston.error "#{err} rpc:#{rpcMethod}(#{args})" if err
       callback err
     else
-      cls.deserialize res, callback
+      cls.deserialize res, (err, deserialized) ->
+        return  callback err if err
+        Repository.add cls, deserialized
+        callback err, deserialized
 
 module.exports = (cls) ->
   cls.model =
@@ -14,6 +19,14 @@ module.exports = (cls) ->
     enableWrappers: -> cls.model.wrappersDisabled = false
     create: rpcWithDeserialize cls, 'create'
     get: rpcWithDeserialize cls, 'get'
+
+  cls::on = (event, fun) ->
+    ss.event.on "#{cls.name}:#{event}:#{@id}", fun
+  cls::off = (event, fun) ->
+    ss.event.off "#{cls.name}:#{event}:#{@id}", fun
+  cls::once = (event, fun) ->
+    ss.event.once "#{cls.name}:#{event}:#{@id}", fun
+
 
   for method in cls.MODEL_METHODS
     do (method) ->
@@ -24,7 +37,10 @@ module.exports = (cls) ->
         else
           callback = args.pop() if _.isFunction _.last args
           args = ((if arg.constructor.model? then arg.id else arg) for arg in args)
-          ss.rpc "models.#{cls.name}.#{method}", @id, args..., (err, res) =>
-            return callback err if err
-            @load JSON.parse(res), callback
+          listener = -> callback null
+          @once method, listener
+          ss.rpc "models.#{cls.name}.#{method}", @id, args..., (err) =>
+            if err
+              @off method, listener
+              callback err
 

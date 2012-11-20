@@ -93,17 +93,16 @@ runGameTests = ->
       done()
 
   it 'startPiece can start a piece if the dice is 6', (done) ->
-    roll = (wantit, cb) =>
-      @game.rollDice (err) =>
+    rollSix = (cb) => @game.rollDice (err) =>
+      Should.not.exist err
+      return cb() if @game.dice == 6
+      @game.skip (err, res) =>
         Should.not.exist err
-        if wantit @game.dice
-          return cb()
-        @game.skip (err, res) =>
-          Should.not.exist err
-          roll wantit, cb
+        rollSix cb
+
     async.series [@join(@u0, @u1, @u2, @u3), @game.start], (err) =>
       Should.not.exist err
-      roll ((n) -> n == 6), =>
+      rollSix =>
         player = @game.currentSide
         oldPieces = _.clone @game.board.pieces
         @game.startPiece (err) =>
@@ -177,15 +176,15 @@ describe 'Game', ->
       it 'joining a game subscribes to, leaving unsubscribes from game pubsub channel', (done) ->
         async.waterfall [
           (cb   ) => @game.join @u0, cb
-          (g, cb) => ss.rpc 'dangerous.listPubsubChannels', cb
-          (l, cb) => l.should.include "game:#{@game.id}"; cb null, null
-          (n, cb) => @game.leave @u0, cb
-          (g, cb) => ss.rpc 'dangerous.listPubsubChannels', cb
-          (l, cb) => l.should.not.include "game:#{@game.id}"; cb null
+          (   cb) => ss.rpc 'dangerous.listPubsubChannels', cb
+          (l, cb) => l.should.include "game:#{@game.id}"; cb()
+          (   cb) => @game.leave @u0, cb
+          (   cb) => ss.rpc 'dangerous.listPubsubChannels', cb
+          (l, cb) => l.should.not.include "game:#{@game.id}"; cb()
         ], done
 
       it 'join', (done) ->
-        ss.event.once "Game:join:#{@game.id}", (userId) =>
+        ss.event.once "Game:join:#{@game.id}", ([userId]) =>
           userId.should.equal @u0.id
           done()
         @game.join @u0, (err) => Should.not.exist err

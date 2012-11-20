@@ -10,7 +10,13 @@ Authorization = require '../../authorization'
 
 exports.actions = (req, res, ss) ->
   req.use 'session'
-  auth = new Authorization req, res
+  auth = new Authorization req
+
+  errorOrEvent = (res, event, args...) -> (err, rawGame) ->
+    return res err if err
+    res()
+    Game.deserialize rawGame, (err, game) ->
+      ss.publish.channel "game:#{game.id}", "Game:#{event}:#{game.id}", args
 
   update = (paramGetter, fun) -> (gameId, paramId) -> Game.model.withLock gameId, res, (res) ->
     getters = [(cb) -> Game.model.get gameId, cb]
@@ -32,12 +38,12 @@ exports.actions = (req, res, ss) ->
 
   originalCreate = actions.create
   actions.create = (args...) ->
-    return unless auth.checkRes 'Game.create'
+    return unless auth.checkRes res, 'Game.create'
     originalCreate args...
 
   originalGet = actions.get
   actions.get = (args...) ->
-    return unless auth.checkRes 'Game.get'
+    return unless auth.checkRes res, 'Game.get'
     originalGet args...
 
   actions.join = (gameId, userId) -> Game.model.withLock gameId, res, (res) ->
@@ -46,20 +52,19 @@ exports.actions = (req, res, ss) ->
       (cb) -> User.model.get userId, cb
     ], (err, [game, user]) ->
       return res err if err
-      return unless auth.checkRes 'Game.join', user
+      return unless auth.checkRes res, 'Game.join', user
       game.join user, (err) ->
         return res err if err
         req.session.channel.subscribe "game:#{gameId}"
-        ss.publish.channel "game:#{gameId}", "Game:join:#{gameId}", userId
-        game.save res
+        game.save errorOrEvent(res, 'join', userId)
 
   actions.start = (gameId) -> Game.model.withLock gameId, res, (res) ->
     Game.model.get gameId, (err, game) ->
       return res err if err
-      return unless auth.checkRes 'Game.start', game
+      return unless auth.checkRes res, 'Game.start', game
       game.start (err) ->
         return res err if err
-        game.save res
+        game.save errorOrEvent(res, 'start')
 
   update ((cb) -> cb null, null), 'start'
 
@@ -69,44 +74,46 @@ exports.actions = (req, res, ss) ->
       (cb) -> User.model.get userId, cb
     ], (err, [game, user]) ->
       return res err if err
+      return unless auth.checkRes res, 'Game.leave', user
       game.leave user, (err) ->
         return res err if err
-        return unless auth.checkRes 'Game.leave', user
-        req.session.channel.unsubscribe "game:#{gameId}"
-        game.save res
+        game.save (err, rawGame) ->
+          return res err if err
+          errorOrEvent(res, 'leave', userId)(err, rawGame)
+          req.session.channel.unsubscribe "game:#{gameId}"
 
   actions.rollDice = (gameId) -> Game.model.withLock gameId, res, (res) ->
     Game.model.get gameId, (err, game) ->
       return res err if err
-      return unless auth.checkRes 'Game.rollDice', game
+      return unless auth.checkRes res, 'Game.rollDice', game
       game.rollDice (err) ->
         return res err if err
-        game.save res
+        game.save errorOrEvent(res, 'rollDice', game.dice)
 
   actions.move = (gameId, pieceId) ->
     Game.model.get gameId, (err, game) ->
       return res err if err
       piece = game.getPiece pieceId
-      return unless auth.checkRes 'Game.move', game, piece
+      return unless auth.checkRes res, 'Game.move', game, piece
       game.move piece, (err) ->
         return res err if err
-        game.save res
+        game.save errorOrEvent(res, 'move', pieceId)
 
   actions.skip = (gameId) ->
     Game.model.get gameId, (err, game) ->
       return res err if err
-      return unless auth.checkRes 'Game.skip', game
+      return unless auth.checkRes res, 'Game.skip', game
       game.skip (err) ->
         return res err if err
-        game.save res
+        game.save errorOrEvent(res, 'skip')
 
   actions.startPiece = (gameId) ->
     Game.model.get gameId, (err, game) ->
       return res err if err
-      return unless auth.checkRes 'Game.startPiece', game
+      return unless auth.checkRes res, 'Game.startPiece', game
       game.startPiece (err) ->
         return res err if err
-        game.save res
+        game.save errorOrEvent(res, 'startPiece')
 
   actions
 

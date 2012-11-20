@@ -41,7 +41,6 @@ exports.actions = (req, res, ss) ->
       user.isSuperuser = true
       user.save res
   listPubsubChannels: ->
-    console.log req.session.channel.list()
     res null, req.session.channel.list()
 
   disableAuthorization: ->
