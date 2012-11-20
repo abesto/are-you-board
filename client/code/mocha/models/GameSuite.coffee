@@ -169,14 +169,21 @@ describe 'Game', ->
 
     runGameTests()
 
-    it 'joining a game subscribes to, leaving unsubscribes from game pubsub channel', (done) ->
-      async.waterfall [
-        (cb   ) => @game.join @u0, cb
-        (g, cb) => ss.rpc 'dangerous.listPubsubChannels', cb
-        (l, cb) => l.should.include "game:#{@game.id}"; cb null, null
-        (n, cb) => @game.leave @u0, cb
-        (g, cb) => ss.rpc 'dangerous.listPubsubChannels', cb
-        (l, cb) => l.should.not.include "game:#{@game.id}"; cb null
-      ], done
+    describe '- pub/sub event', ->
+      it 'joining a game subscribes to, leaving unsubscribes from game pubsub channel', (done) ->
+        async.waterfall [
+          (cb   ) => @game.join @u0, cb
+          (g, cb) => ss.rpc 'dangerous.listPubsubChannels', cb
+          (l, cb) => l.should.include "game:#{@game.id}"; cb null, null
+          (n, cb) => @game.leave @u0, cb
+          (g, cb) => ss.rpc 'dangerous.listPubsubChannels', cb
+          (l, cb) => l.should.not.include "game:#{@game.id}"; cb null
+        ], done
+
+      it 'join', (done) ->
+        ss.event.once "join:#{@game.id}", (userId) =>
+          userId.should.equal @u0.id
+          done()
+        @game.join @u0, (err) => Should.not.exist err
 
 
