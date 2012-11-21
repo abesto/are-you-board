@@ -1,6 +1,11 @@
 # Make 'ss' available to all modules and the browser console
 window.ss = require('socketstream')
-window.TestMeta = []
+TestMeta = []
+
+log = (str) ->
+  return if TestMeta.length == 0
+  current = _.last TestMeta
+  current.log.push str
 
 require('/utils')(window)
 
@@ -28,21 +33,20 @@ originalRpc = ss.rpc
 ss.rpc = (method, args...) ->
   if _.isFunction _.last args
     cb = args.pop()
-  if TestMeta.length
-    toSave = _.filter args, (o) -> !_.isFunction o
-    _.last(TestMeta).log.push '<- ' + method + '(' + [JSON.stringify o for o in args].join(", ") + ')'
+  toSave = _.filter args, (o) -> !_.isFunction o
+  log '<- ' + method + '(' + [JSON.stringify o for o in args].join(", ") + ')'
   originalRpc method, args..., (err, res) ->
     originalRpc 'dangerous.monitor', (redislog) ->
-      _.last(TestMeta).log.push redislog.join('\n') if TestMeta.length
+      log redislog.join('\n')
       if err
         line = "-> err: #{err}"
       else
         line = "-> #{res}"
-      _.last(TestMeta).log.push line + '\n' if TestMeta.length
+      log line + '\n'
       cb? err, res
 
 # Log all events
-ss.event.onAny (args...) -> _.last(TestMeta).log.push('E ' + args.join(' '))
+ss.event.onAny (args...) -> log 'E ' + args.join(' ')
 
 # Make 'winston' available to all modules and the browser console
 window.winston = require('/winston')
