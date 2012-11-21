@@ -4,8 +4,8 @@ var http = require('http'),
 // Define a single-page client called 'main'
 ss.client.define('main', {
   view: 'app.jade',
-  css:  ['app.styl'],
-  code: ['libs/jquery.min.js', 'app'],
+  css:  ['app.less', 'libs/bootstrap.min.css'],
+  code: ['libs/jquery.min.js', 'libs/bootstrap.min.js', 'libs/underscore-min.js', 'app'],
   tmpl: '*'
 });
 ss.http.route('/', function(req, res){
@@ -15,7 +15,8 @@ ss.http.route('/', function(req, res){
 // Code Formatters
 ss.client.formatters.add(require('ss-coffee'));
 ss.client.formatters.add(require('ss-jade'));
-ss.client.formatters.add(require('ss-stylus'));
+ss.client.formatters.add(require('ss-less'));
+ss.client.templateEngine.use(require('ss-hogan'));
 
 // Set up global helpers
 require('./server/setup').loadAppGlobals();
@@ -33,12 +34,12 @@ if (ss.env === 'production') {
     // To connect: ss-console <optional_host_or_port>
     var consoleServer = require('ss-console')(ss);
     consoleServer.listen(5000);
-
     // Run mocha tests on /mocha
     ss.client.define('mocha', {
         view: 'mocha.jade',
-        css:  ['libs'],
-        code: ['libs', 'app', 'mocha']
+        css:  ['libs/mocha-20121106.css'],
+        code: ['libs/async.min.js', 'libs/chai-1.3.0.js', 'libs/jquery.min.js', 'libs/mocha-20121106.js',
+               'libs/sinon-1.5.0.js', 'libs/underscore-min.js', 'app', 'mocha']
     });
     ss.http.route('/mocha', function(req, res){
         res.serveClient('mocha');

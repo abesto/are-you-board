@@ -1,0 +1,12 @@
+form.form-signin
+  h2 Please sign in
+  div.alert.alert-error.hidden
+  input.input-block-level(name='nick', type='text', placeholder='Nickname')
+  input.input-block-level(name='password', type='password', placeholder='Password')
+  label.checkbox
+    input(type='checkbox', value='remember-me', disabled='disabled')
+    | Remember me&nbsp;
+    small (not supported yet)
+  button.btn.btn-primary(name='signin', type='submit') Sign in
+  button.btn(name='register', type='button', style='float:right') Register a new account
+
