@@ -59,6 +59,8 @@ window.constants = require('/constants')
 
 async.series [
   (cb) -> ss.server.on 'ready', cb
+  (cb) -> ss.rpc 'models.User.logout', cb
+  (cb) -> ss.rpc 'dangerous.redis', 'select', 1, cb
   (cb) -> ss.rpc 'dangerous.flushdb', cb
   (cb) -> ss.rpc 'dangerous.startMonitoring', cb
 ], (err, res) ->
@@ -85,6 +87,7 @@ async.series [
         for test in TestMeta
           if test.log.length
             $(testSelector(test.test) + ' + pre').append("\n\nRPC calls, Redis commands:\n" + test.log.join("\n"))
+        ss.rpc 'dangerous.redis', 'select', 0
 
 
 
