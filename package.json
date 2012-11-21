@@ -12,7 +12,8 @@
     "ss-stylus": "0.1.x",
     "ss-hogan": "0.1.x",
     "ss-console": "0.1.x",
-    "redis": "0.7.2",
+	"ss-less": "0.1.x",
+    "redis": "0.7.x",
     "underscore": "latest",
     "winston": "latest",
     "async": "latest",
@@ -27,7 +28,8 @@
     "mocha-phantomjs": "latest",
     "mocha": "latest",
     "coffee-script": "latest",
-    "chai": "latest"
+    "chai": "latest",
+	"sinon": "latest"
   },
 
   "scripts": {
