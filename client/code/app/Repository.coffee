@@ -3,7 +3,7 @@ cache = {}
 registerEventListeners = (cls, o) ->
   for method in cls.MODEL_METHODS
     do (method) ->
-      ss.event.on "#{cls.name}:#{method}:#{o.id}", (args) ->
+      ss.event.on "#{cls._name}:#{method}:#{o.id}", (args) ->
         cls.model.disableWrappers()
         method += 'Listener' if "#{method}Listener" of o
         o[method].apply o, args
@@ -12,13 +12,13 @@ registerEventListeners = (cls, o) ->
 if window?
   module.exports =
     add: (cls, o) ->
-      cache[cls.name] = {} unless cls.name of cache
+      cache[cls._name] = {} unless cls._name of cache
       registerEventListeners cls, o
-      cache[cls.name][o.id] = o
+      cache[cls._name][o.id] = o
 
     get: (cls, id, cb) ->
-      cache[cls.name] = {} unless cls.name of cache
-      clsCache = cache[cls.name]
+      cache[cls._name] = {} unless cls._name of cache
+      clsCache = cache[cls._name]
       if id not of clsCache
         cls.model.get id, (err, res) ->
           return cb err if err

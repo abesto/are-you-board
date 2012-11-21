@@ -1,7 +1,8 @@
 module.exports = constants =
   apply: (cls) ->
-    throw new Error("No constants for class #{cls.name}") unless cls.name of constants
-    for key, value of constants[cls.name]
+    clsName = cls._name
+    throw new Error("No constants for class #{clsName}") unless clsName of constants
+    for key, value of constants[clsName]
       cls[key] = value
 
   Game:

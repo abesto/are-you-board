@@ -1,6 +1,8 @@
 serialization = require './serialization'
 
 class User
+  @_name = 'User'
+
   constructor: (@id, @nick) ->
     @registeredAt = new Date()
     @isSuperuser = false

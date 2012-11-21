@@ -37,7 +37,7 @@ module.exports = (window) ->
 
   window.TC.Instance = (cls) ->
     test = (o) -> o instanceof cls
-    test.err = "instance of #{cls.name}"
+    test.err = "instance of #{cls._name}"
     test.type = 'Instance'
     test.cls = cls
     test
@@ -65,4 +65,4 @@ module.exports = (window) ->
   window.TypeSafe = (cls) ->
     for name, fun of cls.prototype
       if cls.prototype.hasOwnProperty "#{name}S"
-        cls.prototype[name] = TC("#{cls.name}##{name}", cls.prototype["#{name}S"]...)(fun)
+        cls.prototype[name] = TC("#{cls._name}##{name}", cls.prototype["#{name}S"]...)(fun)

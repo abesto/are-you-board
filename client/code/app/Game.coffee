@@ -6,6 +6,8 @@ Repository = require './Repository'
 
 
 class Game
+  @_name = 'Game'
+
   constructor: (@id) ->
     @createdAt = new Date()
     @createdBy = null

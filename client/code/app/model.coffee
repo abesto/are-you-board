@@ -1,7 +1,7 @@
 Repository = require '/Repository'
 
 rpcWithDeserialize = (cls, method) -> (args..., callback) ->
-  rpcMethod = "models.#{cls.name}.#{method}"
+  rpcMethod = "models.#{cls._name}.#{method}"
   ss.rpc rpcMethod, args..., (err, res) ->
     if err
       winston.error "#{err} rpc:#{rpcMethod}(#{args})" if err
@@ -21,11 +21,11 @@ module.exports = (cls) ->
     get: rpcWithDeserialize cls, 'get'
 
   cls::on = (event, fun) ->
-    ss.event.on "#{cls.name}:#{event}:#{@id}", fun
+    ss.event.on "#{cls._name}:#{event}:#{@id}", fun
   cls::off = (event, fun) ->
-    ss.event.off "#{cls.name}:#{event}:#{@id}", fun
+    ss.event.off "#{cls._name}:#{event}:#{@id}", fun
   cls::once = (event, fun) ->
-    ss.event.once "#{cls.name}:#{event}:#{@id}", fun
+    ss.event.once "#{cls._name}:#{event}:#{@id}", fun
 
 
   for method in cls.MODEL_METHODS
@@ -39,7 +39,7 @@ module.exports = (cls) ->
           args = ((if arg.constructor.model? then arg.id else arg) for arg in args)
           listener = -> callback null
           @once method, listener
-          ss.rpc "models.#{cls.name}.#{method}", @id, args..., (err) =>
+          ss.rpc "models.#{cls._name}.#{method}", @id, args..., (err) =>
             if err
               @off method, listener
               callback err
