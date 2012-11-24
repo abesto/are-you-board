@@ -1,13 +1,14 @@
 Repository = require '/Repository'
 
-rpcWithDeserialize = (cls, method) -> (args..., callback) ->
+rpcWithDeserialize = (cls, method, deserialize=null) -> (args..., callback) ->
+  deserialize ||= cls.deserialize
   rpcMethod = "models.#{cls._name}.#{method}"
   ss.rpc rpcMethod, args..., (err, res) ->
     if err
       winston.error "#{err} rpc:#{rpcMethod}(#{args})" if err
       callback err
     else
-      cls.deserialize res, (err, deserialized) ->
+      deserialize res, (err, deserialized) ->
         return  callback err if err
         Repository.add cls, deserialized
         callback err, deserialized
@@ -19,6 +20,14 @@ module.exports = (cls) ->
     enableWrappers: -> cls.model.wrappersDisabled = false
     create: rpcWithDeserialize cls, 'create'
     get: rpcWithDeserialize cls, 'get'
+    getMulti: (ids..., cb) ->
+      failed = null
+      items = []
+      rpcWithDeserialize(cls, 'getMulti', cls.multiDeserialize)  ids..., (err, item) ->
+        failed = err if err
+        return cb failed if failed
+        items.push item
+        cb null, items if items.length == ids.length
     count: (cb) -> ss.rpc "models.#{cls._name}.count", cb
 
   cls::on = (event, fun) ->

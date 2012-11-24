@@ -62,10 +62,22 @@ module.exports = (cls) ->
           return cb 'not_found'
         cb null, str
 
+    getMultiSerialized: (ids, cb) ->
+      redis.mget ("#{cls.name}:#{id}" for id in ids), (err, res) ->
+        if err
+          winston.error "redis_error", {op: "MGET #{cls.model.key(id)}", err: err}
+          return cb err
+        for item, key in res
+          if item == null or _.isUndefined item
+            winston.error "redis_not_found", {op: "MGET #{cls.model.key(key)}"}
+            return cb 'not_found'
+        cb err, JSON.stringify((JSON.parse item for item in res))
+
     get: (id, cb) ->
       @getSerialized id, (err, str) ->
         return cb err if err
         cls.deserialize str, cb
+
 
     withLock: (id, args...) -> redis.withLock @key(id), args...
 

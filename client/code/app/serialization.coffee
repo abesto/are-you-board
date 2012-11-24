@@ -22,5 +22,13 @@ module.exports = (cls, currentFormat, defs) ->
   cls::serialize = (format = currentFormat) -> JSON.stringify @toSerializable format
   cls.deserialize = (json, args...) -> cls.fromSerializable JSON.parse(json), args...
 
+  cls.multiToSerializable = (objs, format = currentFormat) ->
+    (obj.toSerializable(format) for obj in objs)
+  cls.multiFromSerializable = (objs, args...) ->
+    (cls.fromSerializable(obj, args...) for obj in objs)
+
+  cls.multiSerialize = (objs, format = currentFormat) -> JSON.stringify cls.multiToSerializable(objs, format)
+  cls.multiDeserialize = (json, args...) -> cls.multiFromSerializable JSON.parse(json), args...
+
   cls::load = (serialized, args...) ->
     defs[getFormat(serialized)].from this, serialized, args...

@@ -57,6 +57,18 @@ describe 'User RPC', ->
         count.should.equal expectedCount
         done()
 
+  it "can get multiple users with one request", (done) ->
+    User.model.create 'asdf', 'qwer', ->
+      User.model.create 'qwer', 'asdf', ->
+        User.model.getMulti 1, 2, 3, (err, multiUsers) ->
+          Should.not.exist err
+          async.parallel (((cb) -> User.model.get id, cb) for id in [1,2,3]), (err, singleUsers) ->
+            Should.not.exist err
+            for i in [0,1,2]
+              singleUsers[i].should.eql multiUsers[i]
+            done()
+
+
 
 
 

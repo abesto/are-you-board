@@ -10,6 +10,17 @@ class User
   toString: -> "#{@id}:#{@nick}"
 
 constants.apply User
+
+serialization User, 1,
+  1:
+    to: -> [@id, @nick, @registeredAt.getTime(), @isSuperuser]
+    from: (user, [id, nick, registeredAt, isSuperuser], cb) ->
+      user.id = id
+      user.nick = nick
+      user.registeredAt = new Date registeredAt
+      user.isSuperuser = isSuperuser
+      cb null, user
+
 model User
 
 User.model.login = (nick, password, cb) ->
@@ -24,15 +35,5 @@ User.model.getCurrent = (cb) ->
     return cb err if err
     User.deserialize res, cb
 
-
-serialization User, 1,
-  1:
-    to: -> [@id, @nick, @registeredAt.getTime(), @isSuperuser]
-    from: (user, [id, nick, registeredAt, isSuperuser], cb) ->
-      user.id = id
-      user.nick = nick
-      user.registeredAt = new Date registeredAt
-      user.isSuperuser = isSuperuser
-      cb null, user
 
 module.exports = User

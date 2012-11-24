@@ -59,7 +59,7 @@ window.constants = require('/constants')
 
 async.series [
   (cb) -> ss.server.on 'ready', cb
-  (cb) -> ss.rpc 'models.User.logout', cb
+  (cb) -> ss.rpc 'models.User.logout', -> cb null
   (cb) -> ss.rpc 'dangerous.redis', 'select', 1, cb
   (cb) -> ss.rpc 'dangerous.flushdb', cb
   (cb) -> ss.rpc 'dangerous.startMonitoring', cb
