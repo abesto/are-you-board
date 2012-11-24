@@ -16,6 +16,7 @@ showLoginForm = ->
     User.model.login nick, password, (err, user) ->
       window.user = user
       return alert err if err
+      ss.heartbeatStart()
       UI.init(user)
 
   $signinForm.find('[name=register]').click showRegisterForm
@@ -41,6 +42,7 @@ showRegisterForm = ->
       return alert err if err
       User.model.login nick, password, (err, user) ->
         return alert err if err
+        ss.heartbeatStart()
         window.user = user
         UI.init(user)
 
@@ -50,6 +52,7 @@ showRegisterForm = ->
 module.exports =
   logout: (event) ->
     event.preventDefault()
+    ss.heartbeatStop()
     User.model.logout (err) ->
       return alert err if err
       UI.reset()

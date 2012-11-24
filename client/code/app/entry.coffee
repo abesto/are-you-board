@@ -20,6 +20,6 @@ ss.server.on 'ready', ->
 
   # Wait for the DOM to finish loading
   jQuery ->
-    
+    $(window).unload ss.heartbeatStop
     # Load app
     require('/app')

@@ -2,7 +2,6 @@ User = require '/User'
 
 module.exports =
   render: (event) ->
-    event.preventDefault()
     UI.$container.html 'Loading users'
     User.model.count (err, count) ->
       return alert err if err

@@ -5,7 +5,8 @@ var http = require('http'),
 ss.client.define('main', {
   view: 'app.jade',
   css:  ['app.less', 'libs/bootstrap.min.css'],
-  code: ['libs/jquery.min.js', 'libs/bootstrap.min.js', 'libs/underscore-min.js', 'app'],
+  code: ['libs/jquery.min.js', 'libs/bootstrap.min.js', 'libs/underscore-min.js',
+         'libs/async.min.js', 'app'],
   tmpl: '*'
 });
 ss.http.route('/', function(req, res){
@@ -21,6 +22,7 @@ ss.client.templateEngine.use(require('ss-hogan'));
 // Set up global helpers
 require('./server/setup').loadAppGlobals();
 
+
 // Minimize and pack assets if you type: SS_ENV=production node app.js
 if (ss.env === 'production') {
     ss.client.packAssets();
@@ -28,6 +30,7 @@ if (ss.env === 'production') {
     winston.handleExceptions(winston.transports.File, { filename: 'exceptions.log' });
     ss.session.store.use('redis');
     ss.publish.transport.use('redis');
+    ss.responders.add(require('ss-heartbeat-responder'));
 } else {
     // Start Console Server (REPL)
     // To install client: sudo npm install -g ss-console
@@ -44,6 +47,7 @@ if (ss.env === 'production') {
     ss.http.route('/mocha', function(req, res){
         res.serveClient('mocha');
     });
+    ss.responders.add(require('ss-heartbeat-responder'), { logging: 1, fakeRedis: true });
 }
 
 // Start web server

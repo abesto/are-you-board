@@ -28,10 +28,35 @@ if window?
       else
         cb null, clsCache[id]
 
-    delete: (cls, id) -> # TODO
+    getMulti: (cls, ids..., cb) ->
+      cache[cls._name] = {} unless cls._name of cache
+      clsCache = cache[cls._name]
+      items = []
+      for id in ids
+        if id of clsCache
+          items.push clsCache[id]
+        else
+          items.push id
+      async.map items, ((item, cb) ->
+        if _.isNumber item
+          cls.model.get item, (err, res) ->
+            return cb err if err
+            clsCache[id] = res
+            registerEventListeners cls, res
+            cb null, res
+        else
+          cb null, item
+      ), (err, items) ->
+        return cb err if err
+        cb null, items
+
+    delete: (cls, id) ->
+      cache[cls._name] = {} unless cls._name of cache
+      delete cache[cls._name][id] if id of cache[cls._name]
 
 else
   module.exports =
     add: (cls, o) ->
     get: (cls, id, cb) -> cls.model.get id, cb
+    getMulti: (cls, ids..., cb) -> cls.model.getMulti ids..., cb
     delete: (cls, id) ->

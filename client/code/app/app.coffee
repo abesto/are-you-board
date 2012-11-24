@@ -4,6 +4,7 @@ login = require './ui/login'
 
 window.UI ||= {}
 UI.$container = $('div.container')
+UI.$container.css 'height', $(window).height() - 120
 
 UI.init = (user) ->
   UI.$container.empty()
@@ -17,4 +18,5 @@ UI.reset = ->
 
 User.model.getCurrent (err, user) ->
   return login.renderLogin() if err
+  ss.heartbeatStart()
   UI.init user

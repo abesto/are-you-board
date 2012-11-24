@@ -13,6 +13,7 @@
     "ss-hogan": "0.1.x",
     "ss-console": "0.1.x",
 	"ss-less": "0.1.x",
+	"ss-heartbeat-responder": "latest",
     "redis": "0.7.x",
     "underscore": "latest",
     "winston": "latest",
