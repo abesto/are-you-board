@@ -2,18 +2,17 @@ div.navbar.navbar-fixed-top
   div.navbar-inner
    a#brand.brand(href='#') Are you board?
    ul.nav
-     li.active
+     li.active#navbar-lobby-btn
        a(href='#') Lobby
      li
        a(href='#') My Games
    ul.nav.pull-right
+     li.hidden#navbar-admin-btn
+       a(href='#') Admin
      li.dropdown
        a.dropdown-toggle(href='#', data-toggle='dropdown') {{ nick }}
          b.caret
        ul.dropdown-menu
          li
-           a(href='#') Sign out
+           a#signout(href='#') Sign out
 
-h1 Successful login as {{ nick }} (id:{{ id }})
-
-button.btn#signout Sign out
