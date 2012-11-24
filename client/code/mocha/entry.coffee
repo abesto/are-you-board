@@ -88,6 +88,7 @@ async.series [
           if test.log.length
             $(testSelector(test.test) + ' + pre').append("\n\nRPC calls, Redis commands:\n" + test.log.join("\n"))
         ss.rpc 'dangerous.redis', 'select', 0
+        ss.rpc 'models.User.logout'
 
 
 

@@ -22,10 +22,25 @@ describe 'Authorization checks that', ->
       it "can't #{method}", ->
         @a("Game.#{method}").should.deny 'not_logged_in'
 
+    it "can create user", ->
+      @a('User.create').should.allow
+
+    it "can log in", ->
+      @a('User.login').should.allow
+
+    it "can't log out", ->
+      @a('User.logout').should.deny 'not_logged_in'
+
 
   describe "normal user", ->
     before ->
       @req.session.userId = 1
+
+    it "can't create user", ->
+      @a('User.create').should.deny 'already_logged_in'
+
+    it "can't log in", ->
+      @a('User.create').should.deny 'already_logged_in'
 
     it "can create new game", ->
       @a('Game.create').should.allow
@@ -47,6 +62,15 @@ describe 'Authorization checks that', ->
 
     it "can't start a game created by another player", ->
       @a('Game.start', {createdBy: 2}).should.deny 'not_owner'
+
+    it "can't log in again", ->
+      @a('User.login').should.deny 'already_logged_in'
+
+    it "can't create new user / register again", ->
+      @a('User.create').should.deny 'already_logged_in'
+
+    it "can log out", ->
+      @a('User.logout').should.allow
 
   describe "normal player who hasn't joined the game", ->
     before ->

@@ -30,9 +30,14 @@ class Authorization
     res checkResult[1]
     return false
 
-loginRequired = {
+mustBeLoggedIn = {
   check: -> @req.session.userId
   msg: 'not_logged_in'
+}
+
+mustNotBeLoggedIn = {
+  check: -> !@req.session.userId
+  msg: 'already_logged_in'
 }
 
 onlySelf = {
@@ -53,24 +58,32 @@ inGame = {
   meta: (game) -> game: game.id
 }
 
-Authorization.check 'Game.create', loginRequired
-Authorization.check 'Game.get', loginRequired
-Authorization.check 'Game.join', loginRequired, onlySelf
-Authorization.check 'Game.leave', loginRequired, onlySelf
-Authorization.check 'Game.start', loginRequired,
+# Game
+
+Authorization.check 'Game.create', mustBeLoggedIn
+Authorization.check 'Game.get', mustBeLoggedIn
+Authorization.check 'Game.join', mustBeLoggedIn, onlySelf
+Authorization.check 'Game.leave', mustBeLoggedIn, onlySelf
+Authorization.check 'Game.start', mustBeLoggedIn,
   {
     check: (game) -> game.createdBy == parseInt(@req.session.userId)
     msg: 'not_owner'
     meta: (game) -> owner: game.createdBy
   }
-Authorization.check 'Game.rollDice', loginRequired, inGame, currentPlayer
-Authorization.check 'Game.move', loginRequired, inGame, currentPlayer,
+Authorization.check 'Game.rollDice', mustBeLoggedIn, inGame, currentPlayer
+Authorization.check 'Game.move', mustBeLoggedIn, inGame, currentPlayer,
   {
     check: (game, piece) -> piece.player == parseInt(@req.session.userId)
     msg: 'not_own_piece'
     meta: (game, piece) -> owner: piece.player
   }
-Authorization.check 'Game.skip', loginRequired, inGame, currentPlayer
-Authorization.check 'Game.startPiece', loginRequired, inGame, currentPlayer
+Authorization.check 'Game.skip', mustBeLoggedIn, inGame, currentPlayer
+Authorization.check 'Game.startPiece', mustBeLoggedIn, inGame, currentPlayer
+
+# User
+
+Authorization.check 'User.create', mustNotBeLoggedIn
+Authorization.check 'User.login', mustNotBeLoggedIn
+Authorization.check 'User.logout', mustBeLoggedIn
 
 module.exports = Authorization

@@ -1,9 +1,11 @@
 base = require './base'
-User = require '../../../client/code/app/User.coffee'
-auth = require '../../authentication'
+User = require '../../../client/code/app/User'
+authentication = require '../../authentication'
+Authorization = require '../../authorization'
 
 exports.actions = (req, res, ss) ->
   req.use 'session'
+  authorization = new Authorization req
 
   actions = base req, res, ss, User,
     validateCreate: (nick, password) ->
@@ -15,10 +17,12 @@ exports.actions = (req, res, ss) ->
     create: (user, cb, nick, password) ->
       redis.hset 'users_by_nick', user.nick, user.id, (err, res) ->
         return cb err if err
-        auth.setPassword user.id, password, cb
+        return unless authorization.checkRes res, 'User.create'
+        authentication.setPassword user.id, password, cb
 
   actions.login = (nick, password) ->
-    auth.authenticate nick, password, (err, id) ->
+    return unless authorization.checkRes res, 'User.login'
+    authentication.authenticate nick, password, (err, id) ->
       return res err if err
       req.session.setUserId id
       User.model.get id, (err, user) ->
@@ -31,6 +35,7 @@ exports.actions = (req, res, ss) ->
     User.model.getSerialized req.session.userId, res
 
   actions.logout = ->
+    return unless authorization.checkRes res, 'User.logout'
     req.session.setUserId null
     res null, null
 
