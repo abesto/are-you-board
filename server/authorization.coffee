@@ -86,6 +86,9 @@ Authorization.check 'User.create', mustNotBeLoggedIn
 Authorization.check 'User.login', mustNotBeLoggedIn
 Authorization.check 'User.logout', mustBeLoggedIn
 
+# Lobby
+
 Authorization.check 'lobby.listUsers', mustBeLoggedIn
+Authorization.check 'lobby.message', mustBeLoggedIn
 
 module.exports = Authorization

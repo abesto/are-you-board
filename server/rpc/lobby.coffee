@@ -19,3 +19,7 @@ exports.actions = (req, res, ss) ->
     return unless auth.checkRes res, 'lobby.listUsers'
     ss.heartbeat.allConnected (sessions) ->
       res null, _.uniq(parseInt(session.userId) for session in sessions when session.userId)
+
+  message: (msg) ->
+    return unless auth.checkRes res, 'lobby.message'
+    ss.publish.channel 'lobby', 'lobby:message', [req.session.userId, msg]
