@@ -2,9 +2,11 @@ Authorization = require('../authorization')
 
 bindHeartbeatListeners = (ss) ->
   ss.heartbeat.on 'disconnect', (session) ->
-    ss.publish.all 'User:disconnect', session.userId if session.userId
+    session.channel.unsubscribe 'lobby'
+    ss.publish.channel 'lobby', 'User:disconnect', session.userId if session.userId
   ss.heartbeat.on 'connect', (session) ->
-    ss.publish.all 'User:connect', session.userId if session.userId
+    session.channel.subscribe "lobby"
+    ss.publish.channel 'lobby', 'User:connect', session.userId if session.userId
   bindHeartbeatListeners = ->
 
 exports.actions = (req, res, ss) ->
