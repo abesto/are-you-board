@@ -49,6 +49,15 @@ describe 'User RPC', ->
           err.should.equal 'not_logged_in'
           done()
 
+  it "model.count returns number of registered users", (done) ->
+    User.model.create 'foo', 'barbaz', (err, user) ->
+      expectedCount = user.id
+      User.model.count (err, count) ->
+        Should.not.exist err
+        count.should.equal expectedCount
+        done()
+
+
 
 
 

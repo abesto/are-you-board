@@ -19,6 +19,7 @@ module.exports = (cls) ->
     enableWrappers: -> cls.model.wrappersDisabled = false
     create: rpcWithDeserialize cls, 'create'
     get: rpcWithDeserialize cls, 'get'
+    count: (cb) -> ss.rpc "models.#{cls._name}.count", cb
 
   cls::on = (event, fun) ->
     ss.event.on "#{cls._name}:#{event}:#{@id}", fun

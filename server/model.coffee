@@ -69,6 +69,10 @@ module.exports = (cls) ->
 
     withLock: (id, args...) -> redis.withLock @key(id), args...
 
+    count: (cb) -> redis.get "#{cls.name}", (err, res) ->
+      return cb err if err
+      cb err, parseInt(res)
+
   cls::key = -> cls.model.key(@id)
 
   cls::withLock = (args...) -> cls.model.withLock @id, args...
