@@ -1,5 +1,6 @@
 views =
   login: require('./login')
+  admin: require('./admin')
 
 $navbarContainer = $('.navbar-container')
 $navbar = null
@@ -17,7 +18,7 @@ module.exports =
   render: ->
     $navbarContainer.empty().append ss.tmpl['navbar'].render(window.user)
     findControls()
-    $admin.show() if user.isSuperuser
+    $admin.show().click(views.admin.render) if user.isSuperuser
     $('#signout').click views.login.logout
 
   destroy: ->

@@ -1,0 +1,17 @@
+table.table.table-striped
+  thead
+    tr
+      th id
+      th nick
+      th registered at
+      th superuser
+  tbody
+    {{#users}}
+    tr
+      td {{id}}
+      td {{nick}}
+      td {{registeredAt}}
+      td
+        {{#isSuperuser}} yes {{/isSuperuser}}
+        {{^isSuperuser}} no  {{/isSuperuser}}
+    {{/users}}
