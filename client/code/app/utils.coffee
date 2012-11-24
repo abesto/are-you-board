@@ -66,3 +66,15 @@ module.exports = (window) ->
     for name, fun of cls.prototype
       if cls.prototype.hasOwnProperty "#{name}S"
         cls.prototype[name] = TC("#{cls._name}##{name}", cls.prototype["#{name}S"]...)(fun)
+
+
+  window.padLeft = (str, paddingChar, length) ->
+    ret = _.clone str
+    while ret.length < length
+      ret = paddingChar + ret
+    ret
+
+  Date::getPaddedHours = -> padLeft(@getHours().toString(), '0', 2)
+  Date::getPaddedMinutes = -> padLeft(@getMinutes().toString(), '0', 2)
+  Date::getPaddedSeconds = -> padLeft(@getSeconds().toString(), '0', 2)
+

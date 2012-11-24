@@ -6,7 +6,7 @@ ss.client.define('main', {
   view: 'app.jade',
   css:  ['app.less', 'libs/bootstrap.min.css'],
   code: ['libs/jquery.min.js', 'libs/bootstrap.min.js', 'libs/underscore-min.js',
-         'libs/async.min.js', 'app'],
+         'libs/async.min.js', 'libs/moment.min.js', 'app'],
   tmpl: '*'
 });
 ss.http.route('/', function(req, res){

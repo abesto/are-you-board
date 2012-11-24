@@ -22,4 +22,4 @@ exports.actions = (req, res, ss) ->
 
   message: (msg) ->
     return unless auth.checkRes res, 'lobby.message'
-    ss.publish.channel 'lobby', 'lobby:message', [req.session.userId, msg]
+    ss.publish.channel 'lobby', 'lobby:message', [req.session.userId, msg, timestamp()]
