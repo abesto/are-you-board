@@ -26,7 +26,9 @@ exports.actions = (req, res, ss) ->
       return res err if err
       req.session.setUserId id
       User.model.get id, (err, user) ->
-        return res err if err
+        if err
+          req.sesion.setUserId null
+          return res err if err
         req.session.isSuperuser = user.isSuperuser
         res err, user.serialize()
 
