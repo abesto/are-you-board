@@ -9,6 +9,18 @@ chai.Assertion.overwriteMethod 'eql', (_super) -> (other) ->
   if @_obj instanceof Game and other instanceof Game
     assertPropertiesEql ['id', 'createdAt', 'board', 'players', 'currentSide', 'dice', 'state'], @_obj, other
 
+chai.use (_chai, utils) ->
+  chai.Assertion.addMethod 'containGame', (game) ->
+    list = @_obj
+    found = false
+    for item in list
+      if item.id == game.id
+        found = true
+        break
+    @assert(found,
+      "Expected game #{game} to be in list [#{list}]",
+      "Expected game #{game} not to be in list [#{list}]"
+    )
 
 runGameTests = ->
   it 'can create new game', ->
@@ -189,4 +201,34 @@ describe 'Game', ->
           done()
         @game.join @u0, (err) => Should.not.exist err
 
+    describe '- Game.model.listGamesOfUser', ->
+      it "doesn't return not joined, not created games", (done) ->
+        Game.model.listGamesOfUser @u1, (err, games) =>
+          Should.not.exist err
+          games.should.not.containGame @game
+          done()
+
+      it 'returns a game just created', (done) ->
+        Game.model.listGamesOfUser @creator, (err, games) =>
+          Should.not.exist err
+          games.should.containGame @game
+          done()
+
+      it 'returns a joined game', (done) ->
+        @join @u2, (err) =>
+          Should.not.exist err
+          Game.model.listGamesOfUser @u2, (err, games) =>
+            Should.not.exist err
+            games.should.containGame @game
+            done()
+
+      it "doesn't return a left game", (done) ->
+        @game.join @u3, (err) =>
+          Should.not.exist err
+          @game.leave @u3, (err) =>
+            Should.not.exist err
+            Game.model.listGamesOfUser @u3, (err, games) =>
+              Should.not.exist err
+              games.should.not.containGame games
+              done()
 

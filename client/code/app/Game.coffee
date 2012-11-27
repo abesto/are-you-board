@@ -111,7 +111,6 @@ class Game
   logMeta: (obj={}) ->
     _.defaults obj, {side: @currentSide, user: @players[@currentSide]?.toString(), game: @toString()}
 
-
 serialization Game, 1,
   1:
     to: -> [
@@ -141,5 +140,12 @@ TypeSafe Game
 constants.apply Game
 model Game
 LudoRules.wrap Game, Game.MODEL_METHODS...
+
+
+Game.model.listGamesOfUser = TC('Game.model.listGamesOfUser', TC.Instance(User), TC.Callback) (user, cb) ->
+  ss.rpc 'models.Game.listGamesOfUser', user.id, (err, gameIds) ->
+    return cb err if err
+    Repository.getMulti Game, gameIds..., cb
+
 
 module.exports = Game

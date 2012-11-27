@@ -79,6 +79,7 @@ Authorization.check 'Game.move', mustBeLoggedIn, inGame, currentPlayer,
   }
 Authorization.check 'Game.skip', mustBeLoggedIn, inGame, currentPlayer
 Authorization.check 'Game.startPiece', mustBeLoggedIn, inGame, currentPlayer
+Authorization.check 'Game.listGamesOfUser', mustBeLoggedIn, onlySelf
 
 # User
 

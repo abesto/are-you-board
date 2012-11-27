@@ -12,6 +12,19 @@ exports.actions = (req, res, ss) ->
   req.use 'session'
   auth = new Authorization req
 
+
+  keyGamesOfUser = (user) -> "games_of_user:#{user.id}"
+
+  addToGamesOfUser = (game, user, cb) ->
+    redis.sadd keyGamesOfUser(user), game.id, (err, res) -> cb? err, res
+
+  removeFromGamesOfUser = (game, user, cb) ->
+    redis.srem keyGamesOfUser(user), game.id, (err, res) -> cb? err, res
+
+  listGamesOfUser = (user, cb) ->
+    redis.smembers keyGamesOfUser(user), cb
+
+
   errorOrEvent = (res, event, args...) -> (err, rawGame) ->
     return res err if err
     res()
@@ -34,7 +47,7 @@ exports.actions = (req, res, ss) ->
         return cb err if err
         game.createdBy = creator.id
         game.board = new LudoBoard()
-        cb()
+        addToGamesOfUser game, creator, cb
 
   originalCreate = actions.create
   actions.create = (args...) ->
@@ -55,6 +68,7 @@ exports.actions = (req, res, ss) ->
       return unless auth.checkRes res, 'Game.join', user
       game.join user, (err) ->
         return res err if err
+        addToGamesOfUser game, user
         req.session.channel.subscribe "game:#{gameId}"
         game.save errorOrEvent(res, 'join', userId)
 
@@ -79,6 +93,7 @@ exports.actions = (req, res, ss) ->
         return res err if err
         game.save (err, rawGame) ->
           return res err if err
+          removeFromGamesOfUser game, user
           errorOrEvent(res, 'leave', userId)(err, rawGame)
           req.session.channel.unsubscribe "game:#{gameId}"
 
@@ -114,6 +129,12 @@ exports.actions = (req, res, ss) ->
       game.startPiece (err) ->
         return res err if err
         game.save errorOrEvent(res, 'startPiece')
+
+  actions.listGamesOfUser = (userId) ->
+    User.model.get userId, (err, user) ->
+      return res err if err
+      return unless auth.checkRes res, 'Game.listGamesOfUser', user
+      listGamesOfUser user, res
 
   actions
 
