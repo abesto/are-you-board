@@ -47,7 +47,7 @@ userConnectListener = (userId) ->
 messageListener = ([userId, message, timestamp]) ->
   Repository.get User, userId, (err, user) ->
     return alert "Received message from non-existent user #{userId} (user get error: #{err})" if err
-    $messageList.append ss.tmpl['lobby-message'].render from: user.nick, time: moment(timestamp).format('hh:mm:ss'), text: message
+    $messageList.append ss.tmpl['lobby-message'].render from: user.nick, time: moment(timestamp).format('HH:mm:ss'), text: message
     $messageListContainer.scrollTop($messageList.height())
 
 
