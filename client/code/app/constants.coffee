@@ -10,6 +10,7 @@ module.exports = constants =
     STATE_DICE: 2
     STATE_MOVE: 3
     REQUIRED_PLAYERS: 2
+    MAXIMUM_PLAYERS: 4
     MODEL_METHODS: ['join', 'leave', 'start', 'rollDice', 'move', 'skip', 'startPiece']
 
   User:

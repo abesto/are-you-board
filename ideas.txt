@@ -1,0 +1,2 @@
+delete game once it's over
+delete game once last player leaves it
