@@ -184,6 +184,19 @@ describe 'Game', ->
 
     runGameTests()
 
+    it 'lists open games, in the order they were created', (done) ->
+      Game.model.create (err, game2) =>
+        Should.not.exist err
+        @game.join @creator, (err) =>
+          Should.not.exist err
+          game2.join @creator, (err) =>
+            Should.not.exist err
+            Game.model.listOpenGames (err, openGames) =>
+              Should.not.exist err
+              openGames.pop().id.should.equal game2.id
+              openGames.pop().id.should.equal @game.id
+              done()
+
     describe '- pub/sub event', ->
       it 'joining a game subscribes to, leaving unsubscribes from game pubsub channel', (done) ->
         async.waterfall [
@@ -201,7 +214,7 @@ describe 'Game', ->
           done()
         @game.join @u0, (err) => Should.not.exist err
 
-    describe '- Game.model.listGamesOfUser', ->
+    describe 'Game.model.listGamesOfUser', ->
       it "doesn't return not joined, not created games", (done) ->
         Game.model.listGamesOfUser @u1, (err, games) =>
           Should.not.exist err

@@ -9,6 +9,7 @@ LudoBoard = require '../../../client/code/app/LudoBoard'
 Authorization = require '../../authorization'
 
 
+openGamesKey = 'open_games'
 updateOpenGames = (game) ->
   joining = game.state == Game.STATE_JOINING
   not_full = game.playerCount() < Game.MAXIMUM_PLAYERS
@@ -16,9 +17,11 @@ updateOpenGames = (game) ->
   # Filter non-public games if/when they are implemented
   open = joining and not_full and not_empty
   if open
-    redis.zadd 'open_games', game.createdAt.getTime(), game.id
+    redis.zadd openGamesKey, game.createdAt.getTime(), game.id
   else
-    redis.zrem 'open_games', game.id
+    redis.zrem openGamesKey, game.id
+listOpenGames = (cb) ->
+  redis.zrangebyscore openGamesKey, '-inf', '+inf', cb
 originalSave = Game::save
 Game::save = (cb) ->
   updateOpenGames this
@@ -154,6 +157,10 @@ exports.actions = (req, res, ss) ->
       return res err if err
       return unless auth.checkRes res, 'Game.listGamesOfUser', user
       listGamesOfUser user, res
+
+  actions.listOpenGames = ->
+    return unless auth.checkRes res, 'Game.listOpenGames'
+    listOpenGames res
 
   actions
 

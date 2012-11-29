@@ -1,2 +1,4 @@
 delete game once it's over
 delete game once last player leaves it
+fire ss events from server when a game becomes / leaves open-to-join state
+ - only to clients on the "browse open games" page

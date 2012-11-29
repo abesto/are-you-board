@@ -147,5 +147,9 @@ Game.model.listGamesOfUser = TC('Game.model.listGamesOfUser', TC.Instance(User),
     return cb err if err
     Repository.getMulti Game, gameIds..., cb
 
+Game.model.listOpenGames = (cb) ->
+  ss.rpc 'models.Game.listOpenGames', (err, gameIds) ->
+    return cb err if err
+    Repository.getMulti Game, gameIds..., cb
 
 module.exports = Game
