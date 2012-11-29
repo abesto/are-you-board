@@ -1,0 +1,24 @@
+table.table
+  thead
+    tr
+      th Players
+      th Created By
+      th Created At
+  tbody
+    {{#games}}
+    tr
+      td {{playerCount}}/{{maximumPlayers}}
+      td {{createdBy}}
+      td {{createdAt}}
+      td
+        {{^joined}}
+        a.join-game.btn(data-gameid='{{id}}') Join
+        {{/joined}}
+        {{#joined}}
+        a.open-game.btn(data-gameid='{{id}}') Open
+        {{/joined}}
+    {{/games}}
+   tfoot
+    tr
+      td(colspan='4')
+        a#create-game-btn.btn.btn-primary(href='#') New game

@@ -21,7 +21,9 @@ updateOpenGames = (game) ->
   else
     redis.zrem openGamesKey, game.id
 listOpenGames = (cb) ->
-  redis.zrangebyscore openGamesKey, '-inf', '+inf', cb
+  redis.zrangebyscore openGamesKey, '-inf', '+inf', (err, ids) ->
+    return cb err if err
+    cb err, (parseInt(id) for id in ids)
 originalSave = Game::save
 Game::save = (cb) ->
   updateOpenGames this

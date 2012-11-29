@@ -1,13 +1,18 @@
 cache = {}
 
+setWrappersEnabled = (cls, to) ->
+  method = if to then 'enableWrappers' else 'disableWrappers'
+  for wrapper in ['model', 'LudoRules']
+    cls[wrapper]?[method]()
+
 registerEventListeners = (cls, o) ->
   for method in cls.MODEL_METHODS
     do (method) ->
       ss.event.on "#{cls._name}:#{method}:#{o.id}", (args) ->
-        cls.model.disableWrappers()
+        setWrappersEnabled cls, false
         method += 'Listener' if "#{method}Listener" of o
         o[method].apply o, args
-        cls.model.enableWrappers()
+        setWrappersEnabled cls, true
 
 if window?
   module.exports =

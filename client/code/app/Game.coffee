@@ -1,3 +1,4 @@
+require('./utils')(global ? window)
 serialization = require './serialization'
 LudoBoard = require './LudoBoard'
 User = require './User'
@@ -68,6 +69,7 @@ class Game
 
   joinS:[TC.Instance(User), TC.Callback]
   join: (user, cb) ->
+    return if @isUserPlaying user
     idx = @firstFreeSide()
     @players[idx] = user.id
     winston.info "join", @logMeta {user: user.toString()}
