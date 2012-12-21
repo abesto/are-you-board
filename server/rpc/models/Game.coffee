@@ -38,7 +38,9 @@ removeFromGamesOfUser = (game, user, cb) ->
   redis.srem keyGamesOfUser(user), game.id, (err, res) -> cb? err, res
 
 listGamesOfUser = (user, cb) ->
-  redis.smembers keyGamesOfUser(user), cb
+  redis.smembers keyGamesOfUser(user), (err, ids) ->
+    return cb err if err
+    cb err, (parseInt(id) for id in ids)
 
 bindHeartbeatListeners = (ss) ->
   ss.heartbeat.on 'disconnect', (session) ->

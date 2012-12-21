@@ -68,3 +68,5 @@ else
     get: (cls, id, cb) -> cls.model.get id, cb
     getMulti: (cls, ids..., cb) -> cls.model.getMulti ids..., cb
     delete: (cls, id) ->
+
+module.exports.cache = cache
