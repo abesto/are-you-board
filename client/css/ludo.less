@@ -1,0 +1,52 @@
+@import "mixins.less";
+
+div#board {
+    float: left;
+}
+
+table.ludo-board {
+    td {
+        text-align: center;
+        width: 30px;
+        height: 30px;
+        padding: 0;
+
+        &.path {
+            border: 1px solid black;
+        }
+
+        &.red { background-color: darkred; }
+        &.blue { background-color: darkblue; }
+        &.green { background-color: darken(darkgreen, 10%); }
+        &.yellow { background-color: #ccaa00; }
+        &.black { background-color: black; }
+
+        div.piece {
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            margin: auto;
+            border: 3px solid black;
+            .rounded-corners(20px);
+            &.red { background-color: red; }
+            &.blue { background-color: blue; }
+            &.green { background-color: green; }
+            &.yellow { background-color: yellow; }
+        }
+
+        &.nick {
+            font-size: .85em;
+            border: 1px solid silver;
+            background-color: #ddd;
+            font-weight: bold;
+
+            &.current {
+                background-color: #ffe562;
+            }
+        }
+    }
+}
+
+div#controls {
+    float: right;
+}

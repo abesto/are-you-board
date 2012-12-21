@@ -46,6 +46,11 @@ class Game
 
   isStarted: -> @state != Game.STATE_JOINING
 
+  getPreviousSide: ->
+    for i in [0 ... @currentSide].reverse().concat [@players.length-1 .. @currentSide]
+      if @players[i] != null
+        return i
+
   nextSide: ->
     for i in [@currentSide+1 ... @players.length].concat [0 .. @currentSide]
       if @players[i] != null
@@ -66,6 +71,8 @@ class Game
     piece.move @dice, @board
     @nextSide()
     cb? null, this
+  moveListener: (pieceId, cb) ->
+    @move @board.pieces[pieceId], cb
 
   joinS:[TC.Instance(User), TC.Callback]
   join: (user, cb) ->
@@ -93,6 +100,7 @@ class Game
   rollDiceListenerS:[TC.Number, TC.Callback]
   rollDiceListener: (dice, cb) ->
     @dice = dice
+    @state = Game.STATE_MOVE
     cb? null, null
 
   startS:[TC.Callback]

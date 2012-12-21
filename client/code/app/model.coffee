@@ -46,7 +46,7 @@ module.exports = (cls) ->
           original.call this, args...
         else
           callback = args.pop() if _.isFunction _.last args
-          args = ((if arg.constructor.model? then arg.id else arg) for arg in args)
+          args = ((if arg.id? then arg.id else arg) for arg in args)
           listener = -> callback null
           @once method, listener
           ss.rpc "models.#{cls._name}.#{method}", @id, args..., (err) =>

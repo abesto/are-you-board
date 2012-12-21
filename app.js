@@ -4,9 +4,9 @@ var http = require('http'),
 // Define a single-page client called 'main'
 ss.client.define('main', {
   view: 'app.jade',
-  css:  ['app.less', 'libs/bootstrap.min.css'],
+  css:  ['app.less', 'ludo.less', 'libs/bootstrap.min.css'],
   code: ['libs/jquery.min.js', 'libs/bootstrap.min.js', 'libs/underscore-min.js',
-         'libs/async.min.js', 'libs/moment.min.js', 'libs/paper.js', 'app'],
+         'libs/async.min.js', 'libs/moment.min.js', 'libs/jquery.svg.js', 'app'],
   tmpl: '*'
 });
 ss.http.route('/', function(req, res){

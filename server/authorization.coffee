@@ -1,5 +1,5 @@
 class Authorization
-  enabled: true
+  @enabled: true
   @disable: -> Authorization.enabled = false
   @enable: -> Authorization.enabled = true
 
@@ -7,7 +7,6 @@ class Authorization
 
   @check = (name, items...) ->
     Authorization.prototype[name] = (args...) ->
-      return [true] if @req.session.isSuperuser
       for item in items
         continue if item.check.apply this, args
         if _.isFunction item.meta
@@ -47,7 +46,7 @@ onlySelf = {
 }
 
 currentPlayer = {
-  check: (game) -> game.players[game.currentSide].id == parseInt(@req.session.userId)
+  check: (game) -> game.players[game.currentSide] == parseInt(@req.session.userId)
   msg: 'not_current_player'
   meta: (game) -> currentPlayer: game.players[game.currentSide].id
 }
@@ -73,7 +72,7 @@ Authorization.check 'Game.start', mustBeLoggedIn,
 Authorization.check 'Game.rollDice', mustBeLoggedIn, inGame, currentPlayer
 Authorization.check 'Game.move', mustBeLoggedIn, inGame, currentPlayer,
   {
-    check: (game, piece) -> piece.player == parseInt(@req.session.userId)
+    check: (game, piece) -> game.players[piece.player] == parseInt(@req.session.userId)
     msg: 'not_own_piece'
     meta: (game, piece) -> owner: piece.player
   }

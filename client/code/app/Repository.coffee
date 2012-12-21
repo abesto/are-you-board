@@ -5,7 +5,9 @@ setWrappersEnabled = (cls, to) ->
   for wrapper in ['model', 'LudoRules']
     cls[wrapper]?[method]()
 
+repositoryEventListenersRegistered = '__rELR'
 registerEventListeners = (cls, o) ->
+  return if o[repositoryEventListenersRegistered]
   for method in cls.MODEL_METHODS
     do (method) ->
       ss.event.on "#{cls._name}:#{method}:#{o.id}", (args) ->
@@ -13,6 +15,7 @@ registerEventListeners = (cls, o) ->
         method += 'Listener' if "#{method}Listener" of o
         o[method].apply o, args
         setWrappersEnabled cls, true
+  o[repositoryEventListenersRegistered] = true
 
 if window?
   module.exports =

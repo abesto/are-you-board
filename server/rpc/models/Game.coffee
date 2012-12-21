@@ -29,24 +29,36 @@ Game::save = (cb) ->
   updateOpenGames this
   originalSave.call this, cb
 
+keyGamesOfUser = (user) -> "games_of_user:#{user.id}"
+
+addToGamesOfUser = (game, user, cb) ->
+  redis.sadd keyGamesOfUser(user), game.id, (err, res) -> cb? err, res
+
+removeFromGamesOfUser = (game, user, cb) ->
+  redis.srem keyGamesOfUser(user), game.id, (err, res) -> cb? err, res
+
+listGamesOfUser = (user, cb) ->
+  redis.smembers keyGamesOfUser(user), cb
+
+bindHeartbeatListeners = (ss) ->
+  ss.heartbeat.on 'disconnect', (session) ->
+    listGamesOfUser {id: session.userId}, (err, gameIds) ->
+      return winston.warn 'list_games_of_user_failed', {err: err, op: 'heartbeat_disconnect'} if err
+      for gameId in gameIds
+        session.channel.unsubscribe "game:#{gameId}"
+        ss.publish.channel "game:#{gameId}", 'User:disconnect', session.userId if session.userId
+  ss.heartbeat.on 'connect', (session) ->
+    listGamesOfUser {id: session.userId}, (err, gameIds) ->
+      return winston.warn 'list_games_of_user_failed', {err: err, op: 'heartbeat_connect'} if err
+      for gameId in gameIds
+        session.channel.subscribe "game:#{gameId}"
+        ss.publish.channel "game:#{gameId}", 'User:connect', session.userId if session.userId
+  bindHeartbeatListeners = ->
 
 exports.actions = (req, res, ss) ->
   req.use 'session'
   auth = new Authorization req
-
-
-  keyGamesOfUser = (user) -> "games_of_user:#{user.id}"
-
-  addToGamesOfUser = (game, user, cb) ->
-    redis.sadd keyGamesOfUser(user), game.id, (err, res) -> cb? err, res
-
-  removeFromGamesOfUser = (game, user, cb) ->
-    redis.srem keyGamesOfUser(user), game.id, (err, res) -> cb? err, res
-
-  listGamesOfUser = (user, cb) ->
-    redis.smembers keyGamesOfUser(user), cb
-
-
+  bindHeartbeatListeners(ss)
 
   errorOrEvent = (res, event, args...) -> (err, rawGame) ->
     return res err if err
@@ -150,6 +162,7 @@ exports.actions = (req, res, ss) ->
     Game.model.get gameId, (err, game) ->
       return res err if err
       return unless auth.checkRes res, 'Game.startPiece', game
+      side = game.currentSide
       game.startPiece (err) ->
         return res err if err
         game.save errorOrEvent(res, 'startPiece')

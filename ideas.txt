@@ -3,3 +3,9 @@ delete game once last player leaves it
 to clients on the "browse open games" page
  - broadcast events when a game enters / leaves open_games
  - broadcast join/leave events
+use common checks in authorization and ui
+mark the last moved piece
+
+TODO
+ - 6 utan ujradob (legfeljebb 3, 3 utan kimarad de lelepheti)
+ - kezdo mezon nem lehet leutni a kezdo babut

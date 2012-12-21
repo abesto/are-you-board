@@ -3,6 +3,8 @@ User = require './User'
 serialization = require './serialization'
 
 class Piece
+  @_name = 'LudoBoard.Piece'
+
   constructor: (@player, @id) ->
     @field = null
     @pathPosition = 0
@@ -84,32 +86,7 @@ class Index
 
 
 TypeSafe class LudoBoard
-  @SERIALIZATION_FORMAT = 1
-
-  @ROWS = 11
-  @COLUMNS = 11
-  @LAST_ROW = 10
-  @LAST_COLUMN = 10
-
-  @START_POSITIONS: [
-    {
-      player: 0
-      row: 4
-      column: 0
-    }, {
-      player: 1
-      row: 0
-      column: 6
-    }, {
-      player: 2
-      row: 6
-      column:10
-    }, {
-      player: 3
-      row: 10
-      column: 4
-    }
-  ]
+  @_name = 'LudoBoard'
 
   constructor: ->
     @fields = (
@@ -165,6 +142,11 @@ TypeSafe class LudoBoard
     throw new Error("Piece doesn't belong to this board") unless piece.field.board == this
     piece.move steps, this
 
+  pieceCountOfS:[TC.Number]
+  pieceCountOf: (side) -> _.filter(@pieces, (p) -> p.player == side).length
+
+constants.apply LudoBoard
+
 
 serialization LudoBoard, 1,
   1:
@@ -172,7 +154,7 @@ serialization LudoBoard, 1,
     from: (board, fields) ->
       board.pieceCount = 0
       for fieldObj in fields
-        field = Field.fromSerializable fieldObj, this
+        field = Field.fromSerializable fieldObj, board
         board.fields[field.row][field.column] = field
         unless field.isEmpty()
           piece = field.getPiece()

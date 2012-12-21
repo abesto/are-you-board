@@ -1,2 +1,12 @@
 h1 LUDO!
-canvas#board(resize)
+div#board
+div#controls.well
+  div#state
+    | State:
+    span#state-text
+  div#dice
+    | Dice:
+    span#last-dice-value
+    a#roll-dice.btn(href='#') Roll
+  a#start.btn(href='#') Start
+  a#skip.btn(href='#') Skip

@@ -66,6 +66,10 @@ class Validator
         check: -> field.isEmpty() or field.getPiece().player != @game.currentSide
         msg: 'cant_take_own_piece'
       }
+      {
+        check: -> board.pieceCountOf(@game.currentSide) < 4
+        msg: 'no_more_pieces_to_start'
+      }
 
   move: (piece) ->
     rangeCheck = @check 'move', {
@@ -75,6 +79,11 @@ class Validator
     return rangeCheck unless rangeCheck[0]
     toField = @game.board.field @game.board.paths[piece.player][piece.pathPosition + @game.dice]
     @check 'move',
+      {
+        check: -> @game.state == constants.Game.STATE_MOVE
+        msg: 'wrong_state'
+        meta: expected: constants.Game.STATE_MOVE, actual: @game.state
+      }
       {
         check: -> piece.field.board == @game.board
         msg: 'piece_from_wrong_game'
@@ -98,6 +107,10 @@ class Validator
 
   skip: ->
     @check 'skip',
+      {
+        check: -> @game.state == constants.Game.STATE_MOVE
+        msg: 'must_roll_dice'
+      }
       {
         check: -> not @startPiece(@game.currentSide)[0]
         msg: 'valid_move_exists'
