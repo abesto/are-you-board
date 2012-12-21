@@ -4,10 +4,12 @@ Repository = require '/Repository'
 
 $createGame = null
 $joinGame = null
+$openGame = null
 
 findControls = ->
   $createGame = $('#create-game-btn')
   $joinGame = $('.join-game.btn')
+  $openGame = $('.open-game.btn')
 
 module.exports = exports =
   makeRender: (listMethod) ->
@@ -40,4 +42,8 @@ module.exports = exports =
               return alert err if err
               game.join window.user, (err) ->
                 return alert err if err
-                ret.render()
+                require('./ludo').render(game.id)
+          $openGame.click ->
+            Repository.get Game, $(this).data('gameid'), (err, game) ->
+              return alert err if err
+              require('./ludo').render(game.id)
