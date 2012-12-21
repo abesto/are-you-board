@@ -46,4 +46,6 @@ module.exports = exports =
           $openGame.click ->
             Repository.get Game, $(this).data('gameid'), (err, game) ->
               return alert err if err
-              require('./ludo').render(game.id)
+              game.rejoin (err) ->
+                return alert err if err
+                require('./ludo').render(game.id)

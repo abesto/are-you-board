@@ -82,6 +82,12 @@ class Game
     winston.info "join", @logMeta {user: user.toString()}
     cb? null, this
 
+  rejoin: (cb) ->
+    ss.rpc 'models.Game.rejoin', @id, (err) =>
+      return cb? err if err
+      winston.info "rejoin", @logMeta {user: window.user.toString()}
+      cb? null, this
+
   leaveS:[TC.Instance(User), TC.Callback]
   leave: (user, cb) ->
     idx = @userSide user

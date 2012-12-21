@@ -62,6 +62,7 @@ inGame = {
 Authorization.check 'Game.create', mustBeLoggedIn
 Authorization.check 'Game.get', mustBeLoggedIn
 Authorization.check 'Game.join', mustBeLoggedIn, onlySelf
+Authorization.check 'Game.rejoin', mustBeLoggedIn, inGame
 Authorization.check 'Game.leave', mustBeLoggedIn, onlySelf
 Authorization.check 'Game.start', mustBeLoggedIn,
   {

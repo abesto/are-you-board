@@ -110,6 +110,13 @@ exports.actions = (req, res, ss) ->
         req.session.channel.subscribe "game:#{gameId}"
         game.save errorOrEvent(res, 'join', userId)
 
+  actions.rejoin = (gameId) ->
+    Game.model.get gameId, (err, game) ->
+      return res err if err
+      return unless auth.checkRes res, 'Game.rejoin', game
+      req.session.channel.subscribe "game:#{gameId}"
+      res()
+
   actions.start = (gameId) -> Game.model.withLock gameId, res, (res) ->
     Game.model.get gameId, (err, game) ->
       return res err if err
