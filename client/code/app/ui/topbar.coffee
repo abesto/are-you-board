@@ -47,7 +47,7 @@ module.exports =
     setButtonView $myGames, views.myGames
     $('#signout').click views.login.logout
     #$lobby.click()
-    require('./ludo').render(11)
+    require('./ludo').render(1)
 
   destroy: ->
     $navbarContainer.empty()

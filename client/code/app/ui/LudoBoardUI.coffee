@@ -39,11 +39,14 @@ module.exports.Table = class Table
 
   getPiece: (id) -> @$table.find("div.piece[pieceId=#{id}]")
 
-  newLimboPiece: (player, row, column) ->
+  newPiece: (player, row, column) ->
     $piece = $('<div>&nbsp;</div>').addClass('piece').
              addClass(Table.COLORS[player]).
              attr('player': player, 'pieceid': '-1')
     @getField(row, column).empty().append($piece)
+    $piece
+
+  addPieceHandlers: ($piece) ->
     $piece.click =>
       if $piece.attr('pieceid') != '-1'
         @trigger 'move', [$piece.attr('pieceid')]
@@ -85,12 +88,13 @@ module.exports.Table = class Table
       @getField(topleft.row-1, topleft.column+1).remove()
       for row in [topleft.row, topleft.row + 1]
         for column in [topleft.column, topleft.column + 1]
-          @newLimboPiece player, row, column
+          @addPieceHandlers @newPiece player, row, column
     @setCurrentPlayer(game.currentSide)
     @$container.empty().append($table)
     for id, piece of game.board.pieces
       @start piece.player, piece.id
       @move piece.id, piece.field
+    $('.ghost').remove()
 
   start: (side, id) ->
     topleft = Table.LIMBO[side]
@@ -103,10 +107,14 @@ module.exports.Table = class Table
     $piece.detach().appendTo(@getField(field.row, field.column).empty()).attr('pieceid', id)
 
   move: (pieceId, field) ->
+    $piece = @getPiece(pieceId)
+    $fromField = $piece.parent()
     $toField = @getField(field.row, field.column)
     if $toField.children().length > 0
       takenPiecePlayer = $toField.children().attr('player')
       limboField = @nextLimboField(takenPiecePlayer)
-      @newLimboPiece(takenPiecePlayer, limboField.row, limboField.column)
-    @getPiece(pieceId).detach().appendTo($toField.empty())
+      @newPiece(takenPiecePlayer, limboField.row, limboField.column)
+    $piece.detach().appendTo($toField.empty())
+    $('.piece.ghost').remove()
+    @newPiece($piece.attr('player'), $fromField.attr('row'), $fromField.attr('column')).addClass('ghost')
 

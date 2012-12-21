@@ -4,8 +4,11 @@ to clients on the "browse open games" page
  - broadcast events when a game enters / leaves open_games
  - broadcast join/leave events
 use common checks in authorization and ui
-mark the last moved piece
 
-TODO
- - 6 utan ujradob (legfeljebb 3, 3 utan kimarad de lelepheti)
- - kezdo mezon nem lehet leutni a kezdo babut
+mark the last moved piece: save to server? reload destroys the ghost image
+
+Rule variations
+ - can't take piece on its own starting field
+ - can re-roll after six
+ - miss a turn after rolling 6 three times in a row
+
