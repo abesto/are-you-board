@@ -153,6 +153,11 @@ describe 'LudoRules', ->
       @game.dice = 3
       @rules.can.skip().should.deny 'valid_move_exists'
 
+    it "doesn't allow starting a new piece if 4 pieces of the player are already in play", ->
+      @game.dice = 6
+      @game.board.pieceCountOf = -> 4
+      @rules.can.startPiece().should.deny 'no_more_pieces_to_start'
+
 
   describe "action start", ->
     it "throws exception if start is not allowed", ->
