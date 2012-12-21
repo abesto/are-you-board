@@ -67,6 +67,7 @@ module.exports.Table = class Table
   render: (game) ->
     @$table = $table = $('<table>').addClass('ludo-board')
     @bind = _.bind $table.bind, $table
+    @unbind = _.bind $table.unbind, $table
     @trigger = _.bind $table.trigger, $table
     for row in [0 ... LudoBoard.ROWS]
       $row = $('<tr>')

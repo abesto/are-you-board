@@ -8,6 +8,7 @@ views =
   myGames: games.makeRender (args...) -> Game.model.listGamesOfUser window.user, args...
 
 currentView = null
+window.setCurrentView = (v) -> currentView = v
 
 $navbarContainer = $('.navbar-container')
 $navbar = null
