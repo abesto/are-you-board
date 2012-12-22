@@ -45,8 +45,8 @@ module.exports = constants = c =
         }
       ]
 
-c.LudoUI.STATE_TEXT[c.Game.STATE_JOINING] = 'Waiting for players...'
-c.LudoUI.STATE_TEXT[c.Game.STATE_DICE] = 'Dice roll'
-c.LudoUI.STATE_TEXT[c.Game.STATE_MOVE] = 'Moving a piece'
+c.LudoUI.STATE_TEXT[c.Game.STATE_JOINING] = 'ludo.state.waitingForPlayers'
+c.LudoUI.STATE_TEXT[c.Game.STATE_DICE] = 'ludo.state.diceRoll'
+c.LudoUI.STATE_TEXT[c.Game.STATE_MOVE] = 'ludo.state.move'
 
 c

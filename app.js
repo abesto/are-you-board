@@ -5,8 +5,10 @@ var http = require('http'),
 ss.client.define('main', {
   view: 'app.jade',
   css:  ['app.less', 'ludo.less', 'libs/bootstrap.min.css'],
-  code: ['libs/jquery.min.js', 'libs/bootstrap.min.js', 'libs/underscore-min.js',
-         'libs/async.min.js', 'libs/moment.min.js', 'libs/jquery.svg.js', 'app'],
+  code: ['libs/jquery.min.js', 'libs/jquery.livequery.js',
+         'libs/bootstrap.min.js', 'libs/underscore-min.js',
+         'libs/hogan.js',
+         'libs/async.min.js', 'libs/moment.min.js', 'app'],
   tmpl: '*'
 });
 ss.http.route('/', function(req, res){

@@ -81,7 +81,7 @@ module.exports.Table = class Table
                addClass('nick')
       do ($field) ->
         if game.players[player] == null
-          $field.text 'No player'
+          $field.text gettext 'ludo.noPlayer'
         else
           Repository.get User, game.players[player], (err, user) ->
             return alert err if err
@@ -118,4 +118,3 @@ module.exports.Table = class Table
     $piece.detach().appendTo($toField.empty())
     $('.piece.ghost').remove()
     @newPiece($piece.attr('player'), $fromField.attr('row'), $fromField.attr('column')).addClass('ghost')
-

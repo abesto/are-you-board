@@ -3,6 +3,7 @@ topbar = require './ui/topbar'
 login = require './ui/login'
 
 window.UI ||= {}
+window.app ||= {}
 UI.$container = $('div.container')
 UI.$container.css 'height', $(window).height() - 120
 

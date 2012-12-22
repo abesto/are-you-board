@@ -23,3 +23,4 @@ ss.server.on 'ready', ->
     $(window).unload ss.heartbeatStop
     # Load app
     require('/app')
+    require('/i18n')

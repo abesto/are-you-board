@@ -1,9 +1,9 @@
 table.table
   thead
     tr
-      th Players
-      th Created By
-      th Created At
+      th(data-trans='gamelist.players')
+      th(data-trans='gamelist.createdBy')
+      th(data-trans='gamelist.createdAt')
   tbody
     {{#games}}
     tr
@@ -12,13 +12,13 @@ table.table
       td {{createdAt}}
       td
         {{^joined}}
-        a.join-game.btn(data-gameid='{{id}}') Join
+        a.join-game.btn(data-gameid='{{id}}', data-trans='gamelist.join')
         {{/joined}}
         {{#joined}}
-        a.open-game.btn(data-gameid='{{id}}') Open
+        a.open-game.btn(data-gameid='{{id}}', data-trans='gamelist.open')
         {{/joined}}
     {{/games}}
    tfoot
     tr
       td(colspan='4')
-        a#create-game-btn.btn.btn-primary(href='#') New game
+        a#create-game-btn.btn.btn-primary(href='#', data-trans='gamelist.new')

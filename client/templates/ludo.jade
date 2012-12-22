@@ -1,12 +1,11 @@
-h1 LUDO!
 div#board
 div#controls.well
   div#state
-    | State:
+    span(data-trans='ludo.state.label')
     span#state-text
   div#dice
-    | Dice:
+    span(data-trans='ludo.dice')
     span#last-dice-value
-    a#roll-dice.btn(href='#') Roll
-  a#start.btn(href='#') Start
-  a#skip.btn(href='#') Skip
+    a#roll-dice.btn(href='#', data-trans='ludo.roll')
+  a#start.btn(href='#', data-trans='ludo.start')
+  a#skip.btn(href='#', data-trans='ludo.skip')

@@ -24,7 +24,7 @@ class LudoUI
   updateControls: ->
     myGame = @game.createdBy == window.user.id
     myTurn = @game.players[@game.currentSide] == window.user.id
-    @state.text LudoUI.STATE_TEXT[@game.state]
+    @state.text gettext LudoUI.STATE_TEXT[@game.state]
     @start.hide() unless myGame and @rules.can.start()[0]
     @rollDice.toggleClass('disabled', !(myTurn and @rules.can.rollDice()[0]))
     @skip.toggleClass('disabled', !(myTurn and @rules.can.skip()[0]))
@@ -46,15 +46,15 @@ class LudoUI
         @game.on method, @updateControls
         this[method].click (e) =>
           e.preventDefault()
-          return if this[method].hasClass('.disabled')
-          @game[method] (err) => alert err if err
+          return if this[method].hasClass('disabled')
+          @game[method] (err) => @alert err if err
 
     @board.bind 'start', =>
-      @game.startPiece (err) => alert err if err
+      @game.startPiece (err) => @alert err if err
     @game.on 'startPiece', @startHandler
 
     @board.bind 'move', (e, pieceId) =>
-      @game.move @game.board.pieces[pieceId], (err) => alert err if err
+      @game.move @game.board.pieces[pieceId], (err) => @alert err if err
     @game.on 'move', @moveHandler
 
   unbindControls: ->
@@ -69,6 +69,7 @@ class LudoUI
     @board.unbind('move')
     @game.off 'move', @moveHandler
 
+  alert: (err) -> alert gettext "ludo.error.#{err}"
 
   render: ->
     @board = new LudoBoardTableUI($('#board'))
@@ -91,4 +92,3 @@ self = module.exports =
   destroy: ->
     current.unbindControls()
     current = null
-

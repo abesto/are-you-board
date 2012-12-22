@@ -3,11 +3,11 @@ div.navbar.navbar-fixed-top
    a#brand.brand(href='#') Are you board?
    ul.nav
      li#navbar-lobby-btn
-       a(href='#') Lobby
+       a(href='#', data-trans='topbar.lobby')
      li#navbar-games-btn
-       a(href='#') Open games
+       a(href='#', data-trans='topbar.openGames')
      li#navbar-my-games-btn
-       a(href='#') My games
+       a(href='#', data-trans='topbar.myGames')
    ul.nav.pull-right
      li.hidden#navbar-admin-btn
        a(href='#') Admin
@@ -16,5 +16,4 @@ div.navbar.navbar-fixed-top
          b.caret
        ul.dropdown-menu
          li
-           a#signout(href='#') Sign out
-
+           a#signout(href='#', data-trans='topbar.signOut')
