@@ -4,6 +4,7 @@ to clients on the "browse open games" page
  - broadcast events when a game enters / leaves open_games
  - broadcast join/leave events
 use common checks in authorization and ui
+clean up checks order to have most user-relevant error first
 
 mark the last moved piece: save to server? reload destroys the ghost image
 
@@ -11,4 +12,12 @@ Rule variations
  - can't take piece on its own starting field
  - can re-roll after six
  - miss a turn after rolling 6 three times in a row
+ - can start on 1 dice
+
+bugs
+ - authorization move player property of undefined (at click anothers piece?)
+ - can't move freshly started piece (is related to / side effect of above)
+ - can't start taken piece
+ - end of round message was lost?
+     Uncaught Error: Expected argument 0 of Game#move to be instance of LudoBoard.Piece, got undefined of type undefined utils.coffee:49
 
