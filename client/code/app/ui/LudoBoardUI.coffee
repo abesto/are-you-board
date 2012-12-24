@@ -93,11 +93,11 @@ module.exports.Table = class Table
     @setCurrentPlayer(game.currentSide)
     @$container.empty().append($table)
     for id, piece of game.board.pieces
-      @start piece.player, piece.id
+      @start piece.player, piece.id, false
       @move piece.id, piece.field unless piece.pathPosition == 0
     $('.ghost').remove()
 
-  start: (side, id) ->
+  start: (side, id, movePieceEl = true) ->
     topleft = Table.LIMBO[side]
     for row in [topleft.row, topleft.row + 1]
       for column in [topleft.column, topleft.column + 1]
@@ -105,7 +105,8 @@ module.exports.Table = class Table
         break if $piece.length > 0
       break if $piece.length > 0
     field = constants.LudoBoard.START_POSITIONS[side]
-    $piece.detach().appendTo(@getField(field.row, field.column).empty()).attr('pieceid', id)
+    $piece.attr('pieceid', id)
+    $piece.detach().appendTo(@getField(field.row, field.column).empty()) if movePieceEl
 
   move: (pieceId, field) ->
     $piece = @getPiece(pieceId)
