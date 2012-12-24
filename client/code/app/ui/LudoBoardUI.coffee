@@ -93,8 +93,8 @@ module.exports.Table = class Table
     @setCurrentPlayer(game.currentSide)
     @$container.empty().append($table)
     for id, piece of game.board.pieces
-      @start piece.player, piece.id, false
-      @move piece.id, piece.field unless piece.pathPosition == 0
+      @start piece.player, piece.id, (piece.pathPosition == 0)
+      @move piece.id, piece.field, false unless piece.pathPosition == 0
     $('.ghost').remove()
 
   start: (side, id, movePieceEl = true) ->
@@ -108,7 +108,7 @@ module.exports.Table = class Table
     $piece.attr('pieceid', id)
     $piece.detach().appendTo(@getField(field.row, field.column).empty()) if movePieceEl
 
-  move: (pieceId, field) ->
+  move: (pieceId, field, addGhost = true) ->
     $piece = @getPiece(pieceId)
     $fromField = $piece.parent()
     $toField = @getField(field.row, field.column)
@@ -118,4 +118,5 @@ module.exports.Table = class Table
       @newPiece(takenPiecePlayer, limboField.row, limboField.column)
     $piece.detach().appendTo($toField.empty())
     $('.piece.ghost').remove()
-    @newPiece($piece.attr('player'), $fromField.attr('row'), $fromField.attr('column')).addClass('ghost')
+    if addGhost
+      @newPiece($piece.attr('player'), $fromField.attr('row'), $fromField.attr('column')).addClass('ghost')
