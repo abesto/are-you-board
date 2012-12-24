@@ -94,7 +94,7 @@ module.exports.Table = class Table
     @$container.empty().append($table)
     for id, piece of game.board.pieces
       @start piece.player, piece.id
-      @move piece.id, piece.field
+      @move piece.id, piece.field unless piece.pathPosition == 0
     $('.ghost').remove()
 
   start: (side, id) ->
