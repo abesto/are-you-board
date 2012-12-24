@@ -111,7 +111,7 @@ module.exports.Table = class Table
     $piece = @getPiece(pieceId)
     $fromField = $piece.parent()
     $toField = @getField(field.row, field.column)
-    if $toField.children().length > 0
+    if $toField.children('.piece:not(.ghost)').length > 0
       takenPiecePlayer = $toField.children().attr('player')
       limboField = @nextLimboField(takenPiecePlayer)
       @newPiece(takenPiecePlayer, limboField.row, limboField.column)
