@@ -11,10 +11,8 @@ clean up checks order to have most user-relevant error first
 
 mark the last moved piece: save to server? reload destroys the ghost image
 
-join order: second player should start opposite first
-
 Rule variations
- - can't take piece on its own starting field
+ - can take piece on its own starting field
  - can re-roll after six
  - miss a turn after rolling 6 three times in a row
  - can start on 1 dice

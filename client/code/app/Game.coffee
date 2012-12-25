@@ -19,9 +19,9 @@ class Game
     @state = Game.STATE_JOINING
 
   firstFreeSide: ->
-    idx = _.indexOf @players, null
-    return if idx == -1
-    idx
+    joinOrder = [0, 2, 1, 3]
+    for idx in joinOrder
+      return idx if @players[idx] == null
 
   userSideS:[TC.Instance(User)]
   userSide: (user) -> @userIdSide user.id
