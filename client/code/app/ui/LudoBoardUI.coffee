@@ -62,7 +62,7 @@ class NickLabel
   setLabel: (label) -> @el.text(label)
 
   setCurrent: ->
-    @table.find('.nick.current').removeClass('current')
+    @table.board.find('.nick.current').removeClass('current')
     @el.addClass('current')
 
 
@@ -88,7 +88,7 @@ class Piece
 
   attachHandlers: ->
     @el.click =>
-      if @getId != -1
+      if @getId() != -1
         @trigger 'move', [@getId()]
       else
         @trigger 'start', [@getPlayer(), @el]
@@ -101,7 +101,7 @@ class GhostPiece extends Piece
 
   attachHandlers: ->
 
-  @clear: (table) -> table.board.find('.ghost').remove()
+  @clear: (table) -> table.board.find('.ghost').data('uiObject')?.getField().clear()
 
 
 module.exports.Table = class Table
@@ -162,16 +162,18 @@ module.exports.Table = class Table
     @setCurrentPlayer(game.currentSide)
     @container.empty().append(@board)
 
-
-
   start: (side, id) ->
     fromField = @nextLimboFieldWithNonGhostPiece(side)
     piece = fromField.getPiece()
-    toField = constants.LudoBoard.START_POSITIONS[side]
+    toFieldSpec = constants.LudoBoard.START_POSITIONS[side]
+    toField = @getField toFieldSpec.row, toFieldSpec.column
+
+    GhostPiece.clear(this)
 
     piece.setId(id)
     fromField.clear()
     toField.put(piece)
+    fromField.put new GhostPiece(this, side)
 
   move: (pieceId, field) ->
     piece = @getPiece(pieceId)
@@ -182,10 +184,11 @@ module.exports.Table = class Table
       takenPiecePlayer = toField.getPiece().getPlayer()
       limboField = @nextLimboFieldWithoutAnyPiece(takenPiecePlayer)
       limboField.put new Piece(this, takenPiecePlayer)
+      toField.clear()
 
+    GhostPiece.clear(this)
     fromField.clear()
     toField.put piece
-    GhostPiece.clear(this)
     fromField.put new GhostPiece(this, piece.getPlayer())
 
   _createFields: ->
