@@ -45,6 +45,9 @@ module.exports = (window) ->
   window.TC.Number = _.isNumber
   window.TC.Number.err = 'number'
 
+  window.TC.Boolean = _.isBoolean
+  window.TC.Number.err = 'boolean'
+
   window.TC._ = -> true
 
   window.TC.Function = _.isFunction
@@ -66,6 +69,7 @@ module.exports = (window) ->
     for name, fun of cls.prototype
       if cls.prototype.hasOwnProperty "#{name}S"
         cls.prototype[name] = TC("#{cls._name}##{name}", cls.prototype["#{name}S"]...)(fun)
+    cls
 
 
   window.padLeft = (str, paddingChar, length) ->

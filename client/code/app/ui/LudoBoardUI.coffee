@@ -1,8 +1,112 @@
 LudoBoard = require '/LudoBoard'
 User = require '/User'
 Repository = require '/Repository'
+Game = require '/Game'
+
+class Field
+  @_name = 'Field'
+
+  @get: (table, row, column) -> table.board.find("td[row=#{row}][column=#{column}]").data('uiObject')
+
+  constructor: (@table, @row, @column) ->
+    @el = $('<td>').attr(row: row, column: column)
+    @el.data('uiObject', this)
+    @_decorateEl()
+    @piece = null
+
+  hasAnyPiece: -> @piece != null
+
+  hasNonGhostPiece: -> @piece != null and @piece not instanceof GhostPiece
+
+  _decorateEl: ->
+    middle = LudoBoard.LAST_ROW / 2
+    if _.any([@row, @column], (n) -> n >= middle - 1 and n <= middle + 1)
+      @el.addClass('path')
+    if @row == middle
+      if @column < middle and @column > 0
+        @el.addClass(Table.COLORS[0])
+      if @column > middle and @column < LudoBoard.LAST_COLUMN
+        @el.addClass(Table.COLORS[2])
+    if @column == middle
+      if @row < middle and @row > 0
+        @el.addClass(Table.COLORS[1])
+      if @row > middle and @row < LudoBoard.LAST_ROW
+        @el.addClass(Table.COLORS[3])
+    if @column == middle and @row == middle
+      @el.addClass('black')
+
+  put: (piece) ->
+    throw "Tried to add piece to field (#{@row},#{@column}), which is not empty" if @hasAnyPiece()
+    throw "Piece #{piece.id} is already on field (#{piece.getField().row},#{piece.getField().row})" if piece.getField()
+    @el.append(piece.el)
+    @piece = piece
+    @piece.field = this
+
+  clear: ->
+    throw "Tried to remove piece from field (#{@row},#{@column}), which is empty" unless @hasAnyPiece()
+    @piece.el.detach()
+    @piece.field = null
+    @piece = null
+
+  getPiece: -> @piece
+
+
+class NickLabel
+  @_name = 'NickLabel'
+
+  constructor: (@table, @topLeft, @player) ->
+    @el = @table.getField(@topLeft.row, @topLeft.column).el
+    @table.getField(@topLeft.row, @topLeft.column + 1).el.remove()
+    @el.addClass('nick').attr('colspan': 2, id: "nick-#{@player}")
+
+  setLabel: (label) -> @el.text(label)
+
+  setCurrent: ->
+    @table.find('.nick.current').removeClass('current')
+    @el.addClass('current')
+
+
+class Piece
+  @get: (table, id) ->  table.board.find("div.piece[pieceid=#{id}]").data('uiObject')
+
+  constructor: (@table, @player) ->
+    @el = $('<div>&nbsp;</div>').addClass('piece').
+          addClass(Table.COLORS[player]).
+          attr('player': player, 'pieceid': '-1').
+          data('uiObject', this)
+    @attachHandlers()
+    @field = null
+
+  getField: -> @field
+
+  getId: -> parseInt @el.attr('pieceid')
+  setId: (id) -> @el.attr('pieceid', id)
+
+  getPlayer: -> parseInt @el.attr('player')
+
+  trigger: (args...) -> @table.trigger args...
+
+  attachHandlers: ->
+    @el.click =>
+      if @getId != -1
+        @trigger 'move', [@getId()]
+      else
+        @trigger 'start', [@getPlayer(), @el]
+
+
+class GhostPiece extends Piece
+  constructor: (@table, @player) ->
+    super(@table, @player)
+    @el.addClass('ghost')
+
+  attachHandlers: ->
+
+  @clear: (table) -> table.board.find('.ghost').remove()
+
 
 module.exports.Table = class Table
+  @_name = 'Table'
+
   @COLORS = ['red', 'green', 'blue', 'yellow']
   @LIMBO = [
     {row: 1, column: 1}
@@ -11,112 +115,97 @@ module.exports.Table = class Table
     {row: 8, column: 1}
   ]
 
-  constructor: (@$container) ->
+  constructor: (@container) ->
+    @board = $('<table>').addClass('ludo-board')
+    @fields = []
+    @nickFields = []
+    @limboFields = []
+    @bind = _.bind @board.bind, @board
+    @unbind = _.bind @board.unbind, @board
+    @trigger = _.bind @board.trigger, @board
 
-  decorateField: ($field, row, column) ->
-    middle = LudoBoard.LAST_ROW / 2
-    if _.any([row, column], (n) -> n >= middle - 1 and n <= middle + 1)
-      $field.addClass('path')
-    if row == middle
-      if column < middle and column > 0
-        $field.addClass(Table.COLORS[0])
-      if column > middle and column < LudoBoard.LAST_COLUMN
-        $field.addClass(Table.COLORS[2])
-    if column == middle
-      if row < middle and row > 0
-        $field.addClass(Table.COLORS[1])
-      if row > middle and row < LudoBoard.LAST_ROW
-        $field.addClass(Table.COLORS[3])
-    if column == middle and row == middle
-      $field.addClass('black')
+  nextLimboFieldWithNonGhostPiece: (player) ->
+    _.find @limboFields[player], ((field) -> field.hasNonGhostPiece())
+  nextLimboFieldWithoutAnyPiece: (player) ->
+    _.find @limboFields[player], ((field) -> !field.hasAnyPiece())
 
-  getField: (row, column) -> @$table.find("td[row=#{row}][column=#{column}]")
+  setCurrentPlayer: (player) -> @nickFields[player].setCurrent() if player != -1
 
-  getNickField: (player) ->
-    return $() if player < 0 or player >= Table.LIMBO.length
-    limbo = Table.LIMBO[player]
-    return @getField(limbo.row - 1, limbo.column)
+  getField: (row, column) -> @fields[row][column]
 
-  getPiece: (id) -> @$table.find("div.piece[pieceId=#{id}]")
-
-  newPiece: (player, row, column) ->
-    $piece = $('<div>&nbsp;</div>').addClass('piece').
-             addClass(Table.COLORS[player]).
-             attr('player': player, 'pieceid': '-1')
-    @getField(row, column).empty().append($piece)
-    $piece
-
-  addPieceHandlers: ($piece) ->
-    $piece.click =>
-      if $piece.attr('pieceid') != '-1'
-        @trigger 'move', [$piece.attr('pieceid')]
-      else
-        @trigger 'start', [$piece.attr('player'), $piece]
-
-  nextLimboField: (player) ->
-    topLeft = Table.LIMBO[player]
-    for row in [topLeft.row, topLeft.row + 1]
-      for column in [topLeft.column, topLeft.column + 1]
-        return {row: row, column: column} if @getField(row, column).children().length == 0
-    throw "No empty limbo field for player #{player}"
-
-  setCurrentPlayer: (player) ->
-    @$table.find('.nick.current').removeClass('current')
-    @getNickField(player).addClass('current')
+  getPiece: (id) -> Piece.get(this, id)
 
   render: (game) ->
-    @$table = $table = $('<table>').addClass('ludo-board')
-    @bind = _.bind $table.bind, $table
-    @unbind = _.bind $table.unbind, $table
-    @trigger = _.bind $table.trigger, $table
-    for row in [0 ... LudoBoard.ROWS]
-      $row = $('<tr>')
-      for column in [0 ... LudoBoard.COLUMNS]
-        $field = $('<td>&nbsp;</td>').attr(row: row, column: column)
-        @decorateField $field, row, column
-        $row.append $field
-      $table.append $row
-    for topleft, player in Table.LIMBO
-      $field = @getNickField(player).attr(colspan: 2, id: "nick-#{player}").
-               addClass('nick')
-      do ($field) ->
+    @_createFields()
+    @_createNickFields()
+    @_createLimboFields()
+
+    for player in [0...4]
+      field = @nickFields[player]
+      do (field) ->
         if game.players[player] == null
-          $field.text gettext 'ludo.noPlayer'
+          field.setLabel gettext('ludo.noPlayer')
         else
           Repository.get User, game.players[player], (err, user) ->
             return alert err if err
-            $field.text user.nick
-      @getField(topleft.row-1, topleft.column+1).remove()
-      for row in [topleft.row, topleft.row + 1]
-        for column in [topleft.column, topleft.column + 1]
-          @addPieceHandlers @newPiece player, row, column
-    @setCurrentPlayer(game.currentSide)
-    @$container.empty().append($table)
+            field.setLabel user.nick
+
+      for field in @limboFields[player]
+        field.put new Piece(this, player)
+
     for id, piece of game.board.pieces
-      @start piece.player, piece.id, (piece.pathPosition == 0)
-      @move piece.id, piece.field, false unless piece.pathPosition == 0
-    $('.ghost').remove()
+      uiPiece = @nextLimboFieldWithNonGhostPiece(piece.player).getPiece()
+      uiPiece.setId(piece.id)
+      @move piece.id, piece.field
 
-  start: (side, id, movePieceEl = true) ->
-    topleft = Table.LIMBO[side]
-    for row in [topleft.row, topleft.row + 1]
-      for column in [topleft.column, topleft.column + 1]
-        $piece = @getField(row, column).find('div.piece')
-        break if $piece.length > 0
-      break if $piece.length > 0
-    field = constants.LudoBoard.START_POSITIONS[side]
-    $piece.attr('pieceid', id)
-    $piece.detach().appendTo(@getField(field.row, field.column).empty()) if movePieceEl
+    GhostPiece.clear(this)
+    @setCurrentPlayer(game.currentSide)
+    @container.empty().append(@board)
 
-  move: (pieceId, field, addGhost = true) ->
-    $piece = @getPiece(pieceId)
-    $fromField = $piece.parent()
-    $toField = @getField(field.row, field.column)
-    if $toField.children('.piece:not(.ghost)').length > 0
-      takenPiecePlayer = $toField.children().attr('player')
-      limboField = @nextLimboField(takenPiecePlayer)
-      @addPieceHandlers @newPiece(takenPiecePlayer, limboField.row, limboField.column)
-    $piece.detach().appendTo($toField.empty())
-    $('.piece.ghost').remove()
-    if addGhost
-      @newPiece($piece.attr('player'), $fromField.attr('row'), $fromField.attr('column')).addClass('ghost')
+
+
+  start: (side, id) ->
+    fromField = @nextLimboFieldWithNonGhostPiece(side)
+    piece = fromField.getPiece()
+    toField = constants.LudoBoard.START_POSITIONS[side]
+
+    piece.setId(id)
+    fromField.clear()
+    toField.put(piece)
+
+  move: (pieceId, field) ->
+    piece = @getPiece(pieceId)
+    fromField = piece.getField()
+    toField = @getField(field.row, field.column)
+
+    if toField.hasNonGhostPiece()
+      takenPiecePlayer = toField.getPiece().getPlayer()
+      limboField = @nextLimboFieldWithoutAnyPiece(takenPiecePlayer)
+      limboField.put new Piece(this, takenPiecePlayer)
+
+    fromField.clear()
+    toField.put piece
+    GhostPiece.clear(this)
+    fromField.put new GhostPiece(this, piece.getPlayer())
+
+  _createFields: ->
+    for row in [0 ... LudoBoard.ROWS]
+      $row = $('<tr>')
+      @fields.push([])
+      for column in [0 ... LudoBoard.COLUMNS]
+        field = new Field(this, row, column)
+        $row.append field.el
+        @fields[row].push field
+      @board.append $row
+
+  _createNickFields: -> @nickFields = (new NickLabel(this, {row: Table.LIMBO[i].row - 1, column: Table.LIMBO[i].column}, i) for i in [0...4])
+  _createLimboFields: -> @limboFields = (@_limboFields(i) for i in [0...4])
+
+  _limboFields: (player) ->
+    fields = []
+    topLeft = Table.LIMBO[player]
+    for row in [topLeft.row, topLeft.row + 1]
+      for column in [topLeft.column, topLeft.column + 1]
+        fields.push @getField(row, column)
+    fields
+

@@ -15,8 +15,5 @@ Rule variations
  - can start on 1 dice
 
 bugs
- - authorization move player property of undefined (at click anothers piece?)
- - can't move freshly started piece (is related to / side effect of above)
- - end of round message was lost?
-     Uncaught Error: Expected argument 0 of Game#move to be instance of LudoBoard.Piece, got undefined of type undefined utils.coffee:49
-
+ - broadcast join message to players in the game
+ - show ghost in limbo
