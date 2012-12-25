@@ -1,8 +1,11 @@
-delete game once it's over
-delete game once last player leaves it
-to clients on the "browse open games" page
- - broadcast events when a game enters / leaves open_games
- - broadcast join/leave events
+detect when game is over
+ - delete it
+user should be able to leave the game
+ - delete game once last player leaves it
+clear up what games a browser has in memory. if it has it, it should receive events, or reload the game when needed
+ - to clients on the "browse open games" page
+   - broadcast events when a game enters / leaves open_games
+   - broadcast join/leave events
 use common checks in authorization and ui
 clean up checks order to have most user-relevant error first
 
@@ -16,6 +19,3 @@ Rule variations
  - miss a turn after rolling 6 three times in a row
  - can start on 1 dice
 
-bugs
- - broadcast join message to players in the game
- - show ghost in limbo

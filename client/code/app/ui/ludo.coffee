@@ -1,4 +1,5 @@
 Game = require '/Game'
+User = require '/User'
 Repository = require '/Repository'
 LudoBoard = require '/LudoBoard'
 LudoBoardTableUI = require('./LudoBoardUI').Table
@@ -25,7 +26,7 @@ class LudoUI
     myGame = @game.createdBy == window.user.id
     myTurn = @game.players[@game.currentSide] == window.user.id
     @state.text gettext LudoUI.STATE_TEXT[@game.state]
-    @start.hide() unless myGame and @rules.can.start()[0]
+    @start.toggle myGame and @rules.can.start()[0]
     @rollDice.toggleClass('disabled', !(myTurn and @rules.can.rollDice()[0]))
     @skip.toggleClass('disabled', !(myTurn and @rules.can.skip()[0]))
     @board.setCurrentPlayer(@game.currentSide)
@@ -56,6 +57,12 @@ class LudoUI
     @board.bind 'move', (e, pieceId) =>
       @game.move @game.board.pieces[pieceId], (err) => @alert err if err
     @game.on 'move', @moveHandler
+
+    @game.on 'join', ([userId]) =>
+      Repository.get User, userId, (err, user) =>
+        @alert err if err
+        @board.join @game.userSide(user), user
+        @updateControls()
 
   unbindControls: ->
     for method in Game.MODEL_METHODS

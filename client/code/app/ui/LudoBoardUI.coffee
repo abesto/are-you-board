@@ -191,6 +191,9 @@ module.exports.Table = class Table
     toField.put piece
     fromField.put new GhostPiece(this, piece.getPlayer())
 
+  join: (side, user) ->
+    @nickFields[side].setLabel(user.nick)
+
   _createFields: ->
     for row in [0 ... LudoBoard.ROWS]
       $row = $('<tr>')
