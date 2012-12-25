@@ -95,7 +95,6 @@ TypeSafe class LudoBoard
     )
     @pieces = {}
     @buildPaths()
-    @pieceCount = 0
 
   buildPathsS: []
   buildPaths: ->
@@ -121,7 +120,8 @@ TypeSafe class LudoBoard
   startS:[TC.Number]
   start: (player) ->
     {row:row, column:column} = @startPosition player
-    piece = new Piece(player, @pieceCount++)
+    pieceId = Math.max(0, _.max(_.keys(@pieces)) + 1)
+    piece = new Piece(player, pieceId)
     @row(row).column(column).put piece
     @pieces[piece.id] = piece
     piece
@@ -152,14 +152,12 @@ serialization LudoBoard, 1,
   1:
     to: -> (field.toSerializable(1) for field in _.flatten @fields when not field.isEmpty())
     from: (board, fields) ->
-      board.pieceCount = 0
       for fieldObj in fields
         field = Field.fromSerializable fieldObj, board
         board.fields[field.row][field.column] = field
         unless field.isEmpty()
           piece = field.getPiece()
           board.pieces[piece.id] = piece
-          board.pieceCount = Math.max board.pieceCount, piece.id + 1
 
 
 module.exports = LudoBoard
