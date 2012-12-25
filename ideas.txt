@@ -17,7 +17,6 @@ Rule variations
 bugs
  - authorization move player property of undefined (at click anothers piece?)
  - can't move freshly started piece (is related to / side effect of above)
- - can't start taken piece
  - end of round message was lost?
      Uncaught Error: Expected argument 0 of Game#move to be instance of LudoBoard.Piece, got undefined of type undefined utils.coffee:49
 

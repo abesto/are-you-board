@@ -115,7 +115,7 @@ module.exports.Table = class Table
     if $toField.children('.piece:not(.ghost)').length > 0
       takenPiecePlayer = $toField.children().attr('player')
       limboField = @nextLimboField(takenPiecePlayer)
-      @newPiece(takenPiecePlayer, limboField.row, limboField.column)
+      @addPieceHandlers @newPiece(takenPiecePlayer, limboField.row, limboField.column)
     $piece.detach().appendTo($toField.empty())
     $('.piece.ghost').remove()
     if addGhost
