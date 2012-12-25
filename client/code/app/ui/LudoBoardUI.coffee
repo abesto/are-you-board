@@ -107,7 +107,7 @@ class GhostPiece extends Piece
 module.exports.Table = class Table
   @_name = 'Table'
 
-  @COLORS = ['red', 'green', 'blue', 'yellow']
+  @COLORS = ['red', 'green', 'yellow', 'blue']
   @LIMBO = [
     {row: 1, column: 1}
     {row: 1, column: 8}
