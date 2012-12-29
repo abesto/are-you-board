@@ -158,9 +158,9 @@ describe 'LudoRules', ->
       @game.board.pieceCountOf = -> 4
       @rules.can.startPiece().should.deny 'no_more_pieces_to_start'
 
-    describe "with startOnOneAndSix", ->
-      it "can start a piece iff the dice is 1 or 6", ->
-        @game.flavor = new LudoRules.Flavor({startOnOneAndSix: true})
+    describe "flavors", ->
+      it "with startOnOneAndSix it can start a piece iff the dice is 1 or 6", ->
+        @game.flavor.startOnOneAndSix = true
         @game.dice = 1
         @rules.can.startPiece().should.allow
         @game.dice = 6
@@ -168,6 +168,18 @@ describe 'LudoRules', ->
         for dice in [2..5]
           @game.dice = dice
           @rules.can.startPiece().should.deny 'dice_not_1_or_6'
+
+      it 'can take on starting field iff takeOnStartingField', ->
+        @game.dice = 4
+        piece = @game.board.start(2)
+        @game.board.field(@game.board.paths[2][4]).put new LudoBoard.Piece 3
+
+        @game.flavor.takeOnStartingField = true
+        @rules.can.move(piece).should.allow
+
+        @game.flavor.takeOnStartingField = false
+        @rules.can.move(piece).should.deny 'cant_take_on_starting_field'
+
 
   describe "action start", ->
     it "throws exception if start is not allowed", ->

@@ -6,8 +6,17 @@ div#create-ludo-modal.modal.hide.fade
     form#ludo-flavor.form
       fieldset
         label.checkbox
+          input#takeOnStartingField(type='checkbox')
+          span(data-trans='gamelist.newmodal.ludo.takeOnStartingField')
+        label.checkbox
           input#startOnOneAndSix(type='checkbox', checked)
           span(data-trans='gamelist.newmodal.ludo.startOnOneAndSix')
+        label.checkbox
+          input#reRollAfterSix(type='checkbox', disabled)
+          span(data-trans='gamelist.newmodal.ludo.reRollAfterSix')
+        label.checkbox
+          input#skipAfterRollingThreeSixes(type='checkbox', disabled)
+          span(data-trans='gamelist.newmodal.ludo.skipAfterRollingThreeSixes')
    div.modal-footer
     a.btn(data-trans='generic.cancel', data-dismiss='modal')
-    a#create-game-btn.btn.btn-primary(data-trans='gamelist.new', data-dismiss='modal')
+    a#create-game-btn.btn.btn-primary(data-trans='gamelist.newmodal.go', data-dismiss='modal')

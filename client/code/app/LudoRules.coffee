@@ -123,6 +123,12 @@ class Validator
         check: -> toField.isEmpty() or toField.getPiece().player != piece.player
         msg: -> 'cant_take_own_piece'
       }
+      {
+        check: ->
+          return true if @game.flavor.takeOnStartingField
+          toField.isEmpty() or toField.getPiece().pathPosition > 0
+        msg: -> 'cant_take_on_starting_field'
+      }
 
   leave: (user) ->
     @check 'leave',
