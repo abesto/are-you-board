@@ -5,6 +5,7 @@ base = require './base'
 Game = require('../../../client/code/app/Game')
 User = require '../../../client/code/app/User'
 LudoBoard = require '../../../client/code/app/LudoBoard'
+LudoRules = require '../../../client/code/app/LudoRules'
 
 Authorization = require '../../authorization'
 
@@ -79,13 +80,18 @@ exports.actions = (req, res, ss) ->
         game.save res
 
   actions = base req, res, ss, Game,
-    create: (game, cb) ->
-      User.model.get req.session.userId, (err, creator) ->
-        return cb err if err
-        game.createdBy = creator.id
-        game.board = new LudoBoard()
-        updateOpenGames game
-        addToGamesOfUser game, creator, cb
+    create: (game, cb, rawFlavor) ->
+      cont = ->
+        User.model.get req.session.userId, (err, creator) ->
+          return cb err if err
+          game.createdBy = creator.id
+          game.board = new LudoBoard()
+          updateOpenGames game
+          addToGamesOfUser game, creator, cb
+      if rawFlavor?
+        game.flavor.load JSON.parse(rawFlavor), cont
+      else
+        cont()
 
   originalCreate = actions.create
   actions.create = (args...) ->

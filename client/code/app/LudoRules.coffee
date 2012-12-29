@@ -1,4 +1,24 @@
 constants = require './constants'
+serialization = require './serialization'
+
+
+class Flavor
+  @FIELDS = ['takeOnStartingField', 'startOnOneAndSix', 'reRollAfterSix', 'skipAfterRollingThreeSixes']
+  constructor: (opts={}) ->
+    @takeOnStartingField = opts.takeOnStartingField || true
+    @startOnOneAndSix = opts.startOnOneAndSix || false
+    @reRollAfterSix = opts.reRollAfterSix || false
+    @skipAfterRollingThreeSixes = opts.skipAfterRollingThreeSixes || false
+
+
+serialization Flavor, 1,
+  1:
+    to: ->  (this[field] for field in Flavor.FIELDS)
+
+    from: (flavor, args, cb) ->
+      for field, id in Flavor.FIELDS
+        flavor[field] = args[id]
+      cb? null, flavor
 
 
 class Validator
@@ -10,7 +30,9 @@ class Validator
       item.meta ?= {}
       item.meta.game = @game.toString()
       item.meta.method = "game.#{method}"
-      return [false, item.msg, item.meta]
+      message = item.msg
+      message = message.call(this) if _.isFunction(message)
+      return [false, message, item.meta]
     [true]
 
   start: -> @check 'start',
@@ -59,8 +81,9 @@ class Validator
         meta: expected: constants.Game.STATE_MOVE, actual: @game.state
       }
       {
-        check: -> @game.dice == 6
-        msg: 'dice_not_6'
+        check: ->
+          @game.dice == 6 or (@game.flavor.startOnOneAndSix and @game.dice == 1)
+        msg: -> if @game.flavor.startOnOneAndSix then 'dice_not_1_or_6' else 'dice_not_6'
       }
       {
         check: -> field.isEmpty() or field.getPiece().player != @game.currentSide
@@ -150,3 +173,4 @@ class LudoRules
 
 
 module.exports = LudoRules
+module.exports.Flavor = Flavor

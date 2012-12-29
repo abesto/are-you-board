@@ -17,6 +17,7 @@ class Game
     @currentSide = -1
     @dice = 0
     @state = Game.STATE_JOINING
+    @flavor = new LudoRules.Flavor()
 
   firstFreeSide: ->
     joinOrder = [0, 2, 1, 3]
@@ -127,7 +128,7 @@ class Game
   logMeta: (obj={}) ->
     _.defaults obj, {side: @currentSide, user: @players[@currentSide]?.toString(), game: @toString()}
 
-serialization Game, 1,
+serialization Game, 2,
   1:
     to: -> [
       @id
@@ -140,7 +141,7 @@ serialization Game, 1,
       @state
     ]
 
-    from: (game, [id, createdAt, createdBy, board, players, currentSide, dice, state], cb) ->
+    from: (game, [id, createdAt, createdBy, board, players, currentSide, dice, state, flavor], cb) ->
       game.id = id
       game.createdAt = new Date createdAt
       game.createdBy = createdBy
@@ -150,6 +151,19 @@ serialization Game, 1,
       game.dice = dice
       game.state = state
       cb null, game
+
+  2:
+    to: ->
+      ret = _.toArray @toSerializable(1)
+      ret.push @flavor.toSerializable()
+      ret
+
+    from: (game, args, cb) ->
+      flavor = args.pop()
+      game.loadWithFormat 1, args, ->
+        game.flavor = LudoRules.Flavor.fromSerializable(flavor)
+        cb null, game
+
 
 
 TypeSafe Game
@@ -169,3 +183,4 @@ Game.model.listOpenGames = (cb) ->
     Repository.getMulti Game, gameIds..., cb
 
 module.exports = Game
+

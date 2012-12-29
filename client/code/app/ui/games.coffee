@@ -1,6 +1,7 @@
 Game = require '/Game'
 User = require '/User'
 Repository = require '/Repository'
+LudoRules = require '/LudoRules'
 
 $createGame = null
 $joinGame = null
@@ -10,6 +11,14 @@ findControls = ->
   $createGame = $('#create-game-btn')
   $joinGame = $('.join-game.btn')
   $openGame = $('.open-game.btn')
+
+ludoFlavor = ->
+  flavor = new LudoRules.Flavor()
+  $form = $('form#ludo-flavor')
+  for field in LudoRules.Flavor.FIELDS
+    $checkbox = $form.find('#' + field)
+    flavor[field] = $checkbox.is(':checked') if $checkbox.length > 0
+  flavor
 
 module.exports = exports =
   makeRender: (listMethod) ->
@@ -32,7 +41,7 @@ module.exports = exports =
           UI.$container.empty().append ss.tmpl['gamelist'].render games: context
           findControls()
           $createGame.click ->
-            Game.model.create (err, game) ->
+            Game.model.create ludoFlavor().serialize(), (err, game) ->
               return alert err if err
               game.join window.user, (err) ->
                 return alert err if err

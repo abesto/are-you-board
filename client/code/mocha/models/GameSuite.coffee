@@ -3,6 +3,7 @@
 Game = require '/Game'
 User = require '/User'
 LudoBoard = require '/LudoBoard'
+LudoRules = require '/LudoRules'
 
 
 chai.Assertion.overwriteMethod 'eql', (_super) -> (other) ->
@@ -183,6 +184,11 @@ describe 'Game', ->
       ss.rpc 'dangerous.enableAuthorization', done
 
     runGameTests()
+
+    it 'can create new games with flavor', ->
+      flavor = new LudoRules.Flavor({startOnOneAndSix: true})
+      Game.model.create flavor.serialize(), (err, game) =>
+        game.flavor.startOnOneAndSix.should.equal true
 
     it 'lists open games, in the order they were created', (done) ->
       Game.model.create (err, game2) =>

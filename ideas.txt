@@ -1,19 +1,27 @@
+Features
+--------
 detect when game is over
  - delete it
 user should be able to leave the game
  - delete game once last player leaves it
+Rule variations
+ - can take piece on its own starting field
+ - miss a turn after rolling 6 three times in a row
+ - can start on 1 dice
+
+Code quality
+------------
 clear up what games a browser has in memory. if it has it, it should receive events, or reload the game when needed
  - to clients on the "browse open games" page
    - broadcast events when a game enters / leaves open_games
    - broadcast join/leave events
+
+UX
+--
 use common checks in authorization and ui
 clean up checks order to have most user-relevant error first
-
 mark the last moved piece: save to server? reload destroys the ghost image
-
-Rule variations
- - can take piece on its own starting field
- - can re-roll after six
- - miss a turn after rolling 6 three times in a row
- - can start on 1 dice
-
+gamelist
+ - more useful information (rules? player list / other details, maybe on hover?)
+ - scroll tbody; thead and tfoot should always be visible
+show game rules in game

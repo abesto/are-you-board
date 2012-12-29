@@ -1,0 +1,13 @@
+div#create-ludo-modal.modal.hide.fade
+  div.modal-header
+    button.close(type='button', data-dismiss='modal') &times;
+    h3(data-trans='gamelist.newmodal.ludo.header')
+  div.modal-body
+    form#ludo-flavor.form
+      fieldset
+        label.checkbox
+          input#startOnOneAndSix(type='checkbox', checked)
+          span(data-trans='gamelist.newmodal.ludo.startOnOneAndSix')
+   div.modal-footer
+    a.btn(data-trans='generic.cancel', data-dismiss='modal')
+    a#create-game-btn.btn.btn-primary(data-trans='gamelist.new', data-dismiss='modal')

@@ -32,3 +32,8 @@ module.exports = (cls, currentFormat, defs) ->
 
   cls::load = (serialized, args...) ->
     defs[getFormat(serialized)].from this, serialized, args...
+
+  cls::loadWithFormat = (format, serialized, args...) ->
+    getFormat(serialized)  # To remove it from the data object
+    defs[format].from this, serialized, args...
+
