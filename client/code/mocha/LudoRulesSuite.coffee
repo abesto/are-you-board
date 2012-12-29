@@ -4,11 +4,11 @@ Game = require '/Game'
 User = require '/User'
 
 
-chai.Assertion.addProperty 'allow', -> @_obj[0].should.equal true
+chai.Assertion.addProperty 'allow', -> @_obj.valid.should.equal true
 
 chai.Assertion.addMethod 'deny', (msg) ->
-  @_obj[0].should.equal false
-  @_obj[1].should.equal msg
+  @_obj.valid.should.equal false
+  @_obj.message.should.equal msg
 
 
 describe 'LudoRules', ->

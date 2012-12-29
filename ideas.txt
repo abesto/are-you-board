@@ -5,9 +5,6 @@ detect when game is over
 user should be able to leave the game
  - delete game once last player leaves it
 Rule variations
- - can take piece on its own starting field
- - miss a turn after rolling 6 three times in a row
- - can start on 1 dice
 
 Code quality
 ------------
@@ -15,6 +12,7 @@ clear up what games a browser has in memory. if it has it, it should receive eve
  - to clients on the "browse open games" page
    - broadcast events when a game enters / leaves open_games
    - broadcast join/leave events
+refactor common parts of authorization and LudoRules
 
 UX
 --
@@ -24,4 +22,7 @@ mark the last moved piece: save to server? reload destroys the ghost image
 gamelist
  - more useful information (rules? player list / other details, maybe on hover?)
  - scroll tbody; thead and tfoot should always be visible
-show game rules in game
+game rules
+ - show game rules in game
+ - save game rule preference
+ - game rule preference store (save preset flavors)
