@@ -74,12 +74,12 @@ class NickLabel
 class Piece
   @get: (table, id) ->  table.board.find("div.piece[pieceid=#{id}]").data('uiObject')
 
-  constructor: (@table, @player) ->
+  constructor: (@table, @player, show) ->
     @el = $('<div>&nbsp;</div>').addClass('piece').
           addClass(Table.COLORS[player]).
           attr('player': player, 'pieceid': '-1').
-          data('uiObject', this).
-          hide()
+          data('uiObject', this)
+    @el.hide() unless show
     @attachHandlers()
     @field = null
 
@@ -104,7 +104,7 @@ class Piece
 
 class GhostPiece extends Piece
   constructor: (@table, @player) ->
-    super(@table, @player)
+    super(@table, @player, true)
     @el.addClass('ghost')
 
   attachHandlers: ->
@@ -158,9 +158,7 @@ module.exports.Table = class Table
             field.show()
 
       for field in @limboFields[player]
-        piece = new Piece(this, player)
-        piece.show() if game.players[player] != null
-        field.put piece
+        field.put new Piece(this, player, game.players[player] != null)
 
     for id, piece of game.board.pieces
       uiPiece = @nextLimboFieldWithNonGhostPiece(piece.player).getPiece()
@@ -192,7 +190,7 @@ module.exports.Table = class Table
     if toField.hasNonGhostPiece()
       takenPiecePlayer = toField.getPiece().getPlayer()
       limboField = @nextLimboFieldWithoutAnyPiece(takenPiecePlayer)
-      limboField.put new Piece(this, takenPiecePlayer)
+      limboField.put new Piece(this, takenPiecePlayer, true)
       toField.clear()
 
     GhostPiece.clear(this)
@@ -227,4 +225,3 @@ module.exports.Table = class Table
       for column in [topLeft.column, topLeft.column + 1]
         fields.push @getField(row, column)
     fields
-
