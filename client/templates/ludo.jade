@@ -1,15 +1,16 @@
-div#board
-div#controls.well
-  div#state
-    span(data-trans='ludo.state.label')
-    span#state-text
-  div#dice
-    span(data-trans='ludo.dice')
-    span#last-dice-value
-    a#roll-dice.btn(href='#', data-trans='ludo.roll')
-  a#start.btn(href='#', data-trans='ludo.start')
-  a#skip.btn(href='#', data-trans='ludo.skip')
-div#rules-container
-  h4(data-trans='generic.rules')
-  ul#rules
+div.row
+  div.span5#board
+  div.span4#controls.well
+    div#state
+      span(data-trans='ludo.state.label')
+      span#state-text
+    div#dice
+      span(data-trans='ludo.dice')
+      span#last-dice-value
+      a#roll-dice.btn(href='#', data-trans='ludo.roll')
+    a#start.btn(href='#', data-trans='ludo.start')
+    a#skip.btn(href='#', data-trans='ludo.skip')
+  div.span5#rules-container
+    h4(data-trans='generic.rules')
+    ul.unstyled#rules
 
