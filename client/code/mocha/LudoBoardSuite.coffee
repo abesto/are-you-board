@@ -73,6 +73,13 @@ describe 'LudoBoard', ->
       piece.pathPosition.should.equal 0
       @board.hasPiece(piece).should.be.true
 
+  it 'starting pieces create pieces with ids incremented by 1', ->
+    position = startingPositions[0]
+    for i in [0..3]
+      piece = @board.start(0)
+      piece.id.should.equal i
+      @board.move piece, i
+
   it 'piece can be removed', ->
     piece = @board.start(0)
     field =  @board.row(4).column(0)
@@ -126,4 +133,3 @@ describe 'LudoBoard', ->
     serialized.should.be.a 'string'
     deserialized = LudoBoard.deserialize serialized
     @board.should.deep.equal deserialized
-

@@ -120,7 +120,7 @@ TypeSafe class LudoBoard
   startS:[TC.Number]
   start: (player) ->
     {row:row, column:column} = @startPosition player
-    pieceId = Math.max(0, _.max(_.keys(@pieces)) + 1)
+    pieceId = Math.max 0, 1 + _.max(parseInt(n) for n in _.keys(@pieces))
     piece = new Piece(player, pieceId)
     @row(row).column(column).put piece
     @pieces[piece.id] = piece
