@@ -58,7 +58,7 @@ class NickLabel
     @el = @table.getField(@topLeft.row, @topLeft.column).el
     for columnOffset in [-1, 1, 2]
       @table.getField(@topLeft.row, @topLeft.column + columnOffset).el.remove()
-    @label = $('<span>')
+    @label = $('<span>').hide()
     @label.addClass('nick').addClass(Table.COLORS[@player])
     @el.attr('colspan': 4, id: "nick-#{@player}").append @label
 
@@ -68,6 +68,8 @@ class NickLabel
     @table.board.find('.nick.current').removeClass('current')
     @label.addClass('current')
 
+  show: -> @label.css('display', 'inline')
+
 
 class Piece
   @get: (table, id) ->  table.board.find("div.piece[pieceid=#{id}]").data('uiObject')
@@ -76,7 +78,8 @@ class Piece
     @el = $('<div>&nbsp;</div>').addClass('piece').
           addClass(Table.COLORS[player]).
           attr('player': player, 'pieceid': '-1').
-          data('uiObject', this)
+          data('uiObject', this).
+          hide()
     @attachHandlers()
     @field = null
 
@@ -95,6 +98,8 @@ class Piece
         @trigger 'move', [@getId()]
       else
         @trigger 'start', [@getPlayer(), @el]
+
+  show: -> @el.show()
 
 
 class GhostPiece extends Piece
@@ -145,16 +150,17 @@ module.exports.Table = class Table
 
     for player in [0...4]
       field = @nickFields[player]
-      do (field) ->
-        if game.players[player] == null
-          field.setLabel gettext('ludo.noPlayer')
-        else
+      if game.players[player] != null
+        do (field) ->
           Repository.get User, game.players[player], (err, user) ->
             return alert err if err
             field.setLabel user.nick
+            field.show()
 
       for field in @limboFields[player]
-        field.put new Piece(this, player)
+        piece = new Piece(this, player)
+        piece.show() if game.players[player] != null
+        field.put piece
 
     for id, piece of game.board.pieces
       uiPiece = @nextLimboFieldWithNonGhostPiece(piece.player).getPiece()
@@ -196,6 +202,8 @@ module.exports.Table = class Table
 
   join: (side, user) ->
     @nickFields[side].setLabel(user.nick)
+    @nickFields[side].show()
+    field.getPiece().show() for field in @limboFields[side]
 
   _createFields: ->
     for row in [0 ... LudoBoard.ROWS]
