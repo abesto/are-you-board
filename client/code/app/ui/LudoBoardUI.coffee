@@ -13,6 +13,7 @@ class Field
     @el.data('uiObject', this)
     @_decorateEl()
     @piece = null
+    @shownPathStep = null
 
   hasAnyPiece: -> @piece != null
 
@@ -38,9 +39,11 @@ class Field
   put: (piece) ->
     throw "Tried to add piece to field (#{@row},#{@column}), which is not empty" if @hasAnyPiece()
     throw "Piece #{piece.id} is already on field (#{piece.getField().row},#{piece.getField().row})" if piece.getField()
+    $oldShownPathStep = @el.find('span.path-step-label')
     @el.append(piece.el)
     @piece = piece
     @piece.field = this
+    @piece.el.append $oldShownPathStep
 
   clear: ->
     throw "Tried to remove piece from field (#{@row},#{@column}), which is empty" unless @hasAnyPiece()
@@ -49,6 +52,19 @@ class Field
     @piece = null
 
   getPiece: -> @piece
+
+  showPathStep: (n, byDice=false) ->
+    @shownPathStep = n
+    return if n == null
+    @el.find('span.path-step-label').remove()
+    $step = $('<span>').addClass('path-step-label').text(n)
+    $step.addClass('by-dice') if byDice
+    if @hasAnyPiece()
+      @piece.el.append $step
+    else
+      @el.append $step
+
+  @hidePathSteps: -> $('span.path-step-label').remove()
 
 
 class NickLabel
@@ -92,12 +108,27 @@ class Piece
 
   trigger: (args...) -> @table.trigger args...
 
+  nextPathFields: ->
+    path = @table.game.board.paths[@player]
+    currentIndex = _.indexOf(path, _.find(path, (s) => s.row == @field.row && s.column == @field.column))
+    ret = []
+    from = currentIndex + 1
+    to = if @field in @table.limboFields[@player] then from else Math.min(currentIndex + 6, path.length - 1)
+    for i in [from .. to]
+      position = path[i]
+      ret.push @table.getField position.row, position.column
+    ret
+
   attachHandlers: ->
     @el.click =>
       if @getId() != -1
         @trigger 'move', [@getId()]
       else
         @trigger 'start', [@getPlayer(), @el]
+      Field.hidePathSteps()
+
+    showPathSteps = => field.showPathStep(index+1, index+1 == @table.game.dice) for field, index in @nextPathFields()
+    @el.hover showPathSteps, Field.hidePathSteps
 
   show: -> @el.show()
 
@@ -143,30 +174,30 @@ module.exports.Table = class Table
 
   getPiece: (id) -> Piece.get(this, id)
 
-  render: (game) ->
+  render: (@game) ->
     @_createFields()
     @_createNickFields()
     @_createLimboFields()
 
     for player in [0...4]
       field = @nickFields[player]
-      if game.players[player] != null
-        do (field) ->
-          Repository.get User, game.players[player], (err, user) ->
+      if @game.players[player] != null
+        do (field) =>
+          Repository.get User, @game.players[player], (err, user) =>
             return alert err if err
             field.setLabel user.nick
             field.show()
 
       for field in @limboFields[player]
-        field.put new Piece(this, player, game.players[player] != null)
+        field.put new Piece(this, player, @game.players[player] != null)
 
-    for id, piece of game.board.pieces
+    for id, piece of @game.board.pieces
       uiPiece = @nextLimboFieldWithNonGhostPiece(piece.player).getPiece()
       uiPiece.setId(piece.id)
       @move piece.id, piece.field
 
     GhostPiece.clear(this)
-    @setCurrentPlayer(game.currentSide)
+    @setCurrentPlayer(@game.currentSide)
     @container.empty().append(@board)
 
   start: (side, id) ->
