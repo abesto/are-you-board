@@ -207,7 +207,9 @@ module.exports.Table = class Table
         @fields[row].push field
       @board.append $row
 
-  _createNickFields: -> @nickFields = (new NickLabel(this, {row: Table.LIMBO[i].row - 1, column: Table.LIMBO[i].column}, i) for i in [0...4])
+  _createNickFields: ->
+    rowOffset = [2, 2, -1, -1]
+    @nickFields = (new NickLabel(this, {row: Table.LIMBO[i].row + rowOffset[i], column: Table.LIMBO[i].column}, i) for i in [0...4])
   _createLimboFields: -> @limboFields = (@_limboFields(i) for i in [0...4])
 
   _limboFields: (player) ->
