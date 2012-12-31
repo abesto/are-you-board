@@ -1,6 +1,7 @@
 module.exports =
   generic:
     cancel: "Mégse"
+    rules: "Szabályok"
   topbar:
     lobby: "Előszoba"
     openGames: 'Nyitott játékok'
@@ -40,3 +41,16 @@ module.exports =
       not_current_player: 'Nem te jössz!'
       wront_state: 'Biztos, hogy nem.'
       move_not_current_players_piece: 'Ez nem a te bábud.'
+    rules:
+      takeOnStartingField:
+        on: 'Le lehet ütni a saját kezdőmezőjén álló bábut'
+        off: 'Nem lehet leütni a saját kezdőmezőjén álló bábut'
+      startOnOneAndSix:
+        on: '1-es és 6-os kockadobás után is lehet új bábut indítani'
+        off: 'Csak 6-os kockadobás után lehet új bábut indítani'
+      reRollAfterSix:
+        on: '6-os kockadobás után újra ugyanaz a játékos jön'
+        off: ''
+      skipAfterRollingThreeSixes:
+        on: 'Három 6-os kockadobás után a játékos kimarad egy körből'
+        off: ''

@@ -2,6 +2,7 @@ Game = require '/Game'
 User = require '/User'
 Repository = require '/Repository'
 LudoBoard = require '/LudoBoard'
+LudoRules = require '/LudoRules'
 LudoBoardTableUI = require('./LudoBoardUI').Table
 
 class LudoUI
@@ -78,9 +79,16 @@ class LudoUI
 
   alert: (err) -> alert gettext "ludo.error.#{err}"
 
+  displayRules: ->
+    $rules = $('#rules')
+    for field in LudoRules.Flavor.FIELDS
+      trans = "ludo.rules.#{field}.#{if @game.flavor[field] then 'on' else 'off'}"
+      $rules.append $('<li>').attr('data-trans', trans) if gettext(trans).length
+
   render: ->
     @board = new LudoBoardTableUI($('#board'))
     @board.render(@game)
+    @displayRules()
     @updateControls()
     @bindControls()
 constants.apply LudoUI
