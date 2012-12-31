@@ -23,7 +23,7 @@ table.ludo-board {
             padding: 0;
             margin: auto;
             border: 3px solid black;
-            .rounded-corners(20px);
+            .rounded(20px);
             &.red { background-color: red; }
             &.blue { background-color: blue; }
             &.green { background-color: green; }
@@ -31,17 +31,25 @@ table.ludo-board {
 
             &.ghost { opacity: 0.3; }
         }
+    }
 
-        &.nick {
-            font-size: .85em;
-            border: 1px solid silver;
-            background-color: #ddd;
-            font-weight: bold;
+    .nick {
+        font-size: .85em;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        padding-left: 7px;
+        padding-right: 7px;
+        border: 1px solid silver;
+        background-color: #eee;
+        font-weight: bold;
+        .rounded(7px);
 
-            &.current {
-                background-color: #ffe562;
-            }
-        }
+        &.current { background-color: yellow; }
+
+        &.red { .box-shadow(0 0 5px red); }
+        &.blue { .box-shadow(0 0 5px blue); }
+        &.green { .box-shadow(0 0 5px green); }
+        &.yellow { .box-shadow(0 0 5px yellow); }
     }
 }
 

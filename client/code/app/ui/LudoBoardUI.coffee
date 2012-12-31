@@ -56,14 +56,17 @@ class NickLabel
 
   constructor: (@table, @topLeft, @player) ->
     @el = @table.getField(@topLeft.row, @topLeft.column).el
-    @table.getField(@topLeft.row, @topLeft.column + 1).el.remove()
-    @el.addClass('nick').attr('colspan': 2, id: "nick-#{@player}")
+    for columnOffset in [-1, 1, 2]
+      @table.getField(@topLeft.row, @topLeft.column + columnOffset).el.remove()
+    @label = $('<span>')
+    @label.addClass('nick').addClass(Table.COLORS[@player])
+    @el.attr('colspan': 4, id: "nick-#{@player}").append @label
 
-  setLabel: (label) -> @el.text(label)
+  setLabel: (label) -> @label.text(label)
 
   setCurrent: ->
     @table.board.find('.nick.current').removeClass('current')
-    @el.addClass('current')
+    @label.addClass('current')
 
 
 class Piece
