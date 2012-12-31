@@ -54,7 +54,8 @@ if (ss.env === 'production') {
 
 // Start web server
 var server = http.Server(ss.http.middleware);
-server.listen(3000);
+var port = process.argv[2] || 3000;
+server.listen(port, '127.0.0.1');
 
 // Start SocketStream
 ss.start(server);
