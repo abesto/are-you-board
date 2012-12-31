@@ -13,16 +13,19 @@ clear up what games a browser has in memory. if it has it, it should receive eve
    - broadcast events when a game enters / leaves open_games
    - broadcast join/leave events
 refactor common parts of authorization and LudoRules
+use common checks in authorization and ui
 
 UX
 --
-use common checks in authorization and ui
 clean up checks order to have most user-relevant error first
 mark the last moved piece: save to server? reload destroys the ghost image
 gamelist
  - more useful information (rules? player list / other details, maybe on hover?)
  - scroll tbody; thead and tfoot should always be visible
 game rules
- - show game rules in game
  - save game rule preference
  - game rule preference store (save preset flavors)
+
+Bugs
+----
+click on another users limbo piece starts own piece (if possible)

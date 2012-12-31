@@ -27,9 +27,9 @@ class LudoUI
     myGame = @game.createdBy == window.user.id
     myTurn = @game.players[@game.currentSide] == window.user.id
     @state.text gettext LudoUI.STATE_TEXT[@game.state]
-    @start.toggle myGame and @rules.can.start()[0]
-    @rollDice.toggleClass('disabled', !(myTurn and @rules.can.rollDice()[0]))
-    @skip.toggleClass('disabled', !(myTurn and @rules.can.skip()[0]))
+    @start.toggle myGame and @rules.can.start().valid
+    @rollDice.toggleClass('disabled', !(myTurn and @rules.can.rollDice().valid))
+    @skip.toggleClass('disabled', !(myTurn and @rules.can.skip().valid))
     @board.setCurrentPlayer(@game.currentSide)
     @lastDice.text(@game.dice)
 

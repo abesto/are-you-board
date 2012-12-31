@@ -155,3 +155,17 @@
     -webkit-background-clip: @argument;
     background-clip: @argument;
 }
+
+// Addons for are-you-board
+
+// From 3L
+.animation (...) {
+    -webkit-animation: @arguments;
+    -moz-animation: @arguments;
+    -o-animation: @arguments;
+    animation: @arguments;
+}
+
+.pulse (@name) {
+    .animation(@name 0.7s infinite alternate);
+}
