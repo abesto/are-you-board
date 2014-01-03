@@ -6,7 +6,7 @@ ss.client.define('main', {
   view: 'app.jade',
   css:  ['app.less', 'ludo.less', 'libs/bootstrap.min.css'],
   code: ['libs/jquery.min.js', 'libs/jquery.livequery.js',
-         'libs/bootstrap.min.js', 'libs/underscore-min.js',
+         'libs/bootstrap.min.js', 'libs/lodash.min.js',
          'libs/hogan.js',
          'libs/async.min.js', 'libs/moment.min.js', 'app'],
   tmpl: '*'
@@ -44,7 +44,7 @@ if (ss.env === 'production') {
         view: 'mocha.jade',
         css:  ['libs/mocha-20121106.css'],
         code: ['libs/async.min.js', 'libs/chai-1.3.0.js', 'libs/jquery.min.js', 'libs/mocha-20121106.js',
-               'libs/sinon-1.5.0.js', 'libs/underscore-min.js', 'app', 'mocha']
+               'libs/sinon-1.5.0.js', 'libs/lodash.min.js', 'app', 'mocha']
     });
     ss.http.route('/mocha', function(req, res){
         res.serveClient('mocha');

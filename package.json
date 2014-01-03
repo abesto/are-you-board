@@ -15,7 +15,7 @@
 	"ss-less": "0.1.x",
 	"ss-heartbeat-responder": "latest",
     "redis": "0.7.x",
-    "underscore": "latest",
+    "lodash": "latest",
     "winston": "latest",
     "async": "latest",
     "bcrypt": "latest"
