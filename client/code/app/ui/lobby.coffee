@@ -47,12 +47,16 @@ userDisconnectListener = (userId) ->
   $userList.find(".user-#{userId}").remove()
   Repository.delete userId
 
+isUserInUserList = (userId) ->
+  count = $userList.find(".user-#{userId}").length
+  winston.warn("multiple_user_occurences_in_userlist userId=#{userId} count=#{count}") if count > 1
+  return count > 0
+
 userConnectListener = (userId) ->
   winston.debug 'userConnected', userId
   Repository.get User, userId, (err, user) ->
     return alert err if err
-    if $userList.find(".user-#{userId}").length == 0
-      $userList.append ss.tmpl['lobby-userlistitem'].render user
+    $userList.append ss.tmpl['lobby-userlistitem'].render user unless isUserInUserList(userId)
 
 messageListener = ([userId, message, timestamp]) ->
   winston.debug 'message_received', userId, message, timestamp
@@ -73,6 +77,7 @@ module.exports =
     ss.rpc 'lobby.getOnlineUserIds', (err, ids) ->
       winston.debug 'got_online_user_ids', ids.join(',')
       Repository.getMulti User, ids..., (err, users) ->
+        users = _.reject(users, (u) -> isUserInUserList(u.id))
         $userList.prepend ss.tmpl['lobby-userlist'].render {users: users}, ss.tmpl
 
     $messageForm.submit (event) ->
