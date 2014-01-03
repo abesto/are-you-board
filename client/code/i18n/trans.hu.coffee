@@ -9,8 +9,8 @@ module.exports =
   lobby:
     onlineUsers: 'Online játékosok'
   chat:
-    placeholder: 'Monnyad, e!'
-    send: 'Küggyed'
+    placeholder: 'Mondd!'
+    send: 'Küldés'
   gamelist:
     new: 'Új játék'
     join: 'Szállj be!'
@@ -33,13 +33,13 @@ module.exports =
     noPlayer: 'Senki'
     start: 'Kezdjük!'
     state:
-      label: 'Állapot:'
+      label: 'Állapot: '
       waitingForPlayers: 'Várjuk, hogy beszálljanak még páran...'
       diceRoll: 'Kockadobás'
       move: 'Lépés'
     error:
       not_current_player: 'Nem te jössz!'
-      wront_state: 'Biztos, hogy nem.'
+      wrong_state: 'Biztos, hogy nem.'
       move_not_current_players_piece: 'Ez nem a te bábud.'
     rules:
       takeOnStartingField:
