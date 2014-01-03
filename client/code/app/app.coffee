@@ -1,3 +1,4 @@
+require('./utils')(global ? window)
 User = require '/User'
 topbar = require './ui/topbar'
 login = require './ui/login'

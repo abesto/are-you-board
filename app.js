@@ -28,8 +28,8 @@ require('./server/setup').loadAppGlobals();
 // Minimize and pack assets if you type: SS_ENV=production node app.js
 if (ss.env === 'production') {
     ss.client.packAssets();
+    winston.handleExceptions(new winston.transports.File({ filename: 'exceptions.log' }));
     winston.add(winston.transports.File, { filename: 'app.log' });
-    winston.handleExceptions(winston.transports.File, { filename: 'exceptions.log' });
     ss.session.store.use('redis');
     ss.publish.transport.use('redis');
     ss.responders.add(require('ss-heartbeat-responder'));
@@ -50,6 +50,14 @@ if (ss.env === 'production') {
         res.serveClient('mocha');
     });
     ss.responders.add(require('ss-heartbeat-responder'), { logging: 1, fakeRedis: true });
+    // Debug logging
+    winston.remove(winston.transports.Console);
+    winston.add(winston.transports.Console, {
+      level: 'silly',
+      handleExceptions: true,
+      colorize: true,
+      timestamp: true
+    });
 }
 
 // Start web server

@@ -7,6 +7,8 @@ $createGame = null
 $joinGame = null
 $openGame = null
 
+logger = winston.getLogger 'ui.games'
+
 findControls = ->
   $createGame = $('#create-game-btn')
   $joinGame = $('.join-game.btn')
@@ -21,10 +23,13 @@ ludoFlavor = ->
   flavor
 
 module.exports = exports =
-  makeRender: (listMethod) ->
+  makeRender: (type, listMethod) ->
     ret = render: ->
+      logger.debug 'render_start', {type: type}
       listMethod (err, games) ->
-        return alert err if err
+        if err
+          logger.error 'failed_to_load_games', {listMethod: listMethod, err: err}
+          return alert err
         async.map games, ((game, cb) ->
           Repository.get User, game.createdBy, (err, createdBy) ->
             return cb err if err
@@ -41,20 +46,42 @@ module.exports = exports =
           UI.$container.empty().append ss.tmpl['gamelist'].render games: context
           findControls()
           $createGame.click ->
-            Game.model.create ludoFlavor().serialize(), (err, game) ->
-              return alert err if err
+            logger.debug 'create_game_clicked'
+            ludoFlavor = ludoFlavor().serialize()
+            Game.model.create ludoFlavor, (err, game) ->
+              if err
+                logger.error 'failed_to_create_game', {ludoFlavor: ludoFlavor, err: err}
+                return alert err
               game.join window.user, (err) ->
-                return alert err if err
+                if err
+                  logger.error 'failed_to_join_created_game', {ludoFlavor: ludoFlavor, err: err}
+                  return alert err
+                logger.info 'created_and_joined_game', {ludoFlavor: ludoFlavor, err: err}
                 ret.render()
           $joinGame.click ->
-            Repository.get Game, $(this).data('gameid'), (err, game) ->
-              return alert err if err
+            gameId = $(this).data('gameid')
+            logger.debug 'join_game_clicked', {gameId: gameId}
+            Repository.get Game, gameId, (err, game) ->
+              if err
+                logger.error 'failed_to_get_game_to_join', {gameId: gameId, err: err}
+                return alert err
               game.join window.user, (err) ->
-                return alert err if err
+                if err
+                  logger.error 'failed_to_join_game', {gameId: gameId, err: err}
+                  return alert err
+                logger.info 'joined_game', {gameId: gameId}
                 require('./ludo').render(game.id)
           $openGame.click ->
-            Repository.get Game, $(this).data('gameid'), (err, game) ->
-              return alert err if err
+            gameId = $(this).data('gameid')
+            logger.debug 'rejoin_game_clicked', {gameId: gameId}
+            Repository.get Game, gameId, (err, game) ->
+              if err
+                logger.error 'failed_to_get_game_to_rejoin', {gameId: gameId, err: err}
+                return alert err
               game.rejoin (err) ->
-                return alert err if err
+                if err
+                  logger.error 'failed_to_rejoin_game', {gameId: gameId, err: err}
+                  return alert err
+                logger.info 'rejoined_game', {gameId: gameId}
                 require('./ludo').render(game.id)
+          logger.verbose 'render_finished', {type: type}

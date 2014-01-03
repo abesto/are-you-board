@@ -9,6 +9,8 @@ module.exports = constants = c =
       STATE_JOINING: 1
       STATE_DICE: 2
       STATE_MOVE: 3
+      STATE_NAMES: ['NOSTATE', 'JOINING', 'DICE', 'MOVE']
+      SIDE_NAMES: ['RED', 'GREEN', 'YELLOW', 'BLUE']
       REQUIRED_PLAYERS: 2
       MAXIMUM_PLAYERS: 4
       MODEL_METHODS: ['join', 'leave', 'start', 'rollDice', 'move', 'skip', 'startPiece']

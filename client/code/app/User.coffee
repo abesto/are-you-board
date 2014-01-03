@@ -7,7 +7,7 @@ class User
     @registeredAt = new Date()
     @isSuperuser = false
 
-  toString: -> "#{@id}:#{@nick}"
+  toString: -> "User(id=#{@id},nick=#{@nick})"
 
 constants.apply User
 

@@ -1,4 +1,3 @@
-require('./utils')(global ? window)
 serialization = require './serialization'
 LudoBoard = require './LudoBoard'
 User = require './User'

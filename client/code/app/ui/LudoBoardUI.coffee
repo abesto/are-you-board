@@ -122,8 +122,10 @@ class Piece
   attachHandlers: ->
     @el.click =>
       if @getId() != -1
+        @table.logger.debug 'piece_clicked', {pieceId: @getId(), side: @player, triggeredEvent: 'move'}
         @trigger 'move', [@getId()]
       else
+        @table.logger.debug 'piece_clicked', {pieceId: @getId(), side: @player, triggeredEvent: 'start'}
         @trigger 'start', [@getPlayer(), @el]
       Field.hidePathSteps()
 
@@ -140,7 +142,15 @@ class GhostPiece extends Piece
 
   attachHandlers: ->
 
-  @clear: (table) -> table.board.find('.ghost').data('uiObject')?.getField().clear()
+  @clear: (table) ->
+    piece = table.board.find('.ghost').data('uiObject')
+    if !_.isUndefined(piece)
+      field = piece.getField()
+      field.clear()
+      table.logger.debug 'removing_ghost_piece', {
+        side: piece.player,
+        row: field.row, column: field.column
+      }
 
 
 module.exports.Table = class Table
@@ -175,6 +185,7 @@ module.exports.Table = class Table
   getPiece: (id) -> Piece.get(this, id)
 
   render: (@game) ->
+    @_createLogger()
     @_createFields()
     @_createNickFields()
     @_createLimboFields()
@@ -211,7 +222,13 @@ module.exports.Table = class Table
     piece.setId(id)
     fromField.clear()
     toField.put(piece)
-    fromField.put new GhostPiece(this, side)
+    @_putGhostPiece(side, fromField)
+
+    @logger.info 'start_piece', {
+      side: side, id: id,
+      fromRow: fromField.row, fromColumn: fromField.column,
+      toRow: toField.row, toColumn: toField.column
+    }
 
   move: (pieceId, field) ->
     piece = @getPiece(pieceId)
@@ -219,6 +236,7 @@ module.exports.Table = class Table
     toField = @getField(field.row, field.column)
 
     if toField.hasNonGhostPiece()
+      takenPiece = toField.getPiece()
       takenPiecePlayer = toField.getPiece().getPlayer()
       limboField = @nextLimboFieldWithoutAnyPiece(takenPiecePlayer)
       limboField.put new Piece(this, takenPiecePlayer, true)
@@ -227,12 +245,39 @@ module.exports.Table = class Table
     GhostPiece.clear(this)
     fromField.clear()
     toField.put piece
-    fromField.put new GhostPiece(this, piece.getPlayer())
+    @_putGhostPiece(piece.getPlayer(), fromField)
+
+    @logger.info 'move_piece', {
+      pieceId: pieceId,
+      fromRow: fromField.row, fromColumn: fromField.column,
+      toRow: toField.row, toColumn: toField.column,
+      capturedPieceId: if _.isUndefined(takenPiece) then null else takenPiece.id,
+      capturedPieceSide: if _.isUndefined(takenPiecePlayer) then null else takenPiecePlayer
+    }
 
   join: (side, user) ->
     @nickFields[side].setLabel(user.nick)
     @nickFields[side].show()
     field.getPiece().show() for field in @limboFields[side]
+    @logger.info 'player_joined', {side: side, userId: user.id}
+
+  _putGhostPiece: (side, field) ->
+    field.put new GhostPiece(this, side)
+    @logger.debug 'put_ghost_piece', {side: side, row: field.row, column: field.column}
+
+  _createLogger: ->
+    @logPrefix = "Ludo(id=#{@game.id})"
+    @logger = winston.getLogger @logPrefix
+    @logger.metadataFilters.push (o) =>
+      if 'side' of o
+        o.user = @game.players[o.side]
+        Repository.get(User, o.user, (err, user) -> o.user = user.toString())
+        o.side = "Side(id=#{o.side},color=#{Game.SIDE_NAMES[o.side]})"
+      o.state += "[#{Game.STATE_NAMES[@game.state]}]" if 'state' of o
+      o.currentSide = "Side(id=#{@game.currentSide},color=#{Game.SIDE_NAMES[@game.currentSide]})"
+      o.currentUser = @game.players[@game.currentSide]
+      Repository.get(User, @game.players[@game.currentSide], (err, user) -> o.currentUser = user.toString())
+      return o
 
   _createFields: ->
     for row in [0 ... LudoBoard.ROWS]

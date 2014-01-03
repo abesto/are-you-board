@@ -4,8 +4,8 @@ views =
   login: require('./login')
   admin: require('./admin')
   lobby: require('./lobby')
-  games: games.makeRender Game.model.listOpenGames
-  myGames: games.makeRender (args...) -> Game.model.listGamesOfUser window.user, args...
+  games: games.makeRender 'open_games', Game.model.listOpenGames
+  myGames: games.makeRender('my_games', ((args...) -> Game.model.listGamesOfUser window.user, args...))
 
 currentView = null
 window.setCurrentView = (v) -> currentView = v
@@ -28,6 +28,7 @@ findControls = ->
 
 setButtonView = ($btn, view) ->
   $btn.click (event) ->
+    winston.debug 'topbar', $btn.attr('id')
     event.preventDefault()
     $('.navbar .active').removeClass('active')
     $btn.addClass('active')

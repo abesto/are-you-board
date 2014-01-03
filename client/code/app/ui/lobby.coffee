@@ -19,49 +19,53 @@ findControls = ->
 
 listenersConnected = false
 
+logger = winston.getLogger 'ui.lobby'
+
 connectListeners = ->
-  winston.debug 'connectListeners', 'start'
+  logger.debug 'connectListeners_start'
   if listenersConnected
-    winston.verbose 'connectListeners', 'already_connected'
+    logger.verbose 'lobby.connectListeners_already_connected'
     return
   ss.event.on 'User:disconnect', userDisconnectListener
   ss.event.on 'User:connect', userConnectListener
   ss.event.on 'lobby:message', messageListener
   listenersConnected = true
-  winston.debug 'connectListeners', 'finish'
+  logger.debug 'connectListeners_finish'
 
 disconnectListeners = ->
-  winston.debug 'disconnectListeners', 'start'
+  logger.debug 'disconnectListeners_start'
   unless listenersConnected
-    winston.verbose 'disconnectListeners', 'already_not_connected'
+    logger.verbose 'disconnectListeners_already_not_connected'
     return
   ss.event.off 'User:disconnect', userDisconnectListener
   ss.event.off 'User:connect', userConnectListener
   ss.event.off 'lobby:message', messageListener
   listenersConnected = false
-  winston.debug 'disconnectListeners', 'finish'
+  logger.debug 'disconnectListeners_finish'
 
 
 userDisconnectListener = (userId) ->
-  winston.debug 'userDisconnected', userId
+  logger.debug 'userDisconnected', {userId: userId}
   $userList.find(".user-#{userId}").remove()
   Repository.delete userId
 
 isUserInUserList = (userId) ->
   count = $userList.find(".user-#{userId}").length
-  winston.warn("multiple_user_occurences_in_userlist userId=#{userId} count=#{count}") if count > 1
+  logger.warn("multiple_user_occurences_in_userlist userId=#{userId} count=#{count}") if count > 1
   return count > 0
 
 userConnectListener = (userId) ->
-  winston.debug 'userConnected', userId
+  logger.debug 'userConnected', {userId: userId}
   Repository.get User, userId, (err, user) ->
     return alert err if err
     $userList.append ss.tmpl['lobby-userlistitem'].render user unless isUserInUserList(userId)
 
 messageListener = ([userId, message, timestamp]) ->
-  winston.debug 'message_received', userId, message, timestamp
   Repository.get User, userId, (err, user) ->
-    return alert "Received message from non-existent user #{userId} (user get error: #{err})" if err
+    if err
+      logger.warn 'message_received_from_nonexistent_user', {userId: userId, message: message, timestamp: timestamp, err: err}
+      user = {nick: ''}
+    logger.debug 'message_received', {senderId: user.id, senderNick: user.nick, message: message, timestamp: timestamp}
     $messageList.append ss.tmpl['lobby-message'].render from: user.nick, time: moment(timestamp).format('HH:mm:ss'), text: message
     $messageListContainer.scrollTop($messageList.height())
 
@@ -75,7 +79,7 @@ module.exports =
     $messageListContainer.height $(window).height() - 80
 
     ss.rpc 'lobby.getOnlineUserIds', (err, ids) ->
-      winston.debug 'got_online_user_ids', ids.join(',')
+      logger.debug 'got_online_user_ids', {userIds: ids}
       Repository.getMulti User, ids..., (err, users) ->
         users = _.reject(users, (u) -> isUserInUserList(u.id))
         $userList.prepend ss.tmpl['lobby-userlist'].render {users: users}, ss.tmpl
@@ -85,6 +89,7 @@ module.exports =
       message = $messageInput.val().trimRight()
       return if message.length == 0
       $messageInput.val('')
+      winston.debug 'sending_message', {message: message}
       ss.rpc 'lobby.message', message
 
 
