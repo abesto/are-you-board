@@ -78,7 +78,10 @@ module.exports = (window) ->
       ret = paddingChar + ret
     ret
 
-  Date::getPaddedHours = -> padLeft(@getHours().toString(), '0', 2)
-  Date::getPaddedMinutes = -> padLeft(@getMinutes().toString(), '0', 2)
-  Date::getPaddedSeconds = -> padLeft(@getSeconds().toString(), '0', 2)
+  Date::padded = (f) -> padLeft(f.call(this).toString(), '0', 2)
+  Date::getPaddedMonths = -> @padded(@getMonth)
+  Date::getPaddedDays = -> @padded(@getDay)
+  Date::getPaddedHours = -> @padded(@getHours)
+  Date::getPaddedMinutes = -> @padded(@getMinutes)
+  Date::getPaddedSeconds = -> @padded(@getSeconds)
 
