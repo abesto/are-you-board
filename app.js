@@ -45,7 +45,9 @@ if (ss.env === 'production') {
         view: 'mocha.jade',
         css:  ['libs/mocha-20121106.css'],
         code: ['libs/async.js', 'libs/chai-1.3.0.js', 'libs/jquery.min.js', 'libs/mocha-20121106.js',
-               'libs/sinon-1.5.0.js', 'libs/lodash.min.js', 'app', 'mocha']
+               'libs/sinon-1.5.0.js', 'libs/lodash.min.js',
+               'libs/signals.min.js', 'libs/crossroads.min.js', 'libs/hasher.min.js',
+               'app', 'mocha']
     });
     ss.http.route('/mocha', function(req, res){
         res.serveClient('mocha');

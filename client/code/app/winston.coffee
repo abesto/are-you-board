@@ -1,8 +1,13 @@
-logUser = ->
+ss = require 'socketstream'
+async = window?.async || require 'async'
+
+logUserOrServerHost = ->
+  if typeof(window) == 'undefined'
+    return require('os').hostname()
   if _.isUndefined(window.user)
-    'n/a'
+    'User(not_logged_in)'
   else
-    "#{user.id}:#{user.nick}"
+    window.user.toString()
 
 identityMetadataFilter = (x, cb) -> cb(null, x)
 applyMetadataFilters = (filters, args...) ->
@@ -20,7 +25,7 @@ buildLogger = (prefixArgs...) ->
       (args...) ->
         finalArgs = applyMetadataFilters this.metadataFilters, prefixArgs..., args..., (err, finalArgs) ->
           console.log "#{method}:", finalArgs...
-          ss.rpc "winston.#{method}", "client:#{logUser()}", finalArgs...
+          ss.rpc? "winston.#{method}", "client:#{logUserOrServerHost()}", finalArgs...
   return o
 
 exports.getLogger = buildLogger

@@ -1,11 +1,13 @@
 Repository = require '/Repository'
 
+logger = winston.getLogger('model')
+
 rpcWithDeserialize = (cls, method, deserialize=null) -> (args..., callback) ->
   deserialize ||= cls.deserialize
   rpcMethod = "models.#{cls._name}.#{method}"
   ss.rpc rpcMethod, args..., (err, res) ->
     if err
-      winston.error "#{err} rpc:#{rpcMethod}(#{args})" if err
+      logger.error "#{err} rpc:#{rpcMethod}(#{args})" if err
       callback err
     else
       deserialize res, (err, deserialized) ->
