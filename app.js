@@ -8,6 +8,7 @@ ss.client.define('main', {
   code: ['libs/jquery.min.js', 'libs/jquery.livequery.js',
          'libs/bootstrap.min.js', 'libs/lodash.min.js',
          'libs/hogan.js',
+         'libs/signals.min.js', 'libs/crossroads.min.js', 'libs/hasher.min.js',
          'libs/async.js', 'libs/moment.min.js', 'app'],
   tmpl: '*'
 });

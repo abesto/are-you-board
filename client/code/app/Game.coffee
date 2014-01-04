@@ -100,7 +100,7 @@ class Game
   rollDiceS:[TC.Callback]
   rollDice: (cb) ->
     @dice = 1 + Math.floor(Math.random() * 6)
-    winston.debug "rollDice", @logMeta {dice: @dice}
+    @logger.debug "rollDice", @logMeta {dice: @dice}
     @state = Game.STATE_MOVE
     cb? null, this
 
@@ -137,7 +137,7 @@ class Game
       o.currentUser = @players[@currentSide]
       Repository.get User, @players[@currentSide], (err, currentUser) =>
         if err
-          winston.error @logPrefix, 'logger_failed_to_get_current_user', {userId: @players[@currentSide], gameId: @id, side: @currentSide, err: err}
+          winston.getLogger(@logPrefix).error 'logger_failed_to_get_current_user', {userId: @players[@currentSide], gameId: @id, side: @currentSide, err: err}
           o.currentUser = new User(@players[@currentSide], 'N/A').toString()
         else
           o.currentUser = currentUser.toString()
@@ -146,7 +146,7 @@ class Game
           o.side = "Side(id=#{o.side},color=#{Game.SIDE_NAMES[o.side]})"
           Repository.get User, userId, (err, user) =>
             if err
-              winston.error @logPrefix, 'logger_failed_to_get_side_user', {userId: userId, side: o.side, err: err}
+              winston.getLogger(@logPrefix).error 'logger_failed_to_get_side_user', {userId: userId, side: o.side, err: err}
               o.user = new User(userId, 'N/A').toString()
             else
               o.user = user.toString()

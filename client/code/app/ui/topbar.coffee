@@ -1,14 +1,6 @@
-games = require('./games')
-Game = require '/Game'
-views =
-  login: require('./login')
-  admin: require('./admin')
-  lobby: require('./lobby')
-  games: games.makeRender 'open_games', Game.model.listOpenGames
-  myGames: games.makeRender('my_games', ((args...) -> Game.model.listGamesOfUser window.user, args...))
+routes = require('./routes')
 
-currentView = null
-window.setCurrentView = (v) -> currentView = v
+logger = winston.getLogger('topbar')
 
 $navbarContainer = $('.navbar-container')
 $navbar = null
@@ -26,15 +18,14 @@ findControls = ->
   $admin = $navbar.find('#navbar-admin-btn')
   $signout = $navbar.find('#signout')
 
-setButtonView = ($btn, view) ->
+setButtonRoute = ($btn, route) ->
   $btn.click (event) ->
-    winston.debug 'topbar', $btn.attr('id')
+    logger.debug $btn.attr('id')
     event.preventDefault()
-    $('.navbar .active').removeClass('active')
-    $btn.addClass('active')
-    currentView?.destroy?()
-    currentView = view
-    view.render()
+    routes.navigate route
+
+  route.switched.add -> $btn.removeClass('active')
+  route.matched.add -> $btn.addClass('active')
 
 
 module.exports =
@@ -43,12 +34,11 @@ module.exports =
     findControls()
     if user.isSuperuser
       $admin.show()
-      setButtonView $admin, views.admin
-    setButtonView $lobby, views.lobby
-    setButtonView $games, views.games
-    setButtonView $myGames, views.myGames
-    $('#signout').click views.login.logout
-    $lobby.click()
+      setButtonRoute $admin, routes.admin
+    setButtonRoute $lobby, routes.lobby
+    setButtonRoute $games, routes.openGames
+    setButtonRoute $myGames, routes.myGames
+    $('#signout').click routes.logout
 
   destroy: ->
     $navbarContainer.empty()

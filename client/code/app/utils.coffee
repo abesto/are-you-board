@@ -86,3 +86,5 @@ module.exports = (window) ->
   Date::getPaddedSeconds = -> @padded(@getSeconds)
 
   window.winston.getLogger = require('./winston').getLogger
+
+  window.Signal = window.signals.Signal

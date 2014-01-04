@@ -4,10 +4,11 @@ logUser = ->
   else
     "#{user.id}:#{user.nick}"
 
+identityMetadataFilter = (x, cb) -> cb(null, x)
 applyMetadataFilters = (filters, args...) ->
   cb = args.pop()
-  return args unless _.isObject(_.last(args))
-  async.compose(filters...) args.pop(), (err, last) ->
+  return cb(null, args) unless _.isObject(_.last(args))
+  async.compose(identityMetadataFilter, filters...) args.pop(), (err, last) ->
     return cb err if err
     args.push last
     cb null, args
@@ -22,5 +23,4 @@ buildLogger = (prefixArgs...) ->
           ss.rpc "winston.#{method}", "client:#{logUser()}", finalArgs...
   return o
 
-module.exports = buildLogger()
-module.exports.getLogger = buildLogger
+exports.getLogger = buildLogger

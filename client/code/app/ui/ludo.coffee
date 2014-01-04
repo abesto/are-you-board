@@ -4,6 +4,7 @@ Repository = require '/Repository'
 LudoBoard = require '/LudoBoard'
 LudoRules = require '/LudoRules'
 LudoBoardTableUI = require('./LudoBoardUI').Table
+routes = require '/ui/routes'
 
 class LudoUI
   @_name = 'LudoUI'
@@ -94,16 +95,16 @@ class LudoUI
 constants.apply LudoUI
 
 current = null
-self = module.exports =
-  render: (gameId) ->
+
+exports.bindRoutes = ->
+  routes.ludo.matched.add (gameId) ->
     Repository.get Game, gameId, (err, game) ->
       return alert err if err
       UI.$container.empty().append ss.tmpl['ludo'].render()
       throw 'assertion failed: current should be null' unless current == null
       current = new LudoUI(game)
       current.render()
-      setCurrentView self
 
-  destroy: ->
-    current.unbindControls()
+  routes.ludo.switched.add ->
+    current?.unbindControls()
     current = null

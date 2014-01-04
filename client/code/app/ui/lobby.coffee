@@ -1,5 +1,6 @@
 Repository = require '/Repository'
 User = require '/User'
+routes = require '/ui/routes'
 
 $userList = null
 $messageForm = null
@@ -70,8 +71,8 @@ messageListener = ([userId, message, timestamp]) ->
     $messageListContainer.scrollTop($messageList.height())
 
 
-module.exports =
-  render: ->
+exports.bindRoutes = ->
+  routes.lobby.matched.add ->
     UI.$container.empty().append ss.tmpl['lobby-index'].render()
     findControls()
     connectListeners()
@@ -89,11 +90,8 @@ module.exports =
       message = $messageInput.val().trimRight()
       return if message.length == 0
       $messageInput.val('')
-      winston.debug 'sending_message', {message: message}
+      logger.debug 'sending_message', {message: message}
       ss.rpc 'lobby.message', message
 
-
-  destroy: ->
+  routes.lobby.switched.add ->
     disconnectListeners()
-
-

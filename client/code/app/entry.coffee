@@ -11,6 +11,7 @@ window.model = require('/model')
 window.constants = require('/constants')
 
 ss.server.on 'disconnect', ->
+  # TODO Show this on the UI
   console.log('Connection down :-(')
 
 ss.server.on 'reconnect', ->

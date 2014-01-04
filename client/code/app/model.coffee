@@ -37,7 +37,6 @@ module.exports = (cls) ->
   cls::once = (event, fun) ->
     ss.event.once "#{cls._name}:#{event}:#{@id}", fun
 
-
   for method in cls.MODEL_METHODS
     do (method) ->
       original = cls.prototype[method]

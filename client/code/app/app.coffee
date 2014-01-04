@@ -1,7 +1,7 @@
-require('./utils')(global ? window)
+require('/utils')(global ? window)
 User = require '/User'
-topbar = require './ui/topbar'
-login = require './ui/login'
+topbar = require '/ui/topbar'
+routes = require '/ui/routes'
 
 window.UI ||= {}
 window.app ||= {}
@@ -16,9 +16,13 @@ UI.init = (user) ->
 UI.reset = ->
   topbar.destroy()
   UI.$container.empty()
-  login.renderLogin()
+  routes.navigate routes.login
 
 User.model.getCurrent (err, user) ->
-  return login.renderLogin() if err
-  ss.heartbeatStart()
-  UI.init user
+  if err
+    routes.init()
+  else
+    ss.heartbeatStart()
+    UI.init user
+    routes.init()
+

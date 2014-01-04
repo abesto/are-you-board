@@ -1,6 +1,7 @@
 User = require '/User'
+routes = require '/ui/routes'
 
-showLoginForm = ->
+showLoginForm = (successCb) ->
   UI.$container.empty().append ss.tmpl['login'].render()
   $signinForm = $('form.form-signin')
   $alert = $signinForm.find('.alert')
@@ -14,10 +15,11 @@ showLoginForm = ->
     nick = $nick.val()
     password = $password.val()
     User.model.login nick, password, (err, user) ->
-      window.user = user
       return alert err if err
       ss.heartbeatStart()
+      window.user = user
       UI.init(user)
+      successCb()
 
   $signinForm.find('[name=register]').click showRegisterForm
 
@@ -45,17 +47,26 @@ showRegisterForm = ->
         ss.heartbeatStart()
         window.user = user
         UI.init(user)
+        routes.navigate routes.index
 
   $registerForm.find('[name=back]').click showLoginForm
 
+buildSuccessCallback = (redirectTo) -> ->
+  if redirectTo
+    hasher.setHash routes.unslugifySegment(redirectTo)
+  else
+    routes.navigate routes.lobby
 
-module.exports =
-  logout: (event) ->
-    event.preventDefault()
+exports.bindRoutes = ->
+  routes.login.matched.add (redirectTo) ->
+    successCb = buildSuccessCallback(redirectTo)
+    if window.user
+      successCb()
+    else
+      showLoginForm(successCb)
+
+  routes.logout.matched.add ->
     ss.heartbeatStop()
     User.model.logout (err) ->
       return alert err if err
       UI.reset()
-
-  renderLogin: showLoginForm
-
