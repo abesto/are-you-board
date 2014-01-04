@@ -85,3 +85,4 @@ module.exports = (window) ->
   Date::getPaddedMinutes = -> @padded(@getMinutes)
   Date::getPaddedSeconds = -> @padded(@getSeconds)
 
+  window.winston.getLogger = require('./winston').getLogger

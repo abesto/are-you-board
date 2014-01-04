@@ -7,7 +7,6 @@ exports.model = -> require('./model');
 exports.async = -> require('async')
 exports.constants = -> require '../client/code/app/constants'
 
-
 exports.chai = -> require('chai')
 
 exports.loadAppGlobals = ->

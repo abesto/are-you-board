@@ -162,13 +162,14 @@ class LudoRules
 
   constructor: (@game) ->
     @can = new Validator @game
+    @_createLogger()
 
   check: (method, args) ->
     return ValidationResult.valid if LudoRules.wrappersDisabled or not _.isFunction(@can[method])
     @can[method] args...
 
-  @signalError: (result, args) ->
-    winston.warn result.message, result.meta
+  signalError: (result, args) ->
+    @logger.info result.message, result.meta
     if _.isFunction _.last args
       _.last(args)(result.message, null)
     else
@@ -181,9 +182,13 @@ class LudoRules
         cls.prototype[method] = _.wrap cls.prototype[method], (original, args...) ->
           @rule ?= new LudoRules(this)
           result = @rule.check(method, args)
-          return LudoRules.signalError(result, args) unless result.valid
+          return @rule.signalError(result, args) unless result.valid
           original.apply this, args
 
+  _createLogger: ->
+    @logPrefix = @game.logPrefix + '.Rules'
+    @logger = winston.getLogger @logPrefix
+    @logger.metadataFilters = @game.logger.metadataFilters
 
 module.exports = LudoRules
 module.exports.Flavor = Flavor

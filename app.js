@@ -8,7 +8,7 @@ ss.client.define('main', {
   code: ['libs/jquery.min.js', 'libs/jquery.livequery.js',
          'libs/bootstrap.min.js', 'libs/lodash.min.js',
          'libs/hogan.js',
-         'libs/async.min.js', 'libs/moment.min.js', 'app'],
+         'libs/async.js', 'libs/moment.min.js', 'app'],
   tmpl: '*'
 });
 ss.http.route('/', function(req, res){
@@ -43,7 +43,7 @@ if (ss.env === 'production') {
     ss.client.define('mocha', {
         view: 'mocha.jade',
         css:  ['libs/mocha-20121106.css'],
-        code: ['libs/async.min.js', 'libs/chai-1.3.0.js', 'libs/jquery.min.js', 'libs/mocha-20121106.js',
+        code: ['libs/async.js', 'libs/chai-1.3.0.js', 'libs/jquery.min.js', 'libs/mocha-20121106.js',
                'libs/sinon-1.5.0.js', 'libs/lodash.min.js', 'app', 'mocha']
     });
     ss.http.route('/mocha', function(req, res){

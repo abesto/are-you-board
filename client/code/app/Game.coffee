@@ -17,6 +17,7 @@ class Game
     @dice = 0
     @state = Game.STATE_JOINING
     @flavor = new LudoRules.Flavor()
+    @_createLogger()
 
   firstFreeSide: ->
     joinOrder = [0, 2, 1, 3]
@@ -79,20 +80,20 @@ class Game
     return if @isUserPlaying user
     idx = @firstFreeSide()
     @players[idx] = user.id
-    winston.info "join", @logMeta {user: user.toString()}
+    @logger.info "join", @logMeta {user: user.toString()}
     cb? null, this
 
   rejoin: (cb) ->
     ss.rpc 'models.Game.rejoin', @id, (err) =>
       return cb? err if err
-      winston.info "rejoin", @logMeta {user: window.user.toString()}
+      @logger.info "rejoin", @logMeta {user: window.user.toString()}
       cb? null, this
 
   leaveS:[TC.Instance(User), TC.Callback]
   leave: (user, cb) ->
     idx = @userSide user
     @players[idx] = null
-    winston.info "leave", @logMeta {user: user.toString()}
+    @logger.info "leave", @logMeta {user: user.toString()}
     Repository.delete Game, this
     cb? null, this
 
@@ -117,15 +118,42 @@ class Game
 
   startPieceS:[TC.Callback]
   startPiece: (cb) ->
-    winston.info "startPiece", @logMeta()
+    @logger.info "startPiece", @logMeta()
     @state = Game.STATE_DICE
-    piece = @board.start(@currentSide)
+    @board.start(@currentSide)
     @nextSide()
     cb? null, this
 
   logMetaS:[TC.Maybe TC.Object]
   logMeta: (obj={}) ->
-    _.defaults obj, {side: @currentSide, user: @players[@currentSide]?.toString(), game: @toString()}
+    _.defaults obj, {gameId: @id}
+
+  _createLogger: ->
+    @logPrefix = "Ludo"
+    @logger = winston.getLogger @logPrefix
+    @logger.metadataFilters.push (o, cb) =>
+      o.state += "[#{Game.STATE_NAMES[@state]}]" if 'state' of o
+      o.currentSide = "Side(id=#{@currentSide},color=#{Game.SIDE_NAMES[@currentSide]})"
+      o.currentUser = @players[@currentSide]
+      Repository.get User, @players[@currentSide], (err, currentUser) =>
+        if err
+          winston.error @logPrefix, 'logger_failed_to_get_current_user', {userId: @players[@currentSide], gameId: @id, side: @currentSide, err: err}
+          o.currentUser = new User(@players[@currentSide], 'N/A').toString()
+        else
+          o.currentUser = currentUser.toString()
+        if 'side' of o
+          userId = @players[o.side]
+          o.side = "Side(id=#{o.side},color=#{Game.SIDE_NAMES[o.side]})"
+          Repository.get User, userId, (err, user) =>
+            if err
+              winston.error @logPrefix, 'logger_failed_to_get_side_user', {userId: userId, side: o.side, err: err}
+              o.user = new User(userId, 'N/A').toString()
+            else
+              o.user = user.toString()
+            cb null, o
+        else
+          cb null, o
+
 
 serialization Game, 2,
   1:
@@ -162,7 +190,6 @@ serialization Game, 2,
       game.loadWithFormat 1, args, ->
         game.flavor = LudoRules.Flavor.fromSerializable(flavor)
         cb null, game
-
 
 
 TypeSafe Game

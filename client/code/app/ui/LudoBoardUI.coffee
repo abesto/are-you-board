@@ -266,18 +266,9 @@ module.exports.Table = class Table
     @logger.debug 'put_ghost_piece', {side: side, row: field.row, column: field.column}
 
   _createLogger: ->
-    @logPrefix = "Ludo(id=#{@game.id})"
+    @logPrefix = @game.logPrefix + '.UI'
     @logger = winston.getLogger @logPrefix
-    @logger.metadataFilters.push (o) =>
-      if 'side' of o
-        o.user = @game.players[o.side]
-        Repository.get(User, o.user, (err, user) -> o.user = user.toString())
-        o.side = "Side(id=#{o.side},color=#{Game.SIDE_NAMES[o.side]})"
-      o.state += "[#{Game.STATE_NAMES[@game.state]}]" if 'state' of o
-      o.currentSide = "Side(id=#{@game.currentSide},color=#{Game.SIDE_NAMES[@game.currentSide]})"
-      o.currentUser = @game.players[@game.currentSide]
-      Repository.get(User, @game.players[@game.currentSide], (err, user) -> o.currentUser = user.toString())
-      return o
+    @logger.metadataFilters = @game.logger.metadataFilters
 
   _createFields: ->
     for row in [0 ... LudoBoard.ROWS]
