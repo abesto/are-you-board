@@ -75,7 +75,7 @@ class Validator
       meta: expected: constants.Game.STATE_DICE, actual: @game.state
     }
 
-  startPiece: ->
+  startPiece: (side) ->
     board = @game.board
     field = board.field board.startPosition @game.currentSide
     @check 'startPiece',
@@ -87,6 +87,11 @@ class Validator
       {
         check: -> @game.dice == 6 or (@game.flavor.startOnOneAndSix and @game.dice == 1)
         msg: -> if @game.flavor.startOnOneAndSix then 'dice_not_1_or_6' else 'dice_not_6'
+      }
+      {
+        check: -> side == @game.currentSide
+        msg: -> "move_not_current_players_piece"
+        meta: currentSide: @game.currentSide, pieceSide: side
       }
       {
         check: -> field.isEmpty() or field.getPiece().player != @game.currentSide

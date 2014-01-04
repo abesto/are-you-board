@@ -52,8 +52,8 @@ class LudoUI
           return if this[method].hasClass('disabled')
           @game[method] (err) => @alert err if err
 
-    @board.bind 'start', =>
-      @game.startPiece (err) => @alert err if err
+    @board.bind 'start', (e, side) =>
+      @game.startPiece side, (err) => @alert err if err
     @game.on 'startPiece', @startHandler
 
     @board.bind 'move', (e, pieceId) =>

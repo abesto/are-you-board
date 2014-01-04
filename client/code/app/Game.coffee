@@ -116,11 +116,11 @@ class Game
     @nextSide()
     cb? null, this
 
-  startPieceS:[TC.Callback]
-  startPiece: (cb) ->
+  startPieceS:[TC.Number, TC.Callback]
+  startPiece: (side, cb) ->
     @logger.info "startPiece", @logMeta()
     @state = Game.STATE_DICE
-    @board.start(@currentSide)
+    @board.start(side)
     @nextSide()
     cb? null, this
 

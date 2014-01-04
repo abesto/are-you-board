@@ -210,6 +210,7 @@ module.exports.Table = class Table
     GhostPiece.clear(this)
     @setCurrentPlayer(@game.currentSide)
     @container.empty().append(@board)
+    @logger.info 'initial_state_rendered'
 
   start: (side, id) ->
     fromField = @nextLimboFieldWithNonGhostPiece(side)
