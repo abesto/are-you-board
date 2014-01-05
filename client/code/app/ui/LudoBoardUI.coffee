@@ -80,10 +80,6 @@ class NickLabel
 
   setLabel: (label) -> @label.text(label)
 
-  setCurrent: ->
-    @table.board.find('.nick.current').removeClass('current')
-    @label.addClass('current')
-
   show: -> @label.css('display', 'inline')
 
 
@@ -178,7 +174,9 @@ module.exports.Table = class Table
   nextLimboFieldWithoutAnyPiece: (player) ->
     _.find @limboFields[player], ((field) -> !field.hasAnyPiece())
 
-  setCurrentPlayer: (player) -> @nickFields[player].setCurrent() if player != -1
+  setCurrentPlayer: (player) ->
+    $('.player-arrow.current').removeClass('current')
+    $(".player[data-side=#{player}] .player-arrow").addClass('current')
 
   getField: (row, column) -> @fields[row][column]
 
@@ -191,13 +189,11 @@ module.exports.Table = class Table
     @_createLimboFields()
 
     for player in [0...4]
-      field = @nickFields[player]
-      if @game.players[player] != null
-        do (field) =>
-          Repository.get User, @game.players[player], (err, user) =>
-            return alert err if err
-            field.setLabel user.nick
-            field.show()
+      do (player) =>
+        if @game.players[player] != null
+            Repository.get User, @game.players[player], (err, user) =>
+              return alert err if err
+              @_setNick(player, user.nick)
 
       for field in @limboFields[player]
         field.put new Piece(this, player, @game.players[player] != null)
@@ -257,10 +253,14 @@ module.exports.Table = class Table
     }
 
   join: (side, user) ->
-    @nickFields[side].setLabel(user.nick)
-    @nickFields[side].show()
+    @_setNick(side, user.nick)
     field.getPiece().show() for field in @limboFields[side]
     @logger.info 'player_joined', {side: side, userId: user.id}
+
+  _setNick: (side, nick) ->
+    @nickFields[side].setLabel(nick)
+    @nickFields[side].show()
+    $(".player[data-side=#{side}] .player-nick").removeClass('no-player').text(nick)
 
   _putGhostPiece: (side, field) ->
     field.put new GhostPiece(this, side)

@@ -1,45 +1,15 @@
 @import "mixins.less";
 
-.pulse-red-frames () {
-    from { background-color: #fdd; }
-    to { background-color: white; }
+.current-player-arrow-frames () {
+    @offset: 7px;
+    from { padding-left: 0;       padding-right: @offset; }
+    to   { padding-left: @offset; padding-right: 0;       }
 }
-@-webkit-keyframes pulse-red {.pulse-red-frames;}
-@-moz-keyframes pulse-red {.pulse-red-frames;}
-@-ms-keyframes pulse-red {.pulse-red-frames;}
-@-o-keyframes pulse-red {.pulse-red-frames;}
-@keyframes pulse-red {.pulse-red-frames;}
-
-.pulse-green-frames () {
-    from { background-color: #cfc; }
-    to { background-color: white; }
-}
-@-webkit-keyframes pulse-green {.pulse-green-frames;}
-@-moz-keyframes pulse-green {.pulse-green-frames;}
-@-ms-keyframes pulse-green {.pulse-green-frames;}
-@-o-keyframes pulse-green {.pulse-green-frames;}
-@keyframes pulse-green {.pulse-green-frames;}
-
-.pulse-blue-frames () {
-    from { background-color: #ddf; }
-    to { background-color: white; }
-}
-@-webkit-keyframes pulse-blue {.pulse-blue-frames;}
-@-moz-keyframes pulse-blue {.pulse-blue-frames;}
-@-ms-keyframes pulse-blue {.pulse-blue-frames;}
-@-o-keyframes pulse-blue {.pulse-blue-frames;}
-@keyframes pulse-blue {.pulse-blue-frames;}
-
-.pulse-yellow-frames () {
-    from { background-color: #ffb; }
-    to { background-color: white; }
-}
-@-webkit-keyframes pulse-yellow {.pulse-yellow-frames;}
-@-moz-keyframes pulse-yellow {.pulse-yellow-frames;}
-@-ms-keyframes pulse-yellow {.pulse-yellow-frames;}
-@-o-keyframes pulse-yellow {.pulse-yellow-frames;}
-@keyframes pulse-yellow {.pulse-yellow-frames;}
-
+@-webkit-keyframes current-player-arrow {.current-player-arrow-frames;}
+@-moz-keyframes current-player-arrow {.current-player-arrow-frames;}
+@-ms-keyframes current-player-arrow {.current-player-arrow-frames;}
+@-o-keyframes current-player-arrow {.current-player-arrow-frames;}
+@keyframes current-player-arrow {.current-player-arrow-frames}
 
 table.ludo-board {
     margin-top: 30px;
@@ -95,23 +65,44 @@ table.ludo-board {
         &.red {
             .box-shadow(0 0 5px red);
             background-color: #fee;
-            &.current { .pulse(pulse-red); }
-
         }
         &.blue {
             .box-shadow(0 0 5px blue);
             background-color: #eef;
-            &.current { .pulse(pulse-blue); }
         }
         &.green {
             .box-shadow(0 0 5px green);
             background-color: #efe;
-            &.current { .pulse(pulse-green); }
         }
         &.yellow {
             .box-shadow(0 0 5px yellow);
             background-color: #ffe;
-            &.current { .pulse(pulse-yellow); }
         }
+    }
+}
+
+#state table#players {
+    tr { height: 17px; }
+    border-collapse: collapse;
+    td { border: 2px solid black }
+    td.player-arrow {
+        border: none;
+        .pulse(current-player-arrow);
+        color: transparent;
+        &.current { color: black; }
+    }
+    td.player-color {
+        height: 17px;
+        width: 17px;
+    }
+    .player-red .player-color { background-color: red; }
+    .player-green .player-color { background-color: green; }
+    .player-yellow .player-color { background-color: yellow; }
+    .player-blue .player-color { background-color: blue; }
+    .no-player {
+        font-size: .8em;
+        color: gray;
+        &:before {content: "("}
+        &:after {content: ")"}
     }
 }

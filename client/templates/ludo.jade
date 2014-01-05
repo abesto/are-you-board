@@ -4,6 +4,27 @@ div.row
     div#state
       span(data-trans='ludo.state.label')
       span#state-text
+      table#players
+        tr.player.player-red(data-side=0)
+          td.player-arrow &#9654;
+          td.player-color
+          td.player-nick.no-player
+            span(data-trans="ludo.noPlayer")
+        tr.player.player-green(data-side=1)
+            td.player-arrow &#9654;
+            td.player-color
+            td.player-nick.no-player
+              span(data-trans="ludo.noPlayer")
+        tr.player.player-yellow(data-side=2)
+            td.player-arrow &#9654;
+            td.player-color
+            td.player-nick.no-player
+              span(data-trans="ludo.noPlayer")
+        tr.player.player-blue(data-side=3)
+            td.player-arrow &#9654;
+            td.player-color
+            td.player-nick.no-player
+              span(data-trans="ludo.noPlayer")
     div#dice
       span(data-trans='ludo.dice')
       span#last-dice-value
