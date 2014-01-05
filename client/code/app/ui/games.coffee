@@ -38,7 +38,7 @@ makeRender = (type, listMethod) ->
             playerCount: game.playerCount()
             maximumPlayers: Game.MAXIMUM_PLAYERS
             createdBy: createdBy.nick
-            createdAt: game.createdAt
+            createdAt: moment(game.createdAt).format('YYYY-MM-DD HH:mm:ss')
             joined: game.isUserPlaying(window.user)
           }
       ), (err, context) ->
