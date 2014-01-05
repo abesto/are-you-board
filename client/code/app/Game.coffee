@@ -68,6 +68,7 @@ class Game
 
   moveS:[TC.Instance(LudoBoard.Piece), TC.Callback]
   move: (piece, cb) ->
+    @logger.info "move", @logMeta {pieceId: piece.id, dice: @dice}
     @state = Game.STATE_DICE
     piece.move @dice, @board
     @nextSide()
@@ -112,6 +113,7 @@ class Game
 
   startS:[TC.Callback]
   start: (cb) ->
+    @logger.info "start", @logMeta()
     @state = Game.STATE_DICE
     @nextSide()
     cb? null, this
