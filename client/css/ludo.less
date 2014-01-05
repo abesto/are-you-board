@@ -82,27 +82,36 @@ table.ludo-board {
 }
 
 #state table#players {
-    tr { height: 17px; }
-    border-collapse: collapse;
-    td { border: 2px solid black }
-    td.player-arrow {
-        border: none;
-        .pulse(current-player-arrow);
-        color: transparent;
-        &.current { color: black; }
-    }
-    td.player-color {
-        height: 17px;
-        width: 17px;
-    }
-    .player-red .player-color { background-color: red; }
-    .player-green .player-color { background-color: green; }
-    .player-yellow .player-color { background-color: yellow; }
-    .player-blue .player-color { background-color: blue; }
-    .no-player {
-        font-size: .8em;
-        color: gray;
-        &:before {content: "("}
-        &:after {content: ")"}
+    @rowHeight: 16px;
+    @padding: 3px;
+    width: 100%;
+    tr.player {
+        height: @rowHeight;
+        td {
+            height: @rowHeight;
+            padding: @padding;
+        }
+
+        td.player-arrow {
+            width: 20px;
+            border: none;
+            color: transparent;
+            .pulse(current-player-arrow);
+            &.current { color: black; }
+        }
+
+        td.player-color {
+            width: (@rowHeight + @padding);
+            border: none;
+        }
+        .color-row(@color) { &.@{color} .player-color { background-color: @color; } }
+        .color-row(e('red')); .color-row(e('green')); .color-row(e('yellow')); .color-row(e('blue'));
+
+        td.no-player {
+            font-size: .8em;
+            color: gray;
+            &:before {content: "("}
+            &:after {content: ")"}
+        }
     }
 }
