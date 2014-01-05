@@ -118,7 +118,7 @@ runGameTests = ->
       rollSix =>
         player = @game.currentSide
         oldPieces = _.clone @game.board.pieces
-        @game.startPiece (err) =>
+        @game.startPiece player, (err) =>
           return done err if err
           newPieces = @game.board.pieces
           diff = []

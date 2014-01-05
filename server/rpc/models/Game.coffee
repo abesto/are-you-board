@@ -173,14 +173,13 @@ exports.actions = (req, res, ss) ->
         return res err if err
         game.save errorOrEvent(res, 'skip')
 
-  actions.startPiece = (gameId) ->
+  actions.startPiece = (gameId, side) ->
     Game.model.get gameId, (err, game) ->
       return res err if err
       return unless auth.checkRes res, 'Game.startPiece', game
-      side = game.currentSide
-      game.startPiece (err) ->
+      game.startPiece side, (err) ->
         return res err if err
-        game.save errorOrEvent(res, 'startPiece')
+        game.save errorOrEvent(res, 'startPiece', side)
 
   actions.listGamesOfUser = (userId) ->
     User.model.get userId, (err, user) ->

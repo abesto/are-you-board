@@ -30,7 +30,7 @@ describe 'LudoRules', ->
     it "doesn't allow any pieces to be started", ->
       for side in [0 ... 4]
         @game.currentSide = side
-        @rules.can.startPiece().should.deny "wrong_state"
+        @rules.can.startPiece(@game.currentSide).should.deny "wrong_state"
 
   describe "a new game with 2 players", ->
     beforeEach ->
@@ -46,7 +46,7 @@ describe 'LudoRules', ->
     it "doesn't allow any pieces to be started", ->
       for side in [0 ... 4]
         @game.currentSide = side
-        @rules.can.startPiece().should.deny "wrong_state"
+        @rules.can.startPiece(@game.currentSide).should.deny "wrong_state"
 
   describe "a new game with 4 players", ->
     beforeEach ->
@@ -61,7 +61,7 @@ describe 'LudoRules', ->
     it "doesn't allow any pieces to be started", ->
       for side in [0 ... 4]
         @game.currentSide = side
-        @rules.can.startPiece().should.deny "wrong_state"
+        @rules.can.startPiece(@game.currentSide).should.deny "wrong_state"
 
   describe "a game with 3 players in STATE_DICE", ->
     beforeEach ->
@@ -77,7 +77,7 @@ describe 'LudoRules', ->
     it "doesn't allow any pieces to be started", ->
       for side in [0 ... 4]
         @game.currentSide = side
-        @rules.can.startPiece().should.deny "wrong_state"
+        @rules.can.startPiece(@game.currentSide).should.deny "wrong_state"
 
   describe "a game with 3 players in STATE_MOVE with current side 2", ->
     beforeEach ->
@@ -95,23 +95,23 @@ describe 'LudoRules', ->
     it "doesn't allow any pieces to be started, except for when the last dice roll was 6", ->
       for dice in [1..5]
         @game.dice = dice
-        @rules.can.startPiece().should.deny "dice_not_6"
+        @rules.can.startPiece(@game.currentSide).should.deny "dice_not_6"
       @game.dice = 6
-      @rules.can.startPiece().should.allow
+      @rules.can.startPiece(@game.currentSide).should.allow
 
     it "doesn't allow starting a piece if doing so would put it on a field occupied by a piece of the same player", ->
       @game.dice = 6
       board = @game.board
       field = board.field(board.startPosition(2))
       field.put new LudoBoard.Piece(2)
-      @rules.can.startPiece().should.deny "cant_take_own_piece"
+      @rules.can.startPiece(@game.currentSide).should.deny "cant_take_own_piece"
 
     it "allows starting a piece if doing so would put it on a field occupied by a piece of another player", ->
       @game.dice = 6
       board = @game.board
       field = board.field(board.startPosition(2))
       field.put new LudoBoard.Piece(3)
-      @rules.can.startPiece().should.allow
+      @rules.can.startPiece(@game.currentSide).should.allow
 
     it "only allows moving pieces of the current player", ->
       @game.dice = 1
@@ -156,18 +156,24 @@ describe 'LudoRules', ->
     it "doesn't allow starting a new piece if 4 pieces of the player are already in play", ->
       @game.dice = 6
       @game.board.pieceCountOf = -> 4
-      @rules.can.startPiece().should.deny 'no_more_pieces_to_start'
+      @rules.can.startPiece(@game.currentSide).should.deny 'no_more_pieces_to_start'
+
+    it "doesn't allow starting a piece of a non-current player", ->
+      @game.dice = 6
+      for player in [0, 1, 2, 3]
+        continue if player == @game.currentSide
+        @rules.can.startPiece(player).should.deny 'move_not_current_players_piece'
 
     describe "flavors", ->
       it "with startOnOneAndSix it can start a piece iff the dice is 1 or 6", ->
         @game.flavor.startOnOneAndSix = true
         @game.dice = 1
-        @rules.can.startPiece().should.allow
+        @rules.can.startPiece(@game.currentSide).should.allow
         @game.dice = 6
-        @rules.can.startPiece().should.allow
+        @rules.can.startPiece(@game.currentSide).should.allow
         for dice in [2..5]
           @game.dice = dice
-          @rules.can.startPiece().should.deny 'dice_not_1_or_6'
+          @rules.can.startPiece(@game.currentSide).should.deny 'dice_not_1_or_6'
 
       it 'can take on starting field iff takeOnStartingField', ->
         @game.dice = 4
