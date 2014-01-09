@@ -40,22 +40,25 @@ if window?
       cache[cls._name] = {} unless cls._name of cache
       clsCache = cache[cls._name]
       items = []
-      for id in ids
+      indicesToFetch = []
+      for id, idx in ids
         if id of clsCache
           items.push clsCache[id]
         else
-          items.push id
-      async.map items, ((item, cb) ->
-        if _.isNumber item
-          cls.model.get item, (err, res) ->
-            return cb err if err
-            clsCache[id] = res
-            registerEventListeners cls, res
-            cb null, res
-        else
-          cb null, item
-      ), (err, items) ->
+          items.push null
+          indicesToFetch.push idx
+      return cb null, items if indicesToFetch.length == 0
+      uniques = {}
+      for idx in indicesToFetch
+        id = ids[idx]
+        uniques[id] = [] unless id of uniques
+        uniques[id].push idx
+      uniqueKeys = _.keys(uniques)
+      cls.model.getMulti uniqueKeys..., (err, res) ->
         return cb err if err
+        for [id, item] in _.zip(uniqueKeys, res)
+          for idx in uniques[id]
+            items[idx] = item
         cb null, items
 
     delete: (cls, id) ->

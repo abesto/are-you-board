@@ -63,9 +63,10 @@ module.exports = (cls) ->
         cb null, str
 
     getMultiSerialized: (ids, cb) ->
-      redis.mget ("#{cls.name}:#{id}" for id in ids), (err, res) ->
+      keys = ("#{cls.name}:#{id}" for id in ids)
+      redis.mget keys, (err, res) ->
         if err
-          winston.error "redis_error", {op: "MGET #{cls.model.key(id)}", err: err}
+          winston.error "redis_error", {op: "MGET #{keys}", err: err}
           return cb err
         for item, key in res
           if item == null or _.isUndefined item
