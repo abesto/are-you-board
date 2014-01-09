@@ -1,15 +1,37 @@
 var http = require('http'),
     ss = require('socketstream');
 
+var libs = {
+  jquery: {
+    main: 'libs/jquery/jquery.js',
+    livequery: 'libs/jquery.livequery/dist/jquery.livequery.js'
+  },
+  bootstrap: {
+    css: 'libs/bootstrap/bootstrap.less'
+  },
+  lodash: 'libs/lodash/dist/lodash.js',
+  signals: 'libs/js-signals/dist/signals.js',
+  hasher: 'libs/hasher/dist/js/hasher.js',
+  crossroads: 'libs/crossroads/dist/crossroads.js',
+  async: 'libs/async/lib/async.js',
+  moment: 'libs/moment/moment.js',
+  mocha: {
+    js: 'libs/mocha/mocha.js',
+    css: 'libs/mocha/mocha.css'
+  },
+  chai: 'libs/chai/chai.js',
+  sinon: 'libs/sinonjs/sinon.js'
+};
+
 // Define a single-page client called 'main'
 ss.client.define('main', {
   view: 'app.jade',
-  css:  ['app.less', 'ludo.less', 'libs/bootstrap.min.css'],
-  code: ['libs/jquery.min.js', 'libs/jquery.livequery.js',
-         'libs/bootstrap.min.js', 'libs/lodash.min.js',
-         'libs/hogan.js',
-         'libs/signals.min.js', 'libs/crossroads.min.js', 'libs/hasher.min.js',
-         'libs/async.js', 'libs/moment.min.js', 'app'],
+  css:  ['app.less', 'ludo.less', libs.bootstrap.css],
+  code: [
+    libs.jquery.main, libs.jquery.livequery, libs.lodash, libs.signals, libs.hasher,
+    libs.crossroads, libs.async, libs.moment,
+    'app'
+  ],
   tmpl: '*'
 });
 ss.http.route('/', function(req, res){
@@ -43,11 +65,12 @@ if (ss.env === 'production') {
     // Run mocha tests on /mocha
     ss.client.define('mocha', {
         view: 'mocha.jade',
-        css:  ['libs/mocha-20121106.css'],
-        code: ['libs/async.js', 'libs/chai-1.3.0.js', 'libs/jquery.min.js', 'libs/mocha-20121106.js',
-               'libs/sinon-1.5.0.js', 'libs/lodash.min.js',
-               'libs/signals.min.js', 'libs/crossroads.min.js', 'libs/hasher.min.js',
-               'app', 'mocha']
+        css:  [libs.mocha.css],
+        code: [
+          libs.async, libs.chai, libs.jquery.main, libs.mocha.js, libs.sinon, libs.lodash, libs.signals,
+          libs.crossroads, libs.hasher,
+          'app', 'mocha'
+        ]
     });
     ss.http.route('/mocha', function(req, res){
         res.serveClient('mocha');
