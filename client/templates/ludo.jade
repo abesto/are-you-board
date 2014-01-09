@@ -1,36 +1,36 @@
 div.row
-  div.col-md-5#board
+  div.col-md-4.col-md-offset-2#board
   div.col-md-4#controls.well
-    div#state
-      span(data-trans='ludo.state.label')
-      span#state-text
-      table.table#players
-        tr.player.red(data-side=0)
+    div#state-container
+      div.state(data-state=1, data-trans='ludo.state.waitingForPlayers')
+      div#roll-dice.btn.state.new-line(data-state=2, data-trans='ludo.state.diceRoll')
+      div.state(data-state=3, data-trans='ludo.state.move')
+      div.state(data-state='ui-skip', data-trans='ludo.state.skip')
+    div#dice
+      strong(data-trans='ludo.dice')
+      span#last-dice-value
+    table.table#players
+      tr.player.red(data-side=0)
+        td.player-arrow &#9654;
+        td.player-color
+        td.player-nick.no-player
+          span(data-trans="ludo.noPlayer")
+      tr.player.green(data-side=1)
           td.player-arrow &#9654;
           td.player-color
           td.player-nick.no-player
             span(data-trans="ludo.noPlayer")
-        tr.player.green(data-side=1)
-            td.player-arrow &#9654;
-            td.player-color
-            td.player-nick.no-player
-              span(data-trans="ludo.noPlayer")
-        tr.player.yellow(data-side=2)
-            td.player-arrow &#9654;
-            td.player-color
-            td.player-nick.no-player
-              span(data-trans="ludo.noPlayer")
-        tr.player.blue(data-side=3)
-            td.player-arrow &#9654;
-            td.player-color
-            td.player-nick.no-player
-              span(data-trans="ludo.noPlayer")
-    div#dice
-      span(data-trans='ludo.dice')
-      span#last-dice-value
-      a#roll-dice.btn(href='#', data-trans='ludo.roll')
+      tr.player.yellow(data-side=2)
+          td.player-arrow &#9654;
+          td.player-color
+          td.player-nick.no-player
+            span(data-trans="ludo.noPlayer")
+      tr.player.blue(data-side=3)
+          td.player-arrow &#9654;
+          td.player-color
+          td.player-nick.no-player
+            span(data-trans="ludo.noPlayer")
     a#start.btn(href='#', data-trans='ludo.start')
-    a#skip.btn(href='#', data-trans='ludo.skip')
   div.col-md-5#rules-container
     h4(data-trans='generic.rules')
     ul.unstyled#rules

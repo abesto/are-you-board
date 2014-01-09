@@ -7,8 +7,8 @@ div.row
           td.message-from
           td.message-text(data-trans="lobby.welcome")
     form#lobby-message-form.col-md-9
-      input#lobby-message-input(type='text', placeholder, data-trans='chat.placeholder')
-      input#lobby-send-input(type='submit', data-trans='chat.send')
+      input#lobby-message-input.col-md-7(type='text', placeholder, data-trans='chat.placeholder')
+      input#lobby-send-input.col-md-2(type='submit', data-trans='chat.send')
   div.col-md-3
     strong(data-trans='lobby.onlineUsers') Online users
     ul.list-unstyled#lobby-user-list

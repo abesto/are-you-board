@@ -81,7 +81,25 @@ table.ludo-board {
     }
 }
 
-#state table#players {
+#controls #state-container {
+    .state {
+        border: 2px solid silver;
+        color: #777;
+        padding: 4px;
+        margin: 2px;
+        border-radius: 4px;
+        float: left;
+        &.new-line { clear: both; }
+        &.active { border-color: black; color: black; }
+        &.active.btn:not(.disabled) { color: #4092ff; }
+    }
+}
+
+#controls #dice {
+    clear: both;
+}
+
+#controls table#players {
     @rowHeight: 16px;
     @padding: 3px;
     width: 100%;

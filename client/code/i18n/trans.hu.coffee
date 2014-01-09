@@ -38,6 +38,7 @@ module.exports =
       waitingForPlayers: 'Várjuk, hogy beszálljanak még páran...'
       diceRoll: 'Kockadobás'
       move: 'Lépés'
+      skip: 'Kimarad'
     error:
       not_current_player: 'Nem te jössz!'
       wrong_state: 'Biztos, hogy nem.'

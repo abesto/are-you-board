@@ -19,15 +19,20 @@ class LudoUI
 
   findControls: ->
     @start = $('#start')
-    @state = $('#state-text')
     @lastDice = $('#last-dice-value')
     @rollDice = $('#roll-dice')
     @skip = $('#skip')
+    stateIds = [1, 2, 3, 'ui-skip']
+    @states = _.zipObject stateIds, ($("#state-container .state[data-state=#{id}]") for id in stateIds)
 
-  updateControls: ->
+  setState: (state) ->
+    $('.state.active').removeClass('active')
+    @states[state].addClass('active')
+
+  updateControls: () ->
     myGame = @game.createdBy == window.user.id
     myTurn = @game.players[@game.currentSide] == window.user.id
-    @state.text gettext LudoUI.STATE_TEXT[@game.state]
+    @setState(@game.state)
     @start.toggle myGame and @rules.can.start().valid
     @rollDice.toggleClass('disabled', !(myTurn and @rules.can.rollDice().valid))
     @skip.toggleClass('disabled', !(myTurn and @rules.can.skip().valid))
@@ -46,7 +51,17 @@ class LudoUI
     for method in Game.MODEL_METHODS
       continue unless method of this
       do (method) =>
-        @game.on method, @updateControls
+        if method != 'skip'
+          gameEventHandler = @updateControls
+        else
+          gameEventHandler = =>
+            @setState 'ui-skip'
+            @game.logger.debug 'ui-skip', 'start'
+            setTimeout(
+              (=> @game.logger.debug 'ui-skip', 'finish'; @updateControls()),
+              2000
+            )
+        @game.on method, gameEventHandler
         this[method].click (e) =>
           e.preventDefault()
           return if this[method].hasClass('disabled')
