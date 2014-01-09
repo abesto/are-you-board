@@ -1,10 +1,10 @@
 Features
 --------
 detect when game is over
- - delete it
 user should be able to leave the game
- - delete game once last player leaves it
-Rule variations
+implement rest of the rule variations
+delete game button for owner when it's waiting for players or is over
+clean up old games
 
 Code quality
 ------------
@@ -17,15 +17,11 @@ use common checks in authorization and ui
 
 UX
 --
-clean up checks order to have most user-relevant error first
 mark the last moved piece: save to server? reload destroys the ghost image
 gamelist
+ - filtering, paging
  - more useful information (rules? player list / other details, maybe on hover?)
  - scroll tbody; thead and tfoot should always be visible
 game rules
  - save game rule preference
- - game rule preference store (save preset flavors)
-
-Bugs
-----
-click on another users limbo piece starts own piece (if possible)
+ - preset flavors?
