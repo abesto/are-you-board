@@ -38,7 +38,7 @@ module.exports =
     setButtonRoute $lobby, routes.lobby
     setButtonRoute $games, routes.openGames
     setButtonRoute $myGames, routes.myGames
-    $('#signout').click routes.logout
+    setButtonRoute $signout, routes.logout
 
   destroy: ->
     $navbarContainer.empty()

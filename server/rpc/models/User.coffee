@@ -38,8 +38,10 @@ exports.actions = (req, res, ss) ->
 
   actions.logout = ->
     return unless authorization.checkRes res, 'User.logout'
+    userId = req.session.userId
     req.session.setUserId null
     req.session.channel.reset()
+    winston.info 'logout', {userId: userId}
     res null, null
 
   actions

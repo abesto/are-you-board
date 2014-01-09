@@ -69,4 +69,5 @@ exports.bindRoutes = ->
     ss.heartbeatStop()
     User.model.logout (err) ->
       return alert err if err
+      delete window.user
       UI.reset()
