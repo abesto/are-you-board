@@ -1,22 +1,24 @@
-div#create-ludo-modal.modal.hide.fade
-  div.modal-header
-    button.close(type='button', data-dismiss='modal') &times;
-    h3(data-trans='gamelist.newmodal.ludo.header')
-  div.modal-body
-    form#ludo-flavor.form
-      fieldset
-        label.checkbox
-          input#takeOnStartingField(type='checkbox')
-          span(data-trans='gamelist.newmodal.ludo.takeOnStartingField')
-        label.checkbox
-          input#startOnOneAndSix(type='checkbox', checked)
-          span(data-trans='gamelist.newmodal.ludo.startOnOneAndSix')
-        label.checkbox
-          input#reRollAfterSix(type='checkbox', disabled)
-          span(data-trans='gamelist.newmodal.ludo.reRollAfterSix')
-        label.checkbox
-          input#skipAfterRollingThreeSixes(type='checkbox', disabled)
-          span(data-trans='gamelist.newmodal.ludo.skipAfterRollingThreeSixes')
-   div.modal-footer
-    a.btn(data-trans='generic.cancel', data-dismiss='modal')
-    a#create-game-btn.btn.btn-primary(data-trans='gamelist.newmodal.go', data-dismiss='modal')
+div#create-ludo-modal.modal.fade
+  div.modal-dialog
+    div.modal-content
+      div.modal-header
+        button.close(type='button', data-dismiss='modal') &times;
+        h4.modal-title(data-trans='gamelist.newmodal.ludo.header')
+      div.modal-body
+        form#ludo-flavor.form
+          fieldset
+            label.checkbox
+              input#takeOnStartingField(type='checkbox')
+              span(data-trans='gamelist.newmodal.ludo.takeOnStartingField')
+            label.checkbox
+              input#startOnOneAndSix(type='checkbox', checked)
+              span(data-trans='gamelist.newmodal.ludo.startOnOneAndSix')
+            label.checkbox
+              input#reRollAfterSix(type='checkbox', disabled)
+              span(data-trans='gamelist.newmodal.ludo.reRollAfterSix')
+            label.checkbox
+              input#skipAfterRollingThreeSixes(type='checkbox', disabled)
+              span(data-trans='gamelist.newmodal.ludo.skipAfterRollingThreeSixes')
+       div.modal-footer
+        button.btn.btn-default(data-trans='generic.cancel', data-dismiss='modal')
+        button#create-game-btn.btn.btn-primary(data-trans='gamelist.newmodal.go', data-dismiss='modal')

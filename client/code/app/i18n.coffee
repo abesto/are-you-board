@@ -14,7 +14,7 @@ i18n = module.exports =
     obj = app.i18n.trans
     for part in key.split('.')
       obj = obj[part]
-      return key unless obj
+      return key unless obj?
     obj
 
   update: ->

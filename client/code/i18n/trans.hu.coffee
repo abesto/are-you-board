@@ -52,7 +52,7 @@ module.exports =
         off: 'Csak 6-os kockadobás után lehet új bábut indítani'
       reRollAfterSix:
         on: '6-os kockadobás után újra ugyanaz a játékos jön'
-        off: ''
+        off: 'Nincs újradobás 6-os kockadobás után'
       skipAfterRollingThreeSixes:
         on: 'Három 6-os kockadobás után a játékos kimarad egy körből'
-        off: ''
+        off: 'Nem marad ki, aki egymás után háromszor 6-ost dob'
