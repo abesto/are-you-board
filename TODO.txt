@@ -1,3 +1,7 @@
+Bugs
+----
+for now there is always re-roll on six, but the rule says off
+
 Features
 --------
 detect when game is over
@@ -24,4 +28,4 @@ gamelist
  - scroll tbody; thead and tfoot should always be visible
 game rules
  - save game rule preference
- - preset flavors?
+ - preset flavors combinations?
