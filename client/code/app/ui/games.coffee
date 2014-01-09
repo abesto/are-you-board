@@ -17,7 +17,7 @@ findControls = ->
   $openGame = $('.open-game.btn')
   $createModal = $('#create-ludo-modal')
 
-ludoFlavor = ->
+formToLudoFlavor = ->
   flavor = new LudoRules.Flavor()
   $form = $('form#ludo-flavor')
   for field in LudoRules.Flavor.FIELDS
@@ -50,7 +50,7 @@ makeRender = (type, listMethod) -> ->
       findControls()
       $createGame.click -> $createModal.modal('hide').on 'hidden.bs.modal', ->
         logger.debug 'create_game_clicked'
-        ludoFlavor = ludoFlavor().serialize()
+        ludoFlavor = formToLudoFlavor().serialize()
         Game.model.create ludoFlavor, (err, game) ->
           if err
             logger.error 'failed_to_create_game', {ludoFlavor: ludoFlavor, err: err}
