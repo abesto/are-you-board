@@ -10,12 +10,12 @@ i18n = module.exports =
       i18n.update()
 
   gettext: (key, context) ->
+    throw 'Rendering context not supported' if context
     try
       text = eval("app.i18n.trans.#{key}")
     catch e
       text = key
-    text ?= key
-    NativeHogan.compile(text).render(context)
+    text
 
   update: ->
     for el in $(selector)

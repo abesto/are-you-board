@@ -12,8 +12,8 @@
     "ss-stylus": "0.1.x",
     "ss-hogan": "0.1.x",
     "ss-console": "0.1.x",
-	"ss-less": "0.1.x",
-	"ss-heartbeat-responder": "latest",
+    "ss-less": "0.1.x",
+    "ss-heartbeat-responder": "latest",
     "redis": "0.7.x",
     "lodash": "latest",
     "winston": "latest",
@@ -30,10 +30,10 @@
     "mocha": "latest",
     "coffee-script": "latest",
     "chai": "latest",
-	"sinon": "latest"
+    "sinon": "latest"
   },
 
   "scripts": {
-      "test": "node_modules/mocha/bin/mocha server/test.coffee --compilers coffee:coffee-script --reporter spec && node_modules/mocha-phantomjs/bin/mocha-phantomjs http://localhost:3000/mocha --ignore-ssl-errors=yes"
+    "test": "node_modules/mocha/bin/mocha server/test.coffee --compilers coffee:coffee-script --reporter spec && node_modules/mocha-phantomjs/bin/mocha-phantomjs http://localhost:3000/mocha --ignore-ssl-errors=yes"
   }
 }
