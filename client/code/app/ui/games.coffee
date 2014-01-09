@@ -7,6 +7,7 @@ routes = require '/ui/routes'
 $createGame = null
 $joinGame = null
 $openGame = null
+$createModal = null
 
 logger = winston.getLogger 'ui.games'
 
@@ -14,6 +15,7 @@ findControls = ->
   $createGame = $('#create-game-btn')
   $joinGame = $('.join-game.btn')
   $openGame = $('.open-game.btn')
+  $createModal = $('#create-ludo-modal')
 
 ludoFlavor = ->
   flavor = new LudoRules.Flavor()
@@ -45,7 +47,7 @@ makeRender = (type, listMethod) ->
         return alert err if err
         UI.$container.empty().append ss.tmpl['gamelist'].render games: context
         findControls()
-        $createGame.click ->
+        $createGame.click -> $createModal.modal('hide').on 'hidden.bs.modal', ->
           logger.debug 'create_game_clicked'
           ludoFlavor = ludoFlavor().serialize()
           Game.model.create ludoFlavor, (err, game) ->
@@ -57,7 +59,7 @@ makeRender = (type, listMethod) ->
                 logger.error 'failed_to_join_created_game', {ludoFlavor: ludoFlavor, err: err}
                 return alert err
               logger.info 'created_and_joined_game', {ludoFlavor: ludoFlavor, err: err}
-              render()
+              routes.navigate routes.ludo, {gameId: game.id}
         $joinGame.click ->
           gameId = $(this).data('gameid')
           logger.debug 'join_game_clicked', {gameId: gameId}

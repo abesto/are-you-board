@@ -130,32 +130,42 @@ class Game
   logMeta: (obj={}) ->
     _.defaults obj, {gameId: @id}
 
+  _addBasicDataToLogMeta: (meta, cb) =>
+    meta.state += "[#{Game.STATE_NAMES[@state]}]" if 'state' of meta
+    meta.currentSide = "Side(id=#{@currentSide},color=#{Game.SIDE_NAMES[@currentSide]})"
+    meta.currentUser = @players[@currentSide]
+    cb null, meta
+
+  _addUserDataToLogMeta: (meta, cb) =>
+    playerId = @players[@currentSide]
+    return cb(null, meta) if _.isUndefined(playerId) || playerId == null
+    Repository.get User, playerId, (err, currentUser) =>
+      if err
+        winston.getLogger(@logPrefix).error 'logger_failed_to_get_current_user', {userId: @players[@currentSide], gameId: @id, side: @currentSide, err: err}
+        meta.currentUser = new User(@players[@currentSide], 'N/A').toString()
+      else
+        meta.currentUser = currentUser.toString()
+      cb null, meta
+
+  _addSideDataToLogMeta: (meta, cb) =>
+    return cb(null, meta) unless 'side' of meta
+    userId = @players[meta.side]
+    return cb(null, meta) if _.isUndefined(userId) || userId == null
+    meta.side = "Side(id=#{meta.side},color=#{Game.SIDE_NAMES[meta.side]})"
+    Repository.get User, userId, (err, user) =>
+      if err
+        winston.getLogger(@logPrefix).error 'logger_failed_to_get_side_user', {userId: userId, side: meta.side, err: err}
+        meta.user = new User(userId, 'N/A').toString()
+      else
+        meta.user = user.toString()
+      cb null, meta
+
   _createLogger: ->
     @logPrefix = "Ludo"
     @logger = winston.getLogger @logPrefix
-    @logger.metadataFilters.push (o, cb) =>
-      o.state += "[#{Game.STATE_NAMES[@state]}]" if 'state' of o
-      o.currentSide = "Side(id=#{@currentSide},color=#{Game.SIDE_NAMES[@currentSide]})"
-      o.currentUser = @players[@currentSide]
-      Repository.get User, @players[@currentSide], (err, currentUser) =>
-        if err
-          winston.getLogger(@logPrefix).error 'logger_failed_to_get_current_user', {userId: @players[@currentSide], gameId: @id, side: @currentSide, err: err}
-          o.currentUser = new User(@players[@currentSide], 'N/A').toString()
-        else
-          o.currentUser = currentUser.toString()
-        if 'side' of o
-          userId = @players[o.side]
-          o.side = "Side(id=#{o.side},color=#{Game.SIDE_NAMES[o.side]})"
-          Repository.get User, userId, (err, user) =>
-            if err
-              winston.getLogger(@logPrefix).error 'logger_failed_to_get_side_user', {userId: userId, side: o.side, err: err}
-              o.user = new User(userId, 'N/A').toString()
-            else
-              o.user = user.toString()
-            cb null, o
-        else
-          cb null, o
-
+    @logger.metadataFilters.push @_addBasicDataToLogMeta
+    @logger.metadataFilters.push @_addUserDataToLogMeta
+    @logger.metadataFilters.push @_addSideDataToLogMeta
 
 serialization Game, 2,
   1:
