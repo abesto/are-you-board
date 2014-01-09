@@ -9,6 +9,8 @@ $messageList = null
 $messageInput = null
 $sendInput = null
 
+formatMessageDate = (date, format='HH:mm:ss') -> moment(date).format(format)
+
 findControls = ->
   $userList = UI.$container.find '#lobby-user-list'
   $messageListContainer = UI.$container.find '#lobby-messages-list-container'
@@ -67,17 +69,17 @@ messageListener = ([userId, message, timestamp]) ->
       logger.warn 'message_received_from_nonexistent_user', {userId: userId, message: message, timestamp: timestamp, err: err}
       user = {nick: ''}
     logger.debug 'message_received', {senderId: user.id, senderNick: user.nick, message: message, timestamp: timestamp}
-    $messageList.append ss.tmpl['lobby-message'].render from: user.nick, time: moment(timestamp).format('HH:mm:ss'), text: message
+    $messageList.append ss.tmpl['lobby-message'].render from: user.nick, time: formatMessageDate(timestamp), text: message
     $messageListContainer.scrollTop($messageList.height())
 
 
 exports.bindRoutes = ->
   routes.lobby.matched.add ->
-    UI.$container.empty().append ss.tmpl['lobby-index'].render()
+    UI.$container.empty().append ss.tmpl['lobby-index'].render {renderedAt: formatMessageDate(new Date())}
     findControls()
     connectListeners()
     $messageInput.focus()
-    $messageListContainer.height $(window).height() - 80
+    $messageListContainer.height $(window).height() - 140
 
     ss.rpc 'lobby.getOnlineUserIds', (err, ids) ->
       logger.debug 'got_online_user_ids', {userIds: ids}

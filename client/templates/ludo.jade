@@ -1,6 +1,6 @@
 div.row
-  div.span5#board
-  div.span4#controls.well
+  div.col-md-5#board
+  div.col-md-4#controls.well
     div#state
       span(data-trans='ludo.state.label')
       span#state-text
@@ -31,7 +31,7 @@ div.row
       a#roll-dice.btn(href='#', data-trans='ludo.roll')
     a#start.btn(href='#', data-trans='ludo.start')
     a#skip.btn(href='#', data-trans='ludo.skip')
-  div.span5#rules-container
+  div.col-md-5#rules-container
     h4(data-trans='generic.rules')
     ul.unstyled#rules
 

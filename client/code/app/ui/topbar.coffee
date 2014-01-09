@@ -11,7 +11,7 @@ $admin = null
 $signout = null
 
 findControls = ->
-  $navbar = $('.navbar-fixed-top')
+  $navbar = $('.navbar')
   $lobby = $navbar.find('#navbar-lobby-btn')
   $games = $navbar.find('#navbar-games-btn')
   $myGames = $navbar.find('#navbar-my-games-btn')

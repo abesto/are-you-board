@@ -8,6 +8,7 @@ module.exports =
     myGames: 'Játékaim'
   lobby:
     onlineUsers: 'Online játékosok'
+    welcome: 'Jó szórakozást!'
   chat:
     placeholder: 'Mondd!'
     send: 'Küldés'

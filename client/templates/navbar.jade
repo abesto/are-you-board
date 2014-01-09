@@ -1,19 +1,20 @@
-div.navbar.navbar-fixed-top
-  div.navbar-inner
-   a#brand.brand(href='#') Are you board?
-   ul.nav
-     li#navbar-lobby-btn
-       a(href='#', data-trans='topbar.lobby')
-     li#navbar-games-btn
-       a(href='#', data-trans='topbar.openGames')
-     li#navbar-my-games-btn
-       a(href='#', data-trans='topbar.myGames')
-   ul.nav.pull-right
-     li.hidden#navbar-admin-btn
-       a(href='#') Admin
-     li.dropdown
-       a.dropdown-toggle(href='#', data-toggle='dropdown') {{nick}}
-         b.caret
-       ul.dropdown-menu
-         li
-           a#signout(href='#', data-trans='topbar.signOut')
+header.navbar.navbar-default
+  div.container.navbar-default
+    div.navbar-header.navbar-default
+      a#brand.navbar-brand(href='#') Are you board?
+    ul.nav.navbar-nav
+      li#navbar-lobby-btn
+        a(href='#', data-trans='topbar.lobby')
+      li#navbar-games-btn
+        a(href='#', data-trans='topbar.openGames')
+      li#navbar-my-games-btn
+        a(href='#', data-trans='topbar.myGames')
+    ul.nav.navbar-nav.navbar-right
+      li.hidden#navbar-admin-btn
+        a(href='#') Admin
+      li.dropdown
+        a.dropdown-toggle(href='#', data-toggle='dropdown') {{nick}}
+          b.caret
+        ul.dropdown-menu
+          li
+            a#signout(href='#', data-trans='topbar.signOut')

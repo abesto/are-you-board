@@ -1,0 +1,25 @@
+#!/bin/bash
+from_dir=client/code/libs
+to_dir=client/css/libs
+
+copy() {
+	echo "$1 -> $2"
+	cp -r $1 $2
+}
+
+echo "Clearing $to_dir"
+for f in $to_dir/*; do
+	echo Removing $f
+	rm -r $f
+done
+echo
+
+echo "Copying stylesheets from bower-installed packages to client/css"
+
+# Bootstrap
+mkdir $to_dir/bootstrap
+copy $from_dir/bootstrap/dist/css/bootstrap.css $to_dir/bootstrap
+
+# Mocha
+mkdir $to_dir/mocha
+copy $from_dir/mocha/mocha.css $to_dir/mocha/mocha.css

@@ -11,11 +11,11 @@ i18n = module.exports =
 
   gettext: (key, context) ->
     throw 'Rendering context not supported' if context
-    try
-      text = eval("app.i18n.trans.#{key}")
-    catch e
-      text = key
-    text
+    obj = app.i18n.trans
+    for part in key.split('.')
+      obj = obj[part]
+      return key unless obj
+    obj
 
   update: ->
     for el in $(selector)

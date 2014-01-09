@@ -3,8 +3,6 @@
 ////////////
 
 body {
-  padding-bottom: 40px;
-  padding-top: 40px;
   font: normal 1em sans-serif;
 }
 
@@ -34,6 +32,7 @@ form.form-signin, form.form-register {
 div#lobby-messages-list-container {
   height: 50px;
   overflow-y: scroll;
+  border: 1px solid silver;
 }
 
 table#lobby-messages-list {
@@ -52,4 +51,11 @@ table#lobby-messages-list {
     td.message-text {
         padding-left: 5px;
     }
+}
+
+////////////////
+// Game lists //
+////////////////
+table#game-list td {
+    vertical-align: middle;
 }

@@ -7,7 +7,8 @@ var libs = {
     livequery: 'libs/jquery.livequery/dist/jquery.livequery.js'
   },
   bootstrap: {
-    css: 'libs/bootstrap/bootstrap.less'
+    js: 'libs/bootstrap/dist/js/bootstrap.js',
+    css: 'libs/bootstrap/bootstrap.css'
   },
   lodash: 'libs/lodash/dist/lodash.js',
   signals: 'libs/js-signals/dist/signals.js',
@@ -28,7 +29,7 @@ ss.client.define('main', {
   view: 'app.jade',
   css:  ['app.less', 'ludo.less', libs.bootstrap.css],
   code: [
-    libs.jquery.main, libs.jquery.livequery, libs.lodash, libs.signals, libs.hasher,
+    libs.jquery.main, libs.jquery.livequery, libs.bootstrap.js, libs.lodash, libs.signals, libs.hasher,
     libs.crossroads, libs.async, libs.moment,
     'app'
   ],

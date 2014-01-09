@@ -1,0 +1,7 @@
+#!/bin/bash -e
+echo "Installing bower dependencies"
+bower install
+git add --all client/code/libs
+
+./bin/copy-bower-css
+git add --all client/css/libs
