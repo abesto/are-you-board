@@ -47,6 +47,10 @@ module.exports = constants = c =
         }
       ]
 
+    ui:
+      games:
+        pagerLimit: 10
+
 c.LudoUI.STATE_TEXT[c.Game.STATE_JOINING] = 'ludo.state.waitingForPlayers'
 c.LudoUI.STATE_TEXT[c.Game.STATE_DICE] = 'ludo.state.diceRoll'
 c.LudoUI.STATE_TEXT[c.Game.STATE_MOVE] = 'ludo.state.move'

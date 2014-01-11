@@ -2,8 +2,8 @@ routes = {}
 routes.login = crossroads.addRoute 'login/:redirectTo:'
 routes.logout = crossroads.addRoute 'logout'
 routes.lobby = crossroads.addRoute ''
-routes.myGames = crossroads.addRoute 'games/my'
-routes.openGames = crossroads.addRoute 'games/open'
+routes.myGames = crossroads.addRoute 'games/my/:page:'
+routes.openGames = crossroads.addRoute 'games/open/:page:'
 routes.ludo = crossroads.addRoute 'ludo/{gameId}'
 
 index = routes.lobby
@@ -47,6 +47,7 @@ exports.init = ->
   redirectToLoginIfNeeded()
   for moduleWithRoutes in ['/ui/lobby', '/ui/games', '/ui/login', '/ui/ludo']
     require(moduleWithRoutes).bindRoutes()
+  crossroads.shouldTypecast = true
   hasher.init()
   initialized = true
 

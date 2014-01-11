@@ -25,20 +25,23 @@ formToLudoFlavor = ->
     flavor[field] = $checkbox.is(':checked') if $checkbox.length > 0
   flavor
 
-makeRender = (type, listMethod) -> ->
-  logger.debug 'render_start', {type: type}
+makeRender = (route, listMethod) -> (page=1) ->
+  logger.debug 'render_start', {route: route.interpolate({page: page})}
   listMethod (err, games) ->
     if err
       logger.error 'failed_to_load_games', {listMethod: listMethod, err: err}
       return alert err
-    createdByIds = _.pluck(games, 'createdBy')
+    limit = require('/constants').ui.games.pagerLimit
+    offset = (page - 1) * limit
+    displayedGames = _(games).drop(offset).take(limit).value()
+    createdByIds = _.pluck(displayedGames, 'createdBy')
     Repository.getMulti User, createdByIds..., (err, createdByUsers) ->
       if err
         logger.error 'failed_to_get_created_by_users', {ids: createdByIds, err: err}
         return alert err
-      context = []
-      for [game, createdBy] in _.zip(games, createdByUsers)
-        context.push {
+      contextGames = []
+      for [game, createdBy] in _.zip(displayedGames, createdByUsers)
+        contextGames.push {
           id: game.id
           playerCount: game.playerCount()
           maximumPlayers: Game.MAXIMUM_PLAYERS
@@ -46,7 +49,27 @@ makeRender = (type, listMethod) -> ->
           createdAt: moment(game.createdAt).format('YYYY-MM-DD HH:mm:ss')
           joined: game.isUserPlaying(window.user)
         }
-      UI.$container.empty().append ss.tmpl['gamelist'].render games: context
+      pageCount = Math.floor((games.length - 1) / limit + 1)
+      pagesFrom = Math.max(1, page - Math.floor(limit - 1 / 2))
+      pagesTo = Math.min(pageCount, page + Math.ceil((limit - 1 / 2)))
+      pageIds = _.range(pagesFrom, pagesTo + 1)
+      logger.debug 'pagination', {pageCount: pageCount, pagesFrom: pagesFrom, pagesTo: pagesTo, pageIds: pageIds}
+      UI.$container.empty().append ss.tmpl['gamelist'].render {
+        prev: {
+          disabled: pagesFrom == page
+          hash: '#' + route.interpolate({page: Math.max(pagesFrom, page-1)})
+        }
+        next: {
+          disabled: pagesTo == page
+          hash: '#' + route.interpolate({page: Math.min(pagesTo, page+1)})
+        }
+        pages: ({
+          id: id,
+          hash: '#' + route.interpolate({page: id}),
+          isCurrentPage: page == id
+        } for id in pageIds)
+        games: contextGames
+      }
       findControls()
       $createGame.click -> $createModal.modal('hide').on 'hidden.bs.modal', ->
         logger.debug 'create_game_clicked'
@@ -87,10 +110,10 @@ makeRender = (type, listMethod) -> ->
               return alert err
             logger.info 'rejoined_game', {gameId: gameId}
             routes.navigate routes.ludo, {gameId: gameId}
-      logger.verbose 'render_finished', {type: type}
+      logger.debug 'render_finished', {route: route.interpolate({page: page})}
 
 
 exports.bindRoutes = ->
-  routes.openGames.matched.add(makeRender('open_games', Game.model.listOpenGames))
-  routes.myGames.matched.add(makeRender('my_games', ((args...) -> Game.model.listGamesOfUser window.user, args...)))
+  routes.openGames.matched.add(makeRender(routes.openGames, Game.model.listOpenGames))
+  routes.myGames.matched.add(makeRender(routes.myGames, ((args...) -> Game.model.listGamesOfUser window.user, args...)))
 

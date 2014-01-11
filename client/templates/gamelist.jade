@@ -11,7 +11,7 @@ table#game-list.table.table-hover.table-condensed
       td {{playerCount}}/{{maximumPlayers}}
       td {{createdBy}}
       td {{createdAt}}
-      td
+      td.actions
         {{^joined}}
         a.join-game.btn(data-gameid='{{id}}', data-trans='gamelist.join')
         {{/joined}}
@@ -21,7 +21,17 @@ table#game-list.table.table-hover.table-condensed
     {{/games}}
    tfoot
     tr
-      td(colspan='4')
+     td(colspan=3)
+      ul.pagination
+        li(class='{{#prev.disabled}}disabled{{/prev.disabled}}')
+          a#pager-prev(href='{{prev.hash}}') &laquo;
+        {{#pages}}
+        li(class='{{#isCurrentPage}}active{{/isCurrentPage}}')
+          a(href='{{hash}}') {{id}}
+        {{/pages}}
+        li(class='{{#next.disabled}}disabled{{/next.disabled}}')
+          a#pager-next(href='{{next.hash}}') &raquo;
+      td.actions
         a.btn.btn-primary(href='#create-ludo-modal', data-trans='gamelist.new', data-toggle='modal')
 
 include create-ludo

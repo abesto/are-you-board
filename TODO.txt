@@ -21,9 +21,10 @@ use common checks in authorization and ui
 
 UX
 --
+routing: less handlers, more hrefs. will also make hover-shown url useful
 mark the last moved piece: save to server? reload destroys the ghost image
 gamelist
- - filtering, paging
+ - filtering
  - more useful information (rules? player list / other details, maybe on hover?)
  - scroll tbody; thead and tfoot should always be visible
 game rules
