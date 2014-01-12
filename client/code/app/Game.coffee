@@ -68,7 +68,7 @@ class Game
 
   moveS:[TC.Instance(LudoBoard.Piece), TC.Callback]
   move: (piece, cb) ->
-    @logger.info "move", @logMeta {pieceId: piece.id, dice: @dice}
+    @logger.info "move", {pieceId: piece.id, dice: @dice}
     @state = Game.STATE_DICE
     piece.move @dice, @board
     @nextSide()
@@ -81,27 +81,27 @@ class Game
     return if @isUserPlaying user
     idx = @firstFreeSide()
     @players[idx] = user.id
-    @logger.info "join", @logMeta {user: user.toString()}
+    @logger.info "join", {user: user.toString()}
     cb? null, this
 
   rejoin: (cb) ->
     ss.rpc 'models.Game.rejoin', @id, (err) =>
       return cb? err if err
-      @logger.info "rejoin", @logMeta {user: window.user.toString()}
+      @logger.info "rejoin", {user: window.user.toString()}
       cb? null, this
 
   leaveS:[TC.Instance(User), TC.Callback]
   leave: (user, cb) ->
     idx = @userSide user
     @players[idx] = null
-    @logger.info "leave", @logMeta {user: user.toString()}
+    @logger.info "leave", {user: user.toString()}
     Repository.delete Game, this
     cb? null, this
 
   rollDiceS:[TC.Callback]
   rollDice: (cb) ->
     @dice = 1 + Math.floor(Math.random() * 6)
-    @logger.debug "rollDice", @logMeta {dice: @dice}
+    @logger.debug "rollDice", {dice: @dice}
     @state = Game.STATE_MOVE
     cb? null, this
 
@@ -113,24 +113,21 @@ class Game
 
   startS:[TC.Callback]
   start: (cb) ->
-    @logger.info "start", @logMeta()
+    @logger.info "start"
     @state = Game.STATE_DICE
     @nextSide()
     cb? null, this
 
   startPieceS:[TC.Number, TC.Callback]
   startPiece: (side, cb) ->
-    @logger.info "startPiece", @logMeta()
+    @logger.info "startPiece"
     @state = Game.STATE_DICE
     @board.start(side)
     @nextSide()
     cb? null, this
 
-  logMetaS:[TC.Maybe TC.Object]
-  logMeta: (obj={}) ->
-    _.defaults obj, {gameId: @id}
-
   _addBasicDataToLogMeta: (meta, cb) =>
+    meta.gameId = @id
     meta.state += "[#{Game.STATE_NAMES[@state]}]" if 'state' of meta
     meta.currentSide = "Side(id=#{@currentSide},color=#{Game.SIDE_NAMES[@currentSide]})"
     meta.currentUser = @players[@currentSide]
