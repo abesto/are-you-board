@@ -1,8 +1,9 @@
-log each rendered hash
+log render time of each page
 
 Bugs
 ----
 for now there is always re-roll on six, but the rule says off
+logout messed up by multiple tabs
 
 Features
 --------

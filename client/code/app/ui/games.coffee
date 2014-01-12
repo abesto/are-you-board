@@ -26,7 +26,6 @@ formToLudoFlavor = ->
   flavor
 
 makeRender = (route, listMethod) -> (page=1) ->
-  logger.debug 'render_start', {route: route.interpolate({page: page})}
   listMethod (err, games) ->
     if err
       logger.error 'failed_to_load_games', {listMethod: listMethod, err: err}

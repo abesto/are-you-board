@@ -35,6 +35,11 @@ redirectToIndexFromUnknown = ->
     logger.warn 'unknown_route', request
     navigate index
 
+logRenderedRoutes = ->
+  crossroads.routed.add (request, data) ->
+    console.log(data)
+    logger.info 'access', {uri: request, routePattern: data.route._pattern, params: data.params}
+
 parseHash = (newHash, oldHash) ->
   crossroads.parse(newHash)
 
@@ -46,6 +51,7 @@ exports.init = ->
   return if initialized
   redirectToIndexFromUnknown()
   redirectToLoginIfNeeded()
+  logRenderedRoutes()
   for moduleWithRoutes in ['/ui/lobby', '/ui/games', '/ui/login', '/ui/ludo']
     require(moduleWithRoutes).bindRoutes()
   crossroads.shouldTypecast = true
