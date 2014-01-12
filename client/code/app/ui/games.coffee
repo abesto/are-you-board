@@ -42,12 +42,12 @@ makeRender = (route, listMethod) -> (page=1) ->
       contextGames = []
       for [game, createdBy] in _.zip(displayedGames, createdByUsers)
         contextGames.push {
-          id: game.id
           playerCount: game.playerCount()
           maximumPlayers: Game.MAXIMUM_PLAYERS
           createdBy: createdBy.nick
           createdAt: moment(game.createdAt).format('YYYY-MM-DD HH:mm:ss')
           joined: game.isUserPlaying(window.user)
+          uri: routes.ludo.interpolate {gameId: game.id}
         }
       pageCount = Math.floor((games.length - 1) / limit + 1)
       pagesFrom = Math.max(1, page - Math.floor(limit - 1 / 2))
@@ -84,32 +84,6 @@ makeRender = (route, listMethod) -> (page=1) ->
               return alert err
             logger.info 'created_and_joined_game', {ludoFlavor: ludoFlavor, err: err}
             routes.navigate routes.ludo, {gameId: game.id}
-      $joinGame.click ->
-        gameId = $(this).data('gameid')
-        logger.debug 'join_game_clicked', {gameId: gameId}
-        Repository.get Game, gameId, (err, game) ->
-          if err
-            logger.error 'failed_to_get_game_to_join', {gameId: gameId, err: err}
-            return alert err
-          game.join window.user, (err) ->
-            if err
-              logger.error 'failed_to_join_game', {gameId: gameId, err: err}
-              return alert err
-            logger.info 'joined_game', {gameId: gameId}
-            routes.navigate routes.ludo, {gameId: gameId}
-      $openGame.click ->
-        gameId = $(this).data('gameid')
-        logger.debug 'rejoin_game_clicked', {gameId: gameId}
-        Repository.get Game, gameId, (err, game) ->
-          if err
-            logger.error 'failed_to_get_game_to_rejoin', {gameId: gameId, err: err}
-            return alert err
-          game.rejoin (err) ->
-            if err
-              logger.error 'failed_to_rejoin_game', {gameId: gameId, err: err}
-              return alert err
-            logger.info 'rejoined_game', {gameId: gameId}
-            routes.navigate routes.ludo, {gameId: gameId}
       logger.debug 'render_finished', {route: route.interpolate({page: page})}
 
 

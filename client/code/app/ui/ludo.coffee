@@ -6,6 +6,8 @@ LudoRules = require '/LudoRules'
 LudoBoardTableUI = require('./LudoBoardUI').Table
 routes = require '/ui/routes'
 
+logger = winston.getLogger 'ui.ludo'
+
 class LudoUI
   @_name = 'LudoUI'
 
@@ -114,11 +116,24 @@ current = null
 exports.bindRoutes = ->
   routes.ludo.matched.add (gameId) ->
     Repository.get Game, gameId, (err, game) ->
-      return alert err if err
+      if err
+        logger.error 'failed_to_get_game', {gameId: gameId, err: err}
+        return alert err
       UI.$container.empty().append ss.tmpl['ludo'].render()
       throw 'assertion failed: current should be null' unless current == null
-      current = new LudoUI(game)
-      current.render()
+      if game.isUserPlaying window.user
+        game.logger.debug 'rejoining'
+        join = (cb) -> game.rejoin(cb)
+      else
+        game.logger.debug 'joining'
+        join = (cb) -> game.join(window.user, cb)
+      join (err) ->
+        if err
+          game.logger.error 're/joining failed', {err: err}
+          return alert err
+        game.logger.debug 're/joining success'
+        current = new LudoUI(game)
+        current.render()
 
   routes.ludo.switched.add ->
     current?.unbindControls()

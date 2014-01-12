@@ -13,10 +13,10 @@ table#game-list.table.table-hover.table-condensed
       td {{createdAt}}
       td.actions
         {{^joined}}
-        a.join-game.btn(data-gameid='{{id}}', data-trans='gamelist.join')
+        a.join-game.btn(href='\#{{uri}}', data-trans='gamelist.join')
         {{/joined}}
         {{#joined}}
-        a.open-game.btn(data-gameid='{{id}}', data-trans='gamelist.open')
+        a.open-game.btn(href='\#{{uri}}', data-trans='gamelist.open')
         {{/joined}}
     {{/games}}
    tfoot
