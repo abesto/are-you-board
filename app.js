@@ -47,13 +47,14 @@ ss.client.templateEngine.use(require('ss-hogan'));
 
 // Set up global helpers
 require('./server/setup').loadAppGlobals();
+ss.api.log = winston.info;
+console.log = ss.api.log;
 
-
-// Minimize and pack assets if you type: SS_ENV=production node app.js
+// SS_ENV
 if (ss.env === 'production') {
     ss.client.packAssets();
-    winston.handleExceptions(new winston.transports.File({ filename: 'exceptions.log' }));
-    winston.add(winston.transports.File, { filename: 'app.log' });
+    winston.handleExceptions(new winston.transports.File({ filename: 'exceptions.log', timestamp: true }));
+    winston.add(winston.transports.File, { filename: 'app.log', level: 'silly', timestamp: true });
     ss.session.store.use('redis');
     ss.publish.transport.use('redis');
     ss.responders.add(require('ss-heartbeat-responder'));

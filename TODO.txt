@@ -1,5 +1,3 @@
-log render time of each page
-
 Bugs
 ----
 for now there is always re-roll on six, but the rule says off
