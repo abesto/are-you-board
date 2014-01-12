@@ -30,6 +30,7 @@ makeRender = (route, listMethod) -> (page=1) ->
     if err
       logger.error 'failed_to_load_games', {listMethod: listMethod, err: err}
       return alert err
+    games.reverse()
     limit = require('/constants').ui.games.pagerLimit
     offset = (page - 1) * limit
     displayedGames = _(games).drop(offset).take(limit).value()
