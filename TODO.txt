@@ -1,3 +1,7 @@
+fix: login failed: message not shown since migration to bootstrap 3
+fix: registration form also messed up
+sort out general server-side authentication (require logn)
+
 Bugs
 ----
 for now there is always re-roll on six, but the rule says off

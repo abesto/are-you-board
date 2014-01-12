@@ -1,6 +1,6 @@
 div.row
   div.col-md-4.col-md-offset-2#board
-  div.col-md-4#controls.well
+  div.col-md-4#controls
     div#state-container
       div.state(data-state=1, data-trans='ludo.state.waitingForPlayers')
       div#roll-dice.btn.state.new-line(data-state=2, data-trans='ludo.state.diceRoll')
@@ -31,7 +31,15 @@ div.row
           td.player-nick.no-player
             span(data-trans="ludo.noPlayer")
     a#start.btn(href='#', data-trans='ludo.start')
-  div.col-md-5#rules-container
+  //div.col-md-5#controls-auto
+  //  div.checkbox
+  //    label(for='auto-roll-dice', data-trans='ludo.autoRollDice')
+  //    input#auto-roll-dice(type='checkbox', name='auto-roll-dice')
+  //  div.checkbox
+  //    label
+  //      input#auto-skip(type='checkbox')
+  //      span(data-trans='ludo.autoSkip')
+  div.col-md-5.well#rules-container
     h4(data-trans='generic.rules')
     ul.unstyled#rules
 

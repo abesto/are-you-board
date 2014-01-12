@@ -52,7 +52,7 @@ exports.init = ->
   redirectToIndexFromUnknown()
   redirectToLoginIfNeeded()
   logRenderedRoutes()
-  for moduleWithRoutes in ['/ui/lobby', '/ui/games', '/ui/login', '/ui/ludo']
+  for moduleWithRoutes in ['/ui/lobby', '/ui/games', '/ui/login', '/ui/ludo', '/ui/admin']
     require(moduleWithRoutes).bindRoutes()
   crossroads.shouldTypecast = true
   hasher.init()

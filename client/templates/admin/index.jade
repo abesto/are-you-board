@@ -1,0 +1,14 @@
+// For now all data is loaded and rendered up front
+div.row
+  div.col-md-3
+    ul.nav.nav-pills.nav-stacked
+      li.active
+        a(data-toggle='tab', href='#users', data-trans='admin.users')
+      li
+        a(data-toggle='tab', href='#i18n', data-trans='admin.i18n')
+  div.col-md-9.tab-content
+    div#users.tab-pane.active
+      include userlist
+    div#i18n.tab-pane
+      include i18n
+

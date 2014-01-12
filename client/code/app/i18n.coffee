@@ -4,7 +4,10 @@ dataKey = 'trans'
 selector = "[data-#{dataKey}]"
 
 i18n = module.exports =
+  currentLang: null
+
   activate: (lang) ->
+    i18n.currentLang = lang
     ss.load.code "/i18n/trans.#{lang}.coffee", () ->
       app.i18n.trans = require("/trans.#{lang}")
       i18n.update()
@@ -14,7 +17,9 @@ i18n = module.exports =
     obj = app.i18n.trans
     for part in key.split('.')
       obj = obj[part]
-      return key unless obj?
+      unless obj?
+        ss.rpc('i18n.registerUntranslated', i18n.currentLang, key)
+        return key unless obj?
     obj
 
   update: ->

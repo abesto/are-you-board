@@ -10,7 +10,7 @@ header.navbar.navbar-default
       li#navbar-my-games-btn
         a(href='\#{{routeUrls.myGames}}', data-trans='topbar.myGames')
     ul.nav.navbar-nav.navbar-right
-      li.hidden#navbar-admin-btn
+      li#navbar-admin-btn(class='{{^user.isSuperuser}}hidden{{/user.isSuperuser}}')
         a(href='\#{{routeUrls.admin}}') Admin
       li.dropdown
         a.dropdown-toggle(href='#', data-toggle='dropdown') {{user.nick}}

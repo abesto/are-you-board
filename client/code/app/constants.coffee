@@ -47,6 +47,9 @@ module.exports = constants = c =
         }
       ]
 
+    i18n:
+      supportedLanguages: ['en', 'hu']
+
     ui:
       games:
         pagerLimit: 10
