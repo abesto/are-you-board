@@ -34,7 +34,7 @@ class LudoUI
   updateControls: () ->
     myGame = @game.createdBy == window.user.id
     myTurn = @game.players[@game.currentSide] == window.user.id
-    @setState(@game.state)
+    @setState(if @rules.can.skip().valid then 'ui-skip' else @game.state)
     @start.toggle myGame and @rules.can.start().valid
     @rollDice.toggleClass('disabled', !(myTurn and @rules.can.rollDice().valid))
     @skip.toggleClass('disabled', !(myTurn and @rules.can.skip().valid))
@@ -53,17 +53,7 @@ class LudoUI
     for method in Game.MODEL_METHODS
       continue unless method of this
       do (method) =>
-        if method != 'skip'
-          gameEventHandler = @updateControls
-        else
-          gameEventHandler = =>
-            @setState 'ui-skip'
-            @game.logger.debug 'ui-skip', 'start'
-            setTimeout(
-              (=> @game.logger.debug 'ui-skip', 'finish'; @updateControls()),
-              2000
-            )
-        @game.on method, gameEventHandler
+        @game.on method, @updateControls
         this[method].click (e) =>
           e.preventDefault()
           return if this[method].hasClass('disabled')

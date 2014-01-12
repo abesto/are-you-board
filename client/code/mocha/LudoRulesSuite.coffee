@@ -141,6 +141,8 @@ describe 'LudoRules', ->
       piece = @game.board.start(2)
       @game.move piece
       @game.dice = 1
+      @game.state = Game.STATE_MOVE
+      @game.currentSide = 2
       (=> @game.move piece).should.throw 'move_past_path'
 
     it "allows skipping iff the current player doesn't have valid moves", ->

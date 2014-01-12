@@ -103,13 +103,7 @@ class Validator
       }
 
   move: (piece) ->
-    rangeCheck = @check 'move', {
-      check: -> @game.board.paths[piece.player].length > piece.pathPosition + @game.dice
-      msg: -> 'move_past_path'
-    }
-    return rangeCheck unless rangeCheck.valid
-    toField = @game.board.field @game.board.paths[piece.player][piece.pathPosition + @game.dice]
-    @check 'move',
+    partial = @check 'move',
       {
         check: -> @game.state == constants.Game.STATE_MOVE
         msg: -> 'wrong_state'
@@ -124,6 +118,13 @@ class Validator
         msg: -> "move_not_current_players_piece"
         meta: currentSide: @game.currentSide, pieceSide: piece.player
       }
+      {
+        check: -> @game.board.paths[piece.player].length > piece.pathPosition + @game.dice
+        msg: -> 'move_past_path'
+      }
+    return partial unless partial.valid
+    toField = @game.board.field @game.board.paths[piece.player][piece.pathPosition + @game.dice]
+    @check 'move',
       {
         check: -> toField.isEmpty() or toField.getPiece().player != piece.player
         msg: -> 'cant_take_own_piece'

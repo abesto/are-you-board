@@ -5,7 +5,7 @@ div.row
       div.state(data-state=1, data-trans='ludo.state.waitingForPlayers')
       div#roll-dice.btn.state.new-line(data-state=2, data-trans='ludo.state.diceRoll')
       div.state(data-state=3, data-trans='ludo.state.move')
-      div.state(data-state='ui-skip', data-trans='ludo.state.skip')
+      div#skip.btn.state(data-state='ui-skip', data-trans='ludo.state.skip')
     div#dice
       strong(data-trans='ludo.dice')
       span#last-dice-value
