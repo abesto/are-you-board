@@ -18,7 +18,8 @@
     "lodash": "latest",
     "winston": "latest",
     "async": "latest",
-    "bcrypt": "latest"
+    "bcrypt": "latest",
+    "signals": "1.0.0"
   },
 
   "optionalDependencies": {
