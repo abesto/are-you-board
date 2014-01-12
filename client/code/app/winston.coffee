@@ -12,8 +12,11 @@ logUserOrServerHost = ->
 identityMetadataFilter = (x, cb) -> cb(null, x)
 applyMetadataFilters = (filters, args...) ->
   cb = args.pop()
-  return cb(null, args) unless _.isObject(_.last(args))
-  async.compose(identityMetadataFilter, filters...) args.pop(), (err, last) ->
+  if _.isObject(_.last(args))
+    last = args.pop()
+  else
+    last = {}
+  async.compose(identityMetadataFilter, filters...) last, (err, last) ->
     return cb err if err
     args.push last
     cb null, args
