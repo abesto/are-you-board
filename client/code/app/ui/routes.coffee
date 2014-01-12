@@ -1,4 +1,5 @@
 routes = {}
+routes.admin = crossroads.addRoute 'admin'
 routes.login = crossroads.addRoute 'login/:redirectTo:'
 routes.logout = crossroads.addRoute 'logout'
 routes.lobby = crossroads.addRoute ''

@@ -1,3 +1,5 @@
+log each rendered hash
+
 Bugs
 ----
 for now there is always re-roll on six, but the rule says off
@@ -30,3 +32,4 @@ gamelist
 game rules
  - save game rule preference
  - preset flavors combinations?
+
