@@ -8,7 +8,7 @@ showLoginForm = (successCb) ->
   $nick = $signinForm.find('input[name=nick]').focus()
   $password = $signinForm.find('input[name=password]')
 
-  alert = (str) -> $alert.show().text(str)
+  alert = (str) -> $alert.text(str).removeClass('hidden')
 
   $signinForm.submit (event) ->
     event.preventDefault()
