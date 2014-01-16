@@ -37,7 +37,6 @@ redirectToIndexFromUnknown = ->
 
 logRenderedRoutes = ->
   crossroads.routed.add (request, data) ->
-    console.log(data)
     logger.info 'access', {uri: request, routePattern: data.route._pattern, params: data.params}
 
 parseHash = (newHash, oldHash) ->
