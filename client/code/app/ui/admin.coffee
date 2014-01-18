@@ -1,37 +1,48 @@
 User = require '/User'
 routes = require './routes'
+constants = require '/constants'
 
-# TODO: make allKeys not a global, return it instead
-allKeys = []
-addToAllKeys = (obj, acc=[]) ->
-  if _.isString(obj)
-    allKeys.push acc.join('.')
-  else
-    for key, child of obj
-      addToAllKeys(child, acc.concat(key))
+class I18nKeys
+  constructor: ->
+    @keys = []
 
-loadAllKeys = (cb) ->
-  async.parallel [
-    _.partial(ss.load.code, '/i18n/trans.hu.coffee')
-    _.partial(ss.load.code, '/i18n/trans.en.coffee')
-  ], ->
-    addToAllKeys require('/trans.hu')
-    addToAllKeys require('/trans.en')
-    cb()
+  addTree: (obj, acc=[]) =>
+    if _.isString(obj)
+      @keys.push acc.join('.')
+    else
+      for key, child of obj
+        @addTree(child, acc.concat(key))
 
+  addKey: (key) -> @keys.push(key)
 
-mergeWithUntranslated = (lang, untranslated, cb) ->
-  translated = _.cloneDeep(require("/trans.#{lang}"))
-  for whole in untranslated.concat(allKeys)
-    current = translated
-    parts = whole.split('.')
-    last = parts.pop()
-    for part in parts
-      current[part] = {} unless part of current
-      current = current[part]
-    current[last] ?= "untranslated"
-  cb null, JSON.stringify(translated, null, 4)
-  # TODO: remove those that we just noticed are already translated
+  addKeys: (keys) -> @keys = @keys.concat(keys)
+
+  loadTranslatedKeys: (cb) =>
+    loaders = (_.partial(ss.load.code, "/i18n/trans.#{lang}.coffee") for lang in constants.i18n.supportedLanguages)
+    async.parallel loaders, =>
+      @addTree(require("/trans.#{lang}")) for lang in constants.i18n.supportedLanguages
+      cb()
+
+  loadUntranslatedKeys: (cb) =>
+    ss.rpc 'i18n.listUntranslated', (err, untranslated) =>
+      @addKeys(untranslated)
+      cb()
+
+  getTreeExpandedWithAllKeys: (lang) =>
+    tree = _.cloneDeep(require("/trans.#{lang}"))
+    untranslated = []
+    for whole in @keys
+      current = tree
+      parts = whole.split('.')
+      last = parts.pop()
+      for part in parts
+        current[part] = {} unless part of current
+        current = current[part]
+      unless last of current
+        current[last] = "untranslated"
+        untranslated.push whole
+    {tree: tree, untranslated: untranslated}
+    # TODO: remove those that we just noticed are already translated in all languages
 
 exports.bindRoutes = ->
   routes.admin.matched.add ->
@@ -40,28 +51,18 @@ exports.bindRoutes = ->
       return alert err if err
       UI.$container.html "Loading #{count} users"
       # This can be generalized if needed
+      i18nKeys = new I18nKeys()
       async.parallel [
         _.partial(User.model.getMulti, [1..count]...),
-        _.partial(ss.rpc, 'i18n.listUntranslated', 'hu'),
-        _.partial(ss.rpc, 'i18n.listUntranslated', 'en'),
-        loadAllKeys
-      ],
-      (err, [users, untranslatedHu, untranslatedEn]) ->
-        async.parallel [
-          _.partial(mergeWithUntranslated, 'hu', untranslatedHu),
-          _.partial(mergeWithUntranslated, 'en', untranslatedEn)
-        ], (err, [jsonHu, jsonEn]) ->
-          UI.$container.empty().append ss.tmpl['admin-index'].render({
-            users: users
-            i18n: [
-              {
-                lang: 'hu',
-                untranslated: untranslatedHu.join(', '),
-                json: jsonHu
-              }, {
-                lang: 'en',
-                untranslated: untranslatedEn.join(', '),
-                json: jsonEn
-              }
-            ]
-          })
+        i18nKeys.loadTranslatedKeys,
+        i18nKeys.loadUntranslatedKeys
+      ], (err, [users]) ->
+        context = {users: users, i18n: []}
+        for lang in constants.i18n.supportedLanguages
+          {tree, untranslated} = i18nKeys.getTreeExpandedWithAllKeys(lang)
+          context.i18n.push {
+            lang: lang,
+            untranslated: untranslated.join(', '),
+            json: JSON.stringify(tree, null, 4)
+          }
+        UI.$container.empty().append ss.tmpl['admin-index'].render(context)

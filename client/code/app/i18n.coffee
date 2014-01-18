@@ -18,7 +18,7 @@ i18n = module.exports =
     for part in key.split('.')
       obj = obj[part]
       unless obj?
-        ss.rpc('i18n.registerUntranslated', i18n.currentLang, key)
+        ss.rpc('i18n.registerUntranslated', key)
         return key unless obj?
     obj
 
