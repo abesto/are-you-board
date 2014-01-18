@@ -1,5 +1,6 @@
 User = require '/User'
 routes = require '/ui/routes'
+i18n = require '/i18n'
 
 showLoginForm = (successCb) ->
   UI.$container.empty().append ss.tmpl['login'].render()
@@ -8,7 +9,7 @@ showLoginForm = (successCb) ->
   $nick = $signinForm.find('input[name=nick]').focus()
   $password = $signinForm.find('input[name=password]')
 
-  alert = (str) -> $alert.text(str).removeClass('hidden')
+  alert = (str) -> $alert.text(i18n.gettext("auth.#{str}")).removeClass('hidden')
 
   $signinForm.submit (event) ->
     event.preventDefault()
@@ -31,7 +32,7 @@ showRegisterForm = ->
   $password = $registerForm.find('input[name=password]')
   $passwordAgain = $registerForm.find('input[name=password-again]')
 
-  alert = (str) -> $alert.text(str).removeClass('hidden')
+  alert = (str) -> $alert.text(i18n.gettext("auth.#{str}")).removeClass('hidden')
 
   $registerForm.submit (event) ->
     nick = $nick.val()
