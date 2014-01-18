@@ -14,6 +14,12 @@ exports.actions = (req, res, ss) ->
         return "nick_forbidden_char #{c}" if c in nick
       return 'password_too_short' unless password and password.length >= 3
 
+    asyncValidateCreate: (nick, password, cb) ->
+      redis.hexists 'users_by_nick', nick, (err, res) ->
+        return cb err if err
+        return cb 'nick_taken' if res
+        cb null
+
     create: (user, cb, nick, password) ->
       redis.hset 'users_by_nick', user.nick, user.id, (err, res) ->
         return cb err if err

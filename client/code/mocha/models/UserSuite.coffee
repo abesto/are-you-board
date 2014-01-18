@@ -30,6 +30,11 @@ describe 'User RPC', ->
       err.should.equal 'password_too_short'
       done()
 
+  it "refuses to create user with already existing nick", (done) ->
+    User.model.create @nick, @password, (err) ->
+      err.should.equal 'nick_taken'
+      done()
+
   it "adds the user to the 'users_by_nick' hash", (done) ->
     ss.rpc 'dangerous.redis', 'hget', 'users_by_nick', @nick, (err, id) =>
       @user.id.should.equal parseInt(id)

@@ -28,29 +28,38 @@ module.exports = (cls) ->
 
     key: (id) -> "#{cls.name}:#{id}"
 
+    buildSaveSerializedCallback: (id, obj, cb) -> (err, res) ->
+      return cb err if err
+      str = obj.serialize()
+      redis.set cls.model.key(id), str, (err, ok) ->
+        if err
+          winston.error "redis_error", {op: "SET #{cls.model.key(id)}", err: err}
+          return cb err
+        cb null, str
+        winston.info "new_#{cls.name}", {id: obj.id}
+
+    applyDecorators: (name, args..., cb) ->
+      if _.isFunction cls.model.decorators.validateCreate
+        err = cls.model.decorators.validateCreate args...
+        return cb err if err
+      if _.isFunction cls.model.decorators.asyncValidateCreate
+        cls.model.decorators.asyncValidateCreate args..., cb
+      else
+        cb null
+
     create: (args..., cb) ->
-      redis.incr cls.name, (err, id) ->
+      redis.incr cls.name, (err, id) =>
         if err
           winston.error "redis_error", {op: "INCR #{cls.name}", err: err}
           return cb err
-        if _.isFunction cls.model.decorators.validateCreate
-          err = cls.model.decorators.validateCreate args...
+        @applyDecorators "validateCreate", args..., (err) =>
           return cb err if err
-        obj = new cls id, args...
-
-        saveSerialized = ->
-          str = obj.serialize()
-          redis.set cls.model.key(id), str, (err, ok) ->
-            if err
-              winston.error "redis_error", {op: "SET #{cls.model.key(id)}", err: err}
-              return cb err
-            cb null, str
-            winston.info "new_#{cls.name}", {id: obj.id}
-
-        if cls.model.decorators.create?
-          cls.model.decorators.create? obj, saveSerialized, args...
-        else
-          saveSerialized()
+          obj = new cls id, args...
+          saveSerializedCallback = @buildSaveSerializedCallback(id, obj, cb)
+          if cls.model.decorators.create?
+            cls.model.decorators.create? obj, saveSerializedCallback, args...
+          else
+            saveSerializedCallback()
 
     getSerialized: (id, cb) ->
       redis.get "#{cls.name}:#{id}", (err, str) ->

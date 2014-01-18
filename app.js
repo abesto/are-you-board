@@ -82,7 +82,6 @@ if (ss.env === 'production') {
     winston.remove(winston.transports.Console);
     winston.add(winston.transports.Console, {
       level: 'silly',
-      handleExceptions: true,
       colorize: true,
       timestamp: true
     });
