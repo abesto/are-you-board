@@ -31,7 +31,7 @@ showRegisterForm = ->
   $password = $registerForm.find('input[name=password]')
   $passwordAgain = $registerForm.find('input[name=password-again]')
 
-  alert = (str) -> $alert.show().text(str)
+  alert = (str) -> $alert.text(str).removeClass('hidden')
 
   $registerForm.submit (event) ->
     nick = $nick.val()

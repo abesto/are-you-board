@@ -1,4 +1,3 @@
-fix: registration form also messed up
 sort out general server-side authentication (require logn)
 
 Bugs

@@ -1,9 +1,13 @@
 form.form-register
   h2 Guess what :)
-  div.alert.alert-error.hidden
-  input.input-block-level(name='nick', type='text', placeholder='Nickname')
-  input.input-block-level(name='password', type='password', placeholder='Password')
-  input.input-block-level(name='password-again', type='password', placeholder='Password again')
-  button.btn.btn-primary(name='register', type='submit') Register
-  button.btn(name='back', type='button', style='float:right') Back
+  div.alert.alert-danger.hidden
+  div.form-group
+    input.form-control(name='nick', type='text', placeholder='Nickname')
+  div.form-group
+    input.form-control(name='password', type='password', placeholder='Password')
+  div.form-group
+    input.form-control(name='password-again', type='password', placeholder='Password again')
+  div.form-group
+    button.btn.btn-primary.btn-block(name='register', type='submit') Register
+    button.btn.btn-default.btn-block(name='back', type='button', style='float:right') Back
 
