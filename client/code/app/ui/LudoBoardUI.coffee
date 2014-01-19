@@ -125,7 +125,7 @@ class Piece
         @trigger 'start', [@getPlayer(), @el]
       Field.hidePathSteps()
 
-    showPathSteps = => field.showPathStep(index+1, index+1 == @table.game.dice) for field, index in @nextPathFields()
+    showPathSteps = => field.showPathStep(index+1, index+1 == @table.game.getCurrentDice()) for field, index in @nextPathFields()
     @el.hover showPathSteps, Field.hidePathSteps
 
   show: -> @el.show()

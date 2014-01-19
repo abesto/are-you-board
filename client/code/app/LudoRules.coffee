@@ -85,7 +85,7 @@ class Validator
         meta: expected: constants.Game.STATE_MOVE, actual: @game.state
       }
       {
-        check: -> @game.dice == 6 or (@game.flavor.startOnOneAndSix and @game.dice == 1)
+        check: -> @game.getCurrentDice() == 6 or (@game.flavor.startOnOneAndSix and @game.getCurrentDice() == 1)
         msg: -> if @game.flavor.startOnOneAndSix then 'dice_not_1_or_6' else 'dice_not_6'
       }
       {
@@ -119,11 +119,11 @@ class Validator
         meta: currentSide: @game.currentSide, pieceSide: piece.player
       }
       {
-        check: -> @game.board.paths[piece.player].length > piece.pathPosition + @game.dice
+        check: -> @game.board.paths[piece.player].length > piece.pathPosition + @game.getCurrentDice()
         msg: -> 'move_past_path'
       }
     return partial unless partial.valid
-    toField = @game.board.field @game.board.paths[piece.player][piece.pathPosition + @game.dice]
+    toField = @game.board.field @game.board.paths[piece.player][piece.pathPosition + @game.getCurrentDice()]
     @check 'move',
       {
         check: -> toField.isEmpty() or toField.getPiece().player != piece.player

@@ -14,7 +14,7 @@ class Game
     @board = null
     @players = [null, null, null, null]
     @currentSide = -1
-    @dice = 0
+    @_dice = 0
     @state = Game.STATE_JOINING
     @flavor = new LudoRules.Flavor()
     @_createLogger()
@@ -39,6 +39,9 @@ class Game
   isUserIdPlayingS: [TC.Number]
   isUserIdPlaying: (userId) ->
     not _.isUndefined @userIdSide userId
+
+  getCurrentDice: -> @_dice
+  rolled: (d) -> @_dice = d
 
   playerCount: ->
     (_.filter @players, (o) -> o != null).length
@@ -68,9 +71,9 @@ class Game
 
   moveS:[TC.Instance(LudoBoard.Piece), TC.Callback]
   move: (piece, cb) ->
-    @logger.info "move", {pieceId: piece.id, dice: @dice}
+    @logger.info "move", {pieceId: piece.id, dice: @getCurrentDice()}
     @state = Game.STATE_DICE
-    piece.move @dice, @board
+    piece.move @getCurrentDice(), @board
     @nextSide()
     cb? null, this
   moveListener: (pieceId, cb) ->
@@ -100,14 +103,14 @@ class Game
 
   rollDiceS:[TC.Callback]
   rollDice: (cb) ->
-    @dice = 1 + Math.floor(Math.random() * 6)
-    @logger.debug "rollDice", {dice: @dice}
+    @rolled 1 + Math.floor(Math.random() * 6)
+    @logger.debug "rollDice", {dice: @getCurrentDice()}
     @state = Game.STATE_MOVE
     cb? null, this
 
   rollDiceListenerS:[TC.Number, TC.Callback]
   rollDiceListener: (dice, cb) ->
-    @dice = dice
+    @rolled dice
     @state = Game.STATE_MOVE
     cb? null, null
 
@@ -173,7 +176,7 @@ serialization Game, 2,
       @board.toSerializable()
       @players
       @currentSide
-      @dice
+      @_dice
       @state
     ]
 
@@ -184,7 +187,7 @@ serialization Game, 2,
       game.board = LudoBoard.fromSerializable board
       game.players = players
       game.currentSide = currentSide
-      game.dice = dice
+      game._dice = dice
       game.state = state
       cb null, game
 

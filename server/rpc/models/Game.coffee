@@ -154,7 +154,7 @@ exports.actions = (req, res, ss) ->
       return unless auth.checkRes res, 'Game.rollDice', game
       game.rollDice (err) ->
         return res err if err
-        game.save errorOrEvent(res, 'rollDice', game.dice)
+        game.save errorOrEvent(res, 'rollDice', game.getCurrentDice())
 
   actions.move = (gameId, pieceId) ->
     Game.model.get gameId, (err, game) ->

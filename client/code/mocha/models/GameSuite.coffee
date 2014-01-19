@@ -8,7 +8,8 @@ LudoRules = require '/LudoRules'
 
 chai.Assertion.overwriteMethod 'eql', (_super) -> (other) ->
   if @_obj instanceof Game and other instanceof Game
-    assertPropertiesEql ['id', 'createdAt', 'board', 'players', 'currentSide', 'dice', 'state'], @_obj, other
+    assertPropertiesEql ['id', 'createdAt', 'board', 'players', 'currentSide', 'state'], @_obj, other
+    @_obj.getCurrentDice().should.equal other.getCurrentDice()
 
 chai.use (_chai, utils) ->
   chai.Assertion.addMethod 'containGame', (game) ->
@@ -102,13 +103,13 @@ runGameTests = ->
   it 'rollDice sets the current dice roll value', (done) ->
     async.series [@join(@u0, @u1), @game.start, @game.rollDice ], (err) =>
       Should.not.exist err
-      @game.dice.should.be.within 1, 6
+      @game.getCurrentDice().should.be.within 1, 6
       done()
 
   it 'startPiece can start a piece if the dice is 6', (done) ->
     rollSix = (cb) => @game.rollDice (err) =>
       Should.not.exist err
-      return cb() if @game.dice == 6
+      return cb() if @game.getCurrentDice() == 6
       @game.skip (err, res) =>
         Should.not.exist err
         rollSix cb
