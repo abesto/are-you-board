@@ -1,0 +1,3 @@
+include 'shared', 'server'
+
+rootProject.name = 'are-you-board'
