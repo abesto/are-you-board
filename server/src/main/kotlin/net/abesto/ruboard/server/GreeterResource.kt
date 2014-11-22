@@ -8,5 +8,5 @@ import javax.ws.rs.PathParam
 Path("/greet")
 public class GreeterResource {
     GET Path("/{name}") Produces("text/plain")
-    public fun someone(PathParam("name") name: String): String = "oi-right ${name}"
+    public fun someone(PathParam("name") name: String): String = "what up, ${name}"
 }

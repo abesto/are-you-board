@@ -5,12 +5,14 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}"
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}",
+				'org.akhikhl.gretty:gretty:+'
 	}
 }
 
 apply plugin: 'kotlin'
-apply plugin: 'jetty'
+apply plugin: 'war'
+apply plugin: 'org.akhikhl.gretty'
 
 repositories {
 	jcenter()
@@ -21,12 +23,13 @@ dependencies {
 			"org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}",
 			"org.jboss.resteasy:resteasy-jaxrs:${resteasyVersion}",
 			"org.jboss.resteasy:resteasy-servlet-initializer:${resteasyVersion}"
-	providedCompile 'javax.servlet:servlet-api:2.5'
+	providedCompile 'javax.servlet:servlet-api:2.5',
+			'org.eclipse.jetty:jetty-server:9.2.5.v20141112'
 	testCompile "junit:junit:4.11"
 }
 
-jettyRun {
-	contextPath ""
-	reload "automatic"
-	scanIntervalSeconds 1
+gretty {
+	contextPath "/"
+	extraResourceBase new File(project(":client").projectDir, "web")
+	scanDir "${projectDir}/src/main/kotlin"
 }
