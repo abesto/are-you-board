@@ -90,7 +90,8 @@ if (ss.env === 'production') {
 // Start web server
 var server = http.Server(ss.http.middleware);
 var port = process.argv[2] || 3000;
-server.listen(port, '127.0.0.1');
+var bindaddr = process.argv[3] || '127.0.0.1';
+server.listen(port, bindaddr);
 
 // Start SocketStream
 ss.start(server);
