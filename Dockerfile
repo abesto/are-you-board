@@ -10,5 +10,4 @@ RUN npm install
 COPY . /usr/src/app
 
 EXPOSE 80
-ENV REDIS_HOST redis
 CMD [ "node", "app.js", "80", "0.0.0.0" ]

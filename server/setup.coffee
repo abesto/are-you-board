@@ -1,7 +1,10 @@
-exports.redis = -> require('redis').createClient(process.env.REDIS_PORT || 6379, process.env.REDIS_HOST || '127.0.0.1')
+redisHost = process.env.REDIS_PORT_6379_TCP_ADDR || process.env.REDIS_HOST || '127.0.0.1'
+redisPort = process.env.REDIS_PORT_6379_TCP_PORT || process.env.REDIS || 6379
+
+exports.redis = -> require('redis').createClient(redisPort, redisHost)
 exports.winston = -> require('winston')
 exports.lodash = -> require('lodash')
-exports.model = -> require('./model');
+exports.model = -> require('./model')
 exports.async = -> require('async')
 exports.constants = -> require '../client/code/app/constants'
 exports.signals = -> require('signals')
