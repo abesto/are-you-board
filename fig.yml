@@ -1,0 +1,21 @@
+redisdata:
+  image: dockerfile/redis
+  command: false
+  volumes:
+    - db:/data
+
+redis:
+  image: dockerfile/redis
+  volumes_from:
+    - redisdata
+
+board:
+  build: .
+  ports:
+    - "8000:8000"
+    - "5000:5000"
+  command: node app.js 8000 0.0.0.0
+  links:
+    - redis
+  volumes:
+    - .:/usr/src/app
