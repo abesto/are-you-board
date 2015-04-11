@@ -1,3 +1,7 @@
 package net.abesto.board.model;
 
-public interface FieldStyle {}
+public abstract class FieldStyle {
+	public String getCssClassName() {
+		return "";
+	}
+}

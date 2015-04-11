@@ -1,6 +1,6 @@
 package net.abesto.board.model;
 
-public class NoFieldStyle implements FieldStyle {
+public class NoFieldStyle extends FieldStyle {
 	private NoFieldStyle() {}
 	
 	private static NoFieldStyle instance = new NoFieldStyle();

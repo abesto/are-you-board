@@ -17,14 +17,20 @@ public class BoardController {
 	private BeanFactory beanFactory;
 	
 	@RequestMapping("/empty")
-	public String empty(final Model model) {
-		model.addAttribute("board", getEmptyBoard());
+	public String empty(Model model) {
+		model.addAttribute("board", getBoard(EmptyBoardConfiguration.class));
+		return "board";
+	}
+	
+	@RequestMapping("/ludo")
+	public String ludo(Model model) {
+		model.addAttribute("board", getBoard(LudoGameConfiguration.class));
 		return "board";
 	}
 
-	public Board getEmptyBoard() {
+	public Board getBoard(Class<?> configuration) {
 		return beanFactory.getBean(GameContextManager.class)
-				.getContext(EmptyBoardConfiguration.class)
+				.getContext(configuration)
 				.getBean(Board.class);
 	}
 }

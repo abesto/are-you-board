@@ -1,0 +1,23 @@
+.w, .r, .g, .b, .y, .B {
+	border: 1px solid black;
+}
+
+.r {
+	background-color: red;
+}
+
+.g {
+	background-color: green;
+}
+
+.b {
+	background-color: blue;
+}
+
+.y {
+	background-color: yellow;
+}
+
+.B {
+	background-color: black;
+}
