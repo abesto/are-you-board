@@ -1,21 +1,23 @@
 package net.abesto.board.model;
 
-import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Board {
     private static final int WIDTH = 11;
     private static final int HEIGHT = 11;
 
-    private Field[][] fields;
+    private List<List<Field>> fields;
     
-    @Inject
     public Board(FieldProvider fieldProvider) {
 		super();
-		fields = new Field[HEIGHT][WIDTH];
+		fields = new ArrayList<List<Field>>(getHeight());
 		for (int row = 0; row < HEIGHT; row++) {
+			List<Field> rowFields = new ArrayList<Field>(getWidth());
 			for (int column = 0; column < WIDTH; column++) {
-				fields[row][column] = fieldProvider.apply(row, column);
+				rowFields.add(column, fieldProvider.apply(row, column));
 			}
+			fields.add(row,  rowFields);
 		}
 	}
 
@@ -32,6 +34,10 @@ public class Board {
     }
     
     public Field getField(int row, int column) {
-    	return fields[row][column];
+    	return fields.get(row).get(column);
+    }
+
+    public Iterable<? extends Iterable<Field>> getFieldsIterable() {
+    	return fields;
     }
 }

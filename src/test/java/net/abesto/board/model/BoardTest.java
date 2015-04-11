@@ -56,13 +56,13 @@ public class BoardTest extends AbstractJUnit4SpringContextTests {
     	});
     }
 
-	@Test(expected = ArrayIndexOutOfBoundsException.class)
+	@Test(expected = IndexOutOfBoundsException.class)
     public void testGetFieldThrowsArrayIndexOutOfBoundsExceptionForWidth() {
     	Board board = givenAnEmptyBoard();
     	board.getField(0, board.getWidth());
     }
     
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testGetFieldThrowsArrayIndexOutOfBoundsExceptionForHeight() {
     	Board board = givenAnEmptyBoard();
     	board.getField(board.getHeight(), 0);
@@ -75,5 +75,21 @@ public class BoardTest extends AbstractJUnit4SpringContextTests {
     	int column = 5;
     	Position position = new Position(row, column);
     	assertSame(board.getField(position), board.getField(row, column));
+    }
+    
+    @Test
+    public void testGetFields() {
+    	int row = 0;
+    	int column = 0;
+    	Board board = givenAnEmptyBoard();
+    	for (Iterable<Field> rowFields : board.getFieldsIterable()) {
+    		for (Field field : rowFields) {
+    			assertEquals(row, field.getRow());
+    			assertEquals(column, field.getColumn());
+    			column += 1;
+    		}
+    		row += 1;
+    		column = 0;
+    	}
     }
 }
