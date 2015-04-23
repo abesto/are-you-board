@@ -4,9 +4,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class FieldTest {
+public class RectangleMatrixFieldTest {
 	private static Field givenAnEmptyField() {
-		return new Field(0, 0);
+		return new RectangleMatrixField(0, 0);
 	}
 	
 	private static Piece givenAPiece() {
@@ -22,7 +22,7 @@ public class FieldTest {
 	
 	@Test
 	public void testNewFieldIsEmpty() {
-		assertTrue(new Field(0, 0).isEmpty());
+		assertTrue(new RectangleMatrixField(0, 0).isEmpty());
 	}
 
 	@Test
@@ -47,7 +47,7 @@ public class FieldTest {
 	
 	@Test
 	public void testGetRowAndColumn() {
-		Field field = new Field(5, 10);
+		RectangleMatrixField field = new RectangleMatrixField(5, 10);
 		assertEquals(10, field.getColumn());
 		assertEquals(5, field.getRow());
 	}

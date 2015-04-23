@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 class ColorMapFieldProviderTestConfiguration {
 	@Bean
 	public FieldProvider getTestFieldProvider() throws IOException {
-		return new CssClassFieldProvider(getBoardDefOnClasspath());
+		return new RectangleMatrixCssClassSimpleFieldProvider(getBoardDefOnClasspath());
 	}
 
 	@Bean
@@ -30,7 +30,7 @@ class ColorMapFieldProviderTestConfiguration {
 @ContextConfiguration(classes = { ColorMapFieldProviderTestConfiguration.class })
 public class ColorMapFieldProviderTest extends AbstractJUnit4SpringContextTests {
 	@Inject
-	private FieldProvider provider;
+	private RectangleMatrixCssClassSimpleFieldProvider provider;
 	
 	@Test
 	public void test() throws Exception {
@@ -44,7 +44,7 @@ public class ColorMapFieldProviderTest extends AbstractJUnit4SpringContextTests 
 		};
 		for (int row = 0; row < 3; row++) {
 			for (int column = 0; column < 4; column++) {
-				FieldStyle style = provider.apply(row, column).getStyle();
+				FieldStyle style = provider.get(row, column).getStyle();
 				String expectedClassname = expected[row][column];
 				String msg = String.format("row=%d column=%d", row, column);
 				if (expectedClassname == null) {

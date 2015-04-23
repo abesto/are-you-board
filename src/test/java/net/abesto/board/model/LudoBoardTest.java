@@ -13,29 +13,29 @@ import static org.junit.Assert.*;
 
 class BoardTestConfiguration {
 	@Bean
-	public FieldProvider getFieldProvider() {
-		return new SimpleFieldProvider();
+	public RectangleMatrixSimpleFieldProvider getFieldProvider() {
+		return new RectangleMatrixSimpleFieldProvider();
 	}
 	
 	@Bean
-	public Board getBoard() {
-		return new Board(getFieldProvider());
+	public LudoBoard getBoard() {
+		return new LudoBoard(getFieldProvider());
 	}
 }
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { BoardTestConfiguration.class })
-public class BoardTest extends AbstractJUnit4SpringContextTests {
-    private static void forEachPosition(Board board, Consumer<Position> consumer) {
+public class LudoBoardTest extends AbstractJUnit4SpringContextTests {
+    private static void forEachPosition(LudoBoard board, Consumer<Point> consumer) {
     	for (int row = 0; row < board.getHeight(); row++) {
     		for (int column = 0; column < board.getWidth(); column++) {
-    			consumer.accept(new Position(row, column));
+    			consumer.accept(new Point(row, column));
     		}
     	}   	
     }
 
-    private Board givenAnEmptyBoard() {
-    	return (Board) applicationContext.getBean(Board.class);
+    private LudoBoard givenAnEmptyBoard() {
+    	return (LudoBoard) applicationContext.getBean(LudoBoard.class);
     }
     
     @Test
@@ -50,40 +50,40 @@ public class BoardTest extends AbstractJUnit4SpringContextTests {
     
     @Test
     public void testFieldsGeneratedWithCorrectPosition() {
-    	Board board = givenAnEmptyBoard();
-    	forEachPosition(board, (Position position) -> {
-    		assertEquals(position, board.getField(position).getPosition());
+    	LudoBoard board = givenAnEmptyBoard();
+    	forEachPosition(board, (Point point) -> {
+    		assertEquals(point, board.getField(point).getIndex());
     	});
     }
 
 	@Test(expected = IndexOutOfBoundsException.class)
     public void testGetFieldThrowsArrayIndexOutOfBoundsExceptionForWidth() {
-    	Board board = givenAnEmptyBoard();
+    	LudoBoard board = givenAnEmptyBoard();
     	board.getField(0, board.getWidth());
     }
     
     @Test(expected = IndexOutOfBoundsException.class)
     public void testGetFieldThrowsArrayIndexOutOfBoundsExceptionForHeight() {
-    	Board board = givenAnEmptyBoard();
+    	LudoBoard board = givenAnEmptyBoard();
     	board.getField(board.getHeight(), 0);
     }
     
     @Test
     public void testGetField() {
-    	Board board = givenAnEmptyBoard();
+    	LudoBoard board = givenAnEmptyBoard();
     	int row = 1;
     	int column = 5;
-    	Position position = new Position(row, column);
-    	assertSame(board.getField(position), board.getField(row, column));
+    	Point point = new Point(row, column);
+    	assertSame(board.getField(point), board.getField(row, column));
     }
     
     @Test
     public void testGetFields() {
     	int row = 0;
     	int column = 0;
-    	Board board = givenAnEmptyBoard();
-    	for (Iterable<Field> rowFields : board.getFieldsIterable()) {
-    		for (Field field : rowFields) {
+    	LudoBoard board = givenAnEmptyBoard();
+    	for (Iterable<RectangleMatrixField> rowFields : board.getFieldsTable()) {
+    		for (RectangleMatrixField field : rowFields) {
     			assertEquals(row, field.getRow());
     			assertEquals(column, field.getColumn());
     			column += 1;

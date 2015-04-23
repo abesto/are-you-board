@@ -1,9 +1,9 @@
 package net.abesto.board.model;
 
-public final class Position {
+public final class Point {
 	private int row, column;
 	
-	public Position(int row, int column) {
+	public Point(int row, int column) {
 		super();
 		this.row = row;
 		this.column = column;
@@ -34,11 +34,7 @@ public final class Position {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Position other = (Position) obj;
-		if (column != other.column)
-			return false;
-		if (row != other.row)
-			return false;
-		return true;
+		Point other = (Point) obj;
+		return column == other.column && row == other.row;
 	}
 }

@@ -1,43 +1,32 @@
 package net.abesto.board.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class Board {
-    private static final int WIDTH = 11;
-    private static final int HEIGHT = 11;
+/**
+ * @param <I> Type used to index the fields of this board
+ * @param <F> Type of field used in this board
+ */
+public abstract class Board<I, F extends Field<I>> {
+    protected Map<I, F> fields;
 
-    private List<List<Field>> fields;
-    
-    public Board(FieldProvider fieldProvider) {
-		super();
-		fields = new ArrayList<List<Field>>(getHeight());
-		for (int row = 0; row < HEIGHT; row++) {
-			List<Field> rowFields = new ArrayList<Field>(getWidth());
-			for (int column = 0; column < WIDTH; column++) {
-				rowFields.add(column, fieldProvider.apply(row, column));
-			}
-			fields.add(row,  rowFields);
-		}
-	}
-
-	public int getWidth() {
-        return WIDTH;
+    public Board(FieldProvider<I, F> fieldProvider) {
+        super();
+        fields = new HashMap<>();
+        for (I index : getIndexIterable()) {
+            fields.put(index, fieldProvider.get(index));
+        }
     }
 
-    public int getHeight() {
-        return HEIGHT;
-    }
-    
-    public Field getField(Position position) {
-    	return getField(position.getRow(), position.getColumn());
-    }
-    
-    public Field getField(int row, int column) {
-    	return fields.get(row).get(column);
+    public F getField(I index) {
+        if (!fields.containsKey(index)) {
+            throw new IndexOutOfBoundsException();
+        }
+        return fields.get(index);
     }
 
-    public Iterable<? extends Iterable<Field>> getFieldsIterable() {
-    	return fields;
+    public Iterable<F> getFieldsIterable() {
+        return fields.values();
     }
+
+    protected abstract Iterable<I> getIndexIterable();
 }

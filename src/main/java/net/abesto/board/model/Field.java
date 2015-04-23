@@ -2,35 +2,23 @@ package net.abesto.board.model;
 
 import java.util.Optional;
 
-public final class Field {
-    private Position position;
-    private Optional<Piece> piece;
-    private FieldStyle style;
+public class Field<I> {
+    protected I index;
+    protected Optional<Piece> piece;
+    protected FieldStyle style;
 
-    public Field(Position position, FieldStyle style) {
-    	this.position = position;
+    public Field(I index, FieldStyle style) {
+    	this.index = index;
         this.piece = Optional.empty();
         this.style = style;
     }
     
-    public Field(Position position) {
-    	this(position, NoFieldStyle.getInstance());
+    public Field(I index) {
+    	this(index, NoFieldStyle.getInstance());
     }
     
-    public Field(int row, int column) {
-    	this(new Position(row, column));
-    }
-
-    public int getRow() {
-        return position.getRow();
-    }
-
-    public int getColumn() {
-        return position.getColumn();
-    }
-    
-    public Position getPosition() {
-		return position;
+    public I getIndex() {
+		return index;
 	}
 
     public Piece getPiece() {

@@ -2,7 +2,7 @@ package net.abesto.board.controller;
 
 import javax.inject.Inject;
 
-import net.abesto.board.model.Board;
+import net.abesto.board.model.LudoBoard;
 import net.abesto.board.model.GameContextManager;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -28,9 +28,9 @@ public class BoardController {
 		return "board";
 	}
 
-	public Board getBoard(Class<?> configuration) {
+	public LudoBoard getBoard(Class<?> configuration) {
 		return beanFactory.getBean(GameContextManager.class)
 				.getContext(configuration)
-				.getBean(Board.class);
+				.getBean(LudoBoard.class);
 	}
 }
