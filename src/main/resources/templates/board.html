@@ -3,18 +3,20 @@
 <head lang="en">
     <meta charset="UTF-8"/>
     <title></title>
-    <link rel="stylesheet" type="text/css" 
-    	  href="../static/css/board.css" th:href="@{/css/board.css}"/>
+    <link rel="stylesheet" type="text/css"
+          href="../static/css/board.css" th:href="@{/css/board.css}"/>
 </head>
 <body>
-	<table>
-		<tr th:each="row : ${board.getFieldsIterable()}">
-		  <td th:each="field : ${row}"
-		      th:text="|${field.getRow()},${field.getColumn()}|"
-		      th:class="${field.getStyle().getCssClassName()}">
-		  ?,?
-		  </td>
-		</tr>
-	</table>
+<table>
+    <!--@thymesVar id="board" type="net.abesto.board.model.RectangleMatrixBoard"-->
+    <!--@thymesVar id="field" type="net.abesto.board.model.RectangleMatrixField"-->
+    <tr th:each="row : ${board.getFieldsTable()}">
+        <td th:each="field : ${row}"
+            th:text="|${field.getRow()},${field.getColumn()}|"
+            th:class="${field.getStyle().getCssClassName()}">
+            ?,?
+        </td>
+    </tr>
+</table>
 </body>
 </html>
