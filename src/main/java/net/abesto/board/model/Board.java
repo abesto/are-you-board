@@ -1,6 +1,7 @@
 package net.abesto.board.model;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @param <I> Type used to index the fields of this board

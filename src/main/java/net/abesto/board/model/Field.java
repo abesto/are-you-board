@@ -8,23 +8,23 @@ public class Field<I> {
     protected FieldStyle style;
 
     public Field(I index, FieldStyle style) {
-    	this.index = index;
+        this.index = index;
         this.piece = Optional.empty();
         this.style = style;
     }
-    
+
     public Field(I index) {
-    	this(index, NoFieldStyle.getInstance());
+        this(index, NoFieldStyle.getInstance());
     }
-    
+
     public I getIndex() {
-		return index;
-	}
+        return index;
+    }
 
     public Piece getPiece() {
-    	if (!piece.isPresent()) {
-    		throw new FieldEmptyException(this);
-    	}
+        if (!piece.isPresent()) {
+            throw new FieldEmptyException(this);
+        }
         return piece.get();
     }
 
@@ -40,14 +40,14 @@ public class Field<I> {
     }
 
     public void removePiece() {
-    	piece = Optional.empty();
+        piece = Optional.empty();
     }
-    
+
     public FieldStyle getStyle() {
-		return style;
-	}
-    
+        return style;
+    }
+
     public void setStyle(FieldStyle style) {
-		this.style = style;
-	}
+        this.style = style;
+    }
 }
