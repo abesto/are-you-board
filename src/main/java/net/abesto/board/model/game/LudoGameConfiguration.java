@@ -1,6 +1,9 @@
-package net.abesto.board.model.games;
+package net.abesto.board.model.game;
 
-import net.abesto.board.model.*;
+import net.abesto.board.model.board.FieldProvider;
+import net.abesto.board.model.board.RectangleMatrixBoard;
+import net.abesto.board.model.board.RectangleMatrixBoardSize;
+import net.abesto.board.model.board.RectangleMatrixCssClassSimpleFieldProvider;
 import org.springframework.context.annotation.Bean;
 
 import java.io.IOException;

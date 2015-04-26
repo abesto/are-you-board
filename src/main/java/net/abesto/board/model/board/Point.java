@@ -1,6 +1,6 @@
-package net.abesto.board.model;
+package net.abesto.board.model.board;
 
-public final class Point {
+public final class Point implements BoardIndex {
     private int row, column;
 
     public Point(int row, int column) {
@@ -36,5 +36,9 @@ public final class Point {
             return false;
         Point other = (Point) obj;
         return column == other.column && row == other.row;
+    }
+
+    public Point offset(Point vector) {
+        return new Point(row + vector.row, column + vector.column);
     }
 }

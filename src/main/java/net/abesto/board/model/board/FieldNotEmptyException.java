@@ -1,4 +1,7 @@
-package net.abesto.board.model;
+package net.abesto.board.model.board;
+
+import net.abesto.board.model.ModelException;
+import net.abesto.board.model.Piece;
 
 public class FieldNotEmptyException extends ModelException {
     private static final long serialVersionUID = 6497132820674535439L;

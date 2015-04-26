@@ -1,5 +1,6 @@
 package net.abesto.board.model;
 
+import net.abesto.board.model.board.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.annotation.Bean;

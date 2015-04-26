@@ -1,6 +1,8 @@
-package net.abesto.board.model;
+package net.abesto.board.model.board;
 
-public class RectangleMatrixField extends Field<Point> {
+import net.abesto.board.model.side.Side;
+
+public class RectangleMatrixField<S extends Side> extends Field<Point, S> {
     public RectangleMatrixField(int row, int column) {
         this(new Point(row, column));
     }

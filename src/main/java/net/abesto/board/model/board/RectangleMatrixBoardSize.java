@@ -1,4 +1,4 @@
-package net.abesto.board.model;
+package net.abesto.board.model.board;
 
 public class RectangleMatrixBoardSize {
     protected int width, height;

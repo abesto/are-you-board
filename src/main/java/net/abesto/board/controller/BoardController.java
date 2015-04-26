@@ -1,9 +1,9 @@
 package net.abesto.board.controller;
 
-import net.abesto.board.model.GameContextManager;
-import net.abesto.board.model.RectangleMatrixBoard;
-import net.abesto.board.model.games.EmptyBoardConfiguration;
-import net.abesto.board.model.games.LudoGameConfiguration;
+import net.abesto.board.model.board.RectangleMatrixBoard;
+import net.abesto.board.model.game.EmptyBoardConfiguration;
+import net.abesto.board.model.game.GameContextManager;
+import net.abesto.board.model.game.LudoGameConfiguration;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

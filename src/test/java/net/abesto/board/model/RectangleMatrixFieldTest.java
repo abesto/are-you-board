@@ -1,5 +1,9 @@
 package net.abesto.board.model;
 
+import net.abesto.board.model.board.Field;
+import net.abesto.board.model.board.FieldEmptyException;
+import net.abesto.board.model.board.FieldNotEmptyException;
+import net.abesto.board.model.board.RectangleMatrixField;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -10,7 +14,7 @@ public class RectangleMatrixFieldTest {
     }
 
     private static Piece givenAPiece() {
-        return new Piece();
+        return new Piece(null);
     }
 
     private static Field givenAFieldWithAPiece() {

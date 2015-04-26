@@ -1,4 +1,4 @@
-package net.abesto.board.model;
+package net.abesto.board.model.board;
 
 public class FieldStyleCssClassName extends FieldStyle {
     private String className;

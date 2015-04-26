@@ -1,4 +1,6 @@
-package net.abesto.board.model;
+package net.abesto.board.model.board;
+
+import net.abesto.board.model.side.Side;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +9,7 @@ import java.util.Map;
  * @param <I> Type used to index the fields of this board
  * @param <F> Type of field used in this board
  */
-public abstract class Board<I, F extends Field<I>> {
+public abstract class Board<I extends BoardIndex, S extends Side, F extends Field<I, S>> {
     protected FieldProvider<I, F> fieldProvider;
     protected boolean fieldsInitialized;
     private Map<I, F> fields;
@@ -28,9 +30,14 @@ public abstract class Board<I, F extends Field<I>> {
         fieldsInitialized = true;
     }
 
+    public boolean hasField(I index) {
+        initializeFields();
+        return fields.containsKey(index);
+    }
+
     public F getField(I index) {
         initializeFields();
-        if (!fields.containsKey(index)) {
+        if (!hasField(index)) {
             throw new IndexOutOfBoundsException();
         }
         return fields.get(index);

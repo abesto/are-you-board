@@ -1,6 +1,6 @@
-package net.abesto.board.model;
+package net.abesto.board.model.board;
 
-public class RectangleMatrixSimpleFieldProvider extends FieldProvider<Point, RectangleMatrixField> {
+public class RectangleMatrixSimpleFieldProvider extends FieldProvider<Point, RectangleMatrixField<?>> {
     @Override
     public RectangleMatrixField get(Point point) {
         return new RectangleMatrixField(point);

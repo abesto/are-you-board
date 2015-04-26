@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.googlecode.lanterna:lanterna:2.0.4">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.googlecode.lanterna/lanterna/2.0.4/7b46b7c7aa8c6b9f0ef589b0363a3bc5bef346c6/lanterna-2.0.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.googlecode.lanterna/lanterna/2.0.4/823171fd3032ac7559aa3e5a7290b83b53cc5e72/lanterna-2.0.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

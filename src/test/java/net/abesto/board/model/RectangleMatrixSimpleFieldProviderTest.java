@@ -1,5 +1,8 @@
 package net.abesto.board.model;
 
+import net.abesto.board.model.board.Field;
+import net.abesto.board.model.board.Point;
+import net.abesto.board.model.board.RectangleMatrixSimpleFieldProvider;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

@@ -1,5 +1,6 @@
 package net.abesto.board.model;
 
+import net.abesto.board.model.board.Point;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

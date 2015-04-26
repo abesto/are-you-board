@@ -1,6 +1,10 @@
 package net.abesto.board.model;
 
-import net.abesto.board.model.games.LudoGameConfiguration;
+import net.abesto.board.model.board.Point;
+import net.abesto.board.model.board.RectangleMatrixBoard;
+import net.abesto.board.model.board.RectangleMatrixField;
+import net.abesto.board.model.game.LudoGameConfiguration;
+import net.abesto.board.model.side.Side;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -70,8 +74,8 @@ public class LudoBoardTest extends AbstractJUnit4SpringContextTests {
     public void testGetFields() {
         int row = 0;
         int column = 0;
-        RectangleMatrixBoard board = givenAnEmptyBoard();
-        for (Iterable<RectangleMatrixField> rowFields : board.getFieldsTable()) {
+        RectangleMatrixBoard<?> board = givenAnEmptyBoard();
+        for (Iterable<? extends RectangleMatrixField<? extends Side>> rowFields : board.getFieldsTable()) {
             for (RectangleMatrixField field : rowFields) {
                 assertEquals(row, field.getRow());
                 assertEquals(column, field.getColumn());

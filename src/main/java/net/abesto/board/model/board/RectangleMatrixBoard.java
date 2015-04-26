@@ -1,14 +1,16 @@
-package net.abesto.board.model;
+package net.abesto.board.model.board;
+
+import net.abesto.board.model.side.Side;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class RectangleMatrixBoard extends Board<Point, RectangleMatrixField> {
+public class RectangleMatrixBoard<S extends Side> extends Board<Point, S, RectangleMatrixField<S>> {
     protected RectangleMatrixBoardSize size;
 
     public RectangleMatrixBoard(
-            FieldProvider<Point, RectangleMatrixField> fieldProvider,
+            FieldProvider<Point, RectangleMatrixField<S>> fieldProvider,
             RectangleMatrixBoardSize size
     ) {
         super(fieldProvider);
@@ -30,13 +32,13 @@ public class RectangleMatrixBoard extends Board<Point, RectangleMatrixField> {
         return indexes;
     }
 
-    public RectangleMatrixField getField(int row, int column) {
+    public RectangleMatrixField<S> getField(int row, int column) {
         return getField(new Point(row, column));
     }
 
-    public Iterable<? extends Iterable<RectangleMatrixField>> getFieldsTable() {
+    public Iterable<Iterable<RectangleMatrixField<S>>> getFieldsTable() {
         return IntStream.range(0, getHeight()).mapToObj((int row) ->
-                        (Iterable<RectangleMatrixField>) IntStream.range(0, getWidth()).mapToObj((int column) ->
+                        (Iterable<RectangleMatrixField<S>>) IntStream.range(0, getWidth()).mapToObj((int column) ->
                                         getField(row, column)
                         )::iterator
         )::iterator;

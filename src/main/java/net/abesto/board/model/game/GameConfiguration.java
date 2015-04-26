@@ -1,4 +1,4 @@
-package net.abesto.board.model;
+package net.abesto.board.model.game;
 
 import org.springframework.stereotype.Component;
 
