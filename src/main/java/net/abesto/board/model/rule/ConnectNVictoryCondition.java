@@ -3,7 +3,6 @@ package net.abesto.board.model.rule;
 import net.abesto.board.model.Game;
 import net.abesto.board.model.action.Action;
 import net.abesto.board.model.action.HasTarget;
-import net.abesto.board.model.board.Field;
 import net.abesto.board.model.board.Point;
 import net.abesto.board.model.board.RectangleMatrixBoard;
 import net.abesto.board.model.board.RectangleMatrixField;
@@ -11,33 +10,14 @@ import net.abesto.board.model.side.ConnectNSide;
 import net.abesto.board.model.side.Side;
 
 public class ConnectNVictoryCondition extends Rule {
-    protected int n;
     public static Axis[] axes = {
             new Axis(new Point(0, 1), new Point(0, -1)),
             new Axis(new Point(1, 0), new Point(-1, 0)),
             new Axis(new Point(-1, -1), new Point(1, 1)),
             new Axis(new Point(1, -1), new Point(-1, 1))
     };
+    protected int n;
 
-
-    public static class Axis {
-        public Point getVectorA() {
-            return vectorA;
-        }
-
-        public Point getVectorB() {
-            return vectorB;
-        }
-
-        public Axis(Point vectorA, Point vectorB) {
-
-            this.vectorA = vectorA;
-            this.vectorB = vectorB;
-        }
-
-        Point vectorA;
-        Point vectorB;
-    }
 
     public ConnectNVictoryCondition(int n) {
         this.n = n;
@@ -69,5 +49,24 @@ public class ConnectNVictoryCondition extends Rule {
             p = p.offset(vector);
         }
         return count;
+    }
+
+    public static class Axis {
+        Point vectorA;
+        Point vectorB;
+
+        public Axis(Point vectorA, Point vectorB) {
+
+            this.vectorA = vectorA;
+            this.vectorB = vectorB;
+        }
+
+        public Point getVectorA() {
+            return vectorA;
+        }
+
+        public Point getVectorB() {
+            return vectorB;
+        }
     }
 }

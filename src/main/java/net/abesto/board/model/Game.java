@@ -12,16 +12,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Game<S extends Side> {
-    protected Board<?,?,?> board;
+    protected Board<?, ?, ?> board;
     protected RuleRunner ruleRunner;
     protected Sides<S> sides;
+    protected Map<S, User> playerMap;
+    protected boolean over;
+    protected S winner;
+
+    public Game(
+            Board<?, ?, ?> board,
+            RuleMap ruleMap,
+            Sides<S> sides) {
+        this.board = board;
+        over = false;
+        ruleRunner = new RuleRunner(ruleMap);
+        this.sides = sides;
+        playerMap = new HashMap<>();
+    }
 
     public Map<S, User> getPlayerMap() {
         return playerMap;
     }
-
-    protected Map<S, User> playerMap;
-    protected boolean over;
 
     public S getWinnerSide() {
         return winner;
@@ -33,19 +44,6 @@ public class Game<S extends Side> {
 
     public void setWinner(S winner) {
         this.winner = winner;
-    }
-
-    protected S winner;
-
-    public Game(
-            Board<?,?,?> board,
-            RuleMap ruleMap,
-            Sides<S> sides) {
-        this.board = board;
-        over = false;
-        ruleRunner = new RuleRunner(ruleMap);
-        this.sides = sides;
-        playerMap = new HashMap<>();
     }
 
     public boolean isOver() {
@@ -64,7 +62,7 @@ public class Game<S extends Side> {
         return playerMap.get(getCurrentSide());
     }
 
-    public Board<?,?,?> getBoard() {
+    public Board<?, ?, ?> getBoard() {
         return board;
     }
 
