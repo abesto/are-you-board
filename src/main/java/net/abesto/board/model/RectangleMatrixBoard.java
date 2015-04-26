@@ -4,9 +4,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public abstract class RectangleMatrixBoard extends Board<Point, RectangleMatrixField> {
-    public RectangleMatrixBoard(FieldProvider<Point, RectangleMatrixField> fieldProvider) {
+public class RectangleMatrixBoard extends Board<Point, RectangleMatrixField> {
+    protected RectangleMatrixBoardSize size;
+
+    public RectangleMatrixBoard(
+            FieldProvider<Point, RectangleMatrixField> fieldProvider,
+            RectangleMatrixBoardSize size
+    ) {
         super(fieldProvider);
+        this.size = size;
+    }
+
+    public RectangleMatrixBoardSize getSize() {
+        return size;
     }
 
     @Override
@@ -32,7 +42,11 @@ public abstract class RectangleMatrixBoard extends Board<Point, RectangleMatrixF
         )::iterator;
     }
 
-    public abstract int getWidth();
+    public int getWidth() {
+        return size.getWidth();
+    }
 
-    public abstract int getHeight();
+    public int getHeight() {
+        return size.getHeight();
+    }
 }

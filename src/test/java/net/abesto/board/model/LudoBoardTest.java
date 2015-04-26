@@ -1,5 +1,6 @@
 package net.abesto.board.model;
 
+import net.abesto.board.model.games.LudoGameConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.annotation.Bean;
@@ -12,22 +13,17 @@ import java.util.function.Consumer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-class BoardTestConfiguration {
+class BoardTestConfiguration extends LudoGameConfiguration {
     @Bean
     public RectangleMatrixSimpleFieldProvider getFieldProvider() {
         return new RectangleMatrixSimpleFieldProvider();
-    }
-
-    @Bean
-    public LudoBoard getBoard() {
-        return new LudoBoard(getFieldProvider());
     }
 }
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {BoardTestConfiguration.class})
 public class LudoBoardTest extends AbstractJUnit4SpringContextTests {
-    private static void forEachPosition(LudoBoard board, Consumer<Point> consumer) {
+    private static void forEachPosition(RectangleMatrixBoard board, Consumer<Point> consumer) {
         for (int row = 0; row < board.getHeight(); row++) {
             for (int column = 0; column < board.getWidth(); column++) {
                 consumer.accept(new Point(row, column));
@@ -35,8 +31,8 @@ public class LudoBoardTest extends AbstractJUnit4SpringContextTests {
         }
     }
 
-    private LudoBoard givenAnEmptyBoard() {
-        return (LudoBoard) applicationContext.getBean(LudoBoard.class);
+    private RectangleMatrixBoard givenAnEmptyBoard() {
+        return applicationContext.getBean(RectangleMatrixBoard.class);
     }
 
     @Test
@@ -51,7 +47,7 @@ public class LudoBoardTest extends AbstractJUnit4SpringContextTests {
 
     @Test
     public void testFieldsGeneratedWithCorrectPosition() {
-        LudoBoard board = givenAnEmptyBoard();
+        RectangleMatrixBoard board = givenAnEmptyBoard();
         forEachPosition(board, (Point point) -> {
             assertEquals(point, board.getField(point).getIndex());
         });
@@ -59,19 +55,19 @@ public class LudoBoardTest extends AbstractJUnit4SpringContextTests {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testGetFieldThrowsArrayIndexOutOfBoundsExceptionForWidth() {
-        LudoBoard board = givenAnEmptyBoard();
+        RectangleMatrixBoard board = givenAnEmptyBoard();
         board.getField(0, board.getWidth());
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testGetFieldThrowsArrayIndexOutOfBoundsExceptionForHeight() {
-        LudoBoard board = givenAnEmptyBoard();
+        RectangleMatrixBoard board = givenAnEmptyBoard();
         board.getField(board.getHeight(), 0);
     }
 
     @Test
     public void testGetField() {
-        LudoBoard board = givenAnEmptyBoard();
+        RectangleMatrixBoard board = givenAnEmptyBoard();
         int row = 1;
         int column = 5;
         Point point = new Point(row, column);
@@ -82,7 +78,7 @@ public class LudoBoardTest extends AbstractJUnit4SpringContextTests {
     public void testGetFields() {
         int row = 0;
         int column = 0;
-        LudoBoard board = givenAnEmptyBoard();
+        RectangleMatrixBoard board = givenAnEmptyBoard();
         for (Iterable<RectangleMatrixField> rowFields : board.getFieldsTable()) {
             for (RectangleMatrixField field : rowFields) {
                 assertEquals(row, field.getRow());

@@ -1,9 +1,6 @@
-package net.abesto.board.controller;
+package net.abesto.board.model.games;
 
-import net.abesto.board.model.FieldProvider;
-import net.abesto.board.model.GameConfiguration;
-import net.abesto.board.model.LudoBoard;
-import net.abesto.board.model.RectangleMatrixCssClassSimpleFieldProvider;
+import net.abesto.board.model.*;
 import org.springframework.context.annotation.Bean;
 
 import java.io.IOException;
@@ -21,8 +18,13 @@ public class LudoGameConfiguration {
     }
 
     @Bean
-    public LudoBoard getBoard() throws IOException {
-        return new LudoBoard(getFieldProvider());
+    public RectangleMatrixBoardSize getBoardSize() {
+        return new RectangleMatrixBoardSize(11, 11);
+    }
+
+    @Bean
+    public RectangleMatrixBoard getBoard() throws IOException {
+        return new RectangleMatrixBoard(getFieldProvider(), getBoardSize());
     }
 
 }

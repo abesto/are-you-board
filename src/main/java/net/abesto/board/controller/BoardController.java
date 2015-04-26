@@ -1,7 +1,9 @@
 package net.abesto.board.controller;
 
 import net.abesto.board.model.GameContextManager;
-import net.abesto.board.model.LudoBoard;
+import net.abesto.board.model.RectangleMatrixBoard;
+import net.abesto.board.model.games.EmptyBoardConfiguration;
+import net.abesto.board.model.games.LudoGameConfiguration;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,9 +29,9 @@ public class BoardController {
         return "board";
     }
 
-    public LudoBoard getBoard(Class<?> configuration) {
+    public RectangleMatrixBoard getBoard(Class<?> configuration) {
         return beanFactory.getBean(GameContextManager.class)
                 .getContext(configuration)
-                .getBean(LudoBoard.class);
+                .getBean(RectangleMatrixBoard.class);
     }
 }
