@@ -24,6 +24,8 @@ jar {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+mainClassName = "net.abesto.board.BoardApplication"
+
 repositories {
     mavenCentral()
 }
