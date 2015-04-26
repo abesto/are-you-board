@@ -3,7 +3,6 @@ package net.abesto.board.model;
 import net.abesto.board.model.games.LudoGameConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -13,15 +12,8 @@ import java.util.function.Consumer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-class BoardTestConfiguration extends LudoGameConfiguration {
-    @Bean
-    public RectangleMatrixSimpleFieldProvider getFieldProvider() {
-        return new RectangleMatrixSimpleFieldProvider();
-    }
-}
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {BoardTestConfiguration.class})
+@ContextConfiguration(classes = {LudoGameConfiguration.class})
 public class LudoBoardTest extends AbstractJUnit4SpringContextTests {
     private static void forEachPosition(RectangleMatrixBoard board, Consumer<Point> consumer) {
         for (int row = 0; row < board.getHeight(); row++) {
