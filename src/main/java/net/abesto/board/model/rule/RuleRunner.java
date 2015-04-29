@@ -5,23 +5,19 @@ import net.abesto.board.model.action.Action;
 
 import java.util.List;
 
-public class RuleRunner {
-    protected RuleMap ruleMap;
+public class RuleRunner<G extends Game<?, ?>> {
+    protected RuleMap<G> ruleMap;
 
-    public RuleRunner(RuleMap ruleMap) {
+    public RuleRunner(RuleMap<G> ruleMap) {
         this.ruleMap = ruleMap;
     }
 
-    protected List<Rule> rulesForAction(Action action) {
-        return ruleMap.get(action.getClass());
-    }
-
-    public RuleCheckResult check(Game game, Action action) {
-        List<Rule> rules = rulesForAction(action);
+    public <A extends Action> RuleCheckResult check(G game, A action) {
+        List<Rule<G, ? super A>> rules = getRules(action);
         if (rules == null) {
             return RuleCheckResult.valid();
         }
-        for (Rule rule : rules) {
+        for (Rule<G, ? super A> rule : rules) {
             RuleCheckResult result = rule.check(game, action);
             if (!result.isValid()) {
                 return result;
@@ -30,10 +26,14 @@ public class RuleRunner {
         return RuleCheckResult.valid();
     }
 
-    public void run(Game game, Action action) {
-        List<Rule> rules = rulesForAction(action);
+    private <A extends Action> List<Rule<G, ? super A>> getRules(A action) {
+        return ruleMap.get(action);
+    }
+
+    public <A extends Action> void run(G game, A action) {
+        List<Rule<G, ? super A>> rules = getRules(action);
         if (rules != null) {
-            for (Rule rule : rules) {
+            for (Rule<G, ? super A> rule : rules) {
                 rule.apply(game, action);
             }
         }

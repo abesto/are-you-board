@@ -27,6 +27,7 @@ class ConnectNVictoryConditionTestConfiguration extends TicTacToeConfiguration {
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ConnectNVictoryConditionTestConfiguration.class})
+@SuppressWarnings("unchecked")
 public class ConnectNVictoryConditionTest extends AbstractJUnit4SpringContextTests {
     private RectangleMatrixBoard<ConnectNSide> givenAnEmptyBoard() {
         return applicationContext.getBean(RectangleMatrixBoard.class);
@@ -105,17 +106,18 @@ public class ConnectNVictoryConditionTest extends AbstractJUnit4SpringContextTes
         for (ConnectNVictoryCondition.Axis axis : ConnectNVictoryCondition.axes) {
             Game game = givenAGame();
             RectangleMatrixBoard<ConnectNSide> board = (RectangleMatrixBoard) game.getBoard();
+            RectangleMatrixField centerField = board.getField(center);
 
             board.getField(center).setPiece(pieceO());
-            action.apply(game, new RectangleMatrixClick(null, center));
+            action.apply(game, new RectangleMatrixClick(null, centerField));
             assertFalse(game.isOver());
 
             board.getField(center.offset(axis.getVectorA())).setPiece(pieceO());
-            action.apply(game, new RectangleMatrixClick(null, center));
+            action.apply(game, new RectangleMatrixClick(null, centerField));
             assertFalse(game.isOver());
 
             board.getField(center.offset(axis.getVectorB())).setPiece(pieceO());
-            action.apply(game, new RectangleMatrixClick(null, center));
+            action.apply(game, new RectangleMatrixClick(null, centerField));
             assertTrue(game.isOver());
         }
     }

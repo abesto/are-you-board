@@ -8,6 +8,7 @@ import java.util.Map;
 /**
  * @param <I> Type used to index the fields of this board
  * @param <F> Type of field used in this board
+ * @param <S> The type of Side used by the fields on this board
  */
 public abstract class Board<I extends BoardIndex, S extends Side, F extends Field<I, S>> {
     protected FieldProvider<I, F> fieldProvider;

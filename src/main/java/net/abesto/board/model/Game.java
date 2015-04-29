@@ -11,21 +11,21 @@ import net.abesto.board.model.side.Sides;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Game<S extends Side> {
-    protected Board<?, ?, ?> board;
-    protected RuleRunner ruleRunner;
+public class Game<S extends Side, B extends Board> {
+    protected B board;
+    protected RuleRunner<Game<S, B>> ruleRunner;
     protected Sides<S> sides;
     protected Map<S, User> playerMap;
     protected boolean over;
     protected S winner;
 
     public Game(
-            Board<?, ?, ?> board,
-            RuleMap ruleMap,
+            B board,
+            RuleMap<Game<S, B>> ruleMap,
             Sides<S> sides) {
         this.board = board;
         over = false;
-        ruleRunner = new RuleRunner(ruleMap);
+        ruleRunner = new RuleRunner<>(ruleMap);
         this.sides = sides;
         playerMap = new HashMap<>();
     }
@@ -62,7 +62,7 @@ public class Game<S extends Side> {
         return playerMap.get(getCurrentSide());
     }
 
-    public Board<?, ?, ?> getBoard() {
+    public B getBoard() {
         return board;
     }
 

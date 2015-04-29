@@ -1,5 +1,6 @@
 package net.abesto.board.model.board;
 
+import net.abesto.board.model.side.Side;
 import org.springframework.core.io.ClassPathResource;
 
 import javax.inject.Inject;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class RectangleMatrixCssClassSimpleFieldProvider extends RectangleMatrixSimpleFieldProvider {
+public class RectangleMatrixCssClassSimpleFieldProvider<S extends Side> extends RectangleMatrixFieldProvider<S> {
     private static final char BLANK = '.';
     private List<String> fields;
 
@@ -28,7 +29,7 @@ public class RectangleMatrixCssClassSimpleFieldProvider extends RectangleMatrixS
     }
 
     @Override
-    public RectangleMatrixField get(Point point) {
+    public RectangleMatrixField<S> get(Point point) {
         char def = fields.get(point.getRow()).charAt(point.getColumn());
         FieldStyle style;
         if (def == BLANK) {
@@ -36,6 +37,6 @@ public class RectangleMatrixCssClassSimpleFieldProvider extends RectangleMatrixS
         } else {
             style = new FieldStyleCssClassName(Character.toString(def));
         }
-        return new RectangleMatrixField(point, style);
+        return new RectangleMatrixField<>(point, style);
     }
 }

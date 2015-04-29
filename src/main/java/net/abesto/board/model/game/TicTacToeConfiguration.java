@@ -2,9 +2,7 @@ package net.abesto.board.model.game;
 
 import net.abesto.board.model.Game;
 import net.abesto.board.model.action.RectangleMatrixClick;
-import net.abesto.board.model.board.RectangleMatrixBoard;
-import net.abesto.board.model.board.RectangleMatrixBoardSize;
-import net.abesto.board.model.board.RectangleMatrixSimpleFieldProvider;
+import net.abesto.board.model.board.*;
 import net.abesto.board.model.rule.*;
 import net.abesto.board.model.side.ConnectNSide;
 import net.abesto.board.model.side.ConnectNSides;
@@ -13,12 +11,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @GameConfiguration
 public class TicTacToeConfiguration {
     @Bean
-    public RectangleMatrixSimpleFieldProvider getFieldProvider() {
-        return new RectangleMatrixSimpleFieldProvider();
+    public RectangleMatrixFieldProvider<ConnectNSide> getFieldProvider() {
+        return new RectangleMatrixSimpleFieldProvider<>();
     }
 
     @Bean
@@ -28,20 +27,19 @@ public class TicTacToeConfiguration {
 
     @Bean
     @Scope("prototype")
-    public RectangleMatrixBoard getBoard() throws IOException {
-        return new RectangleMatrixBoard(getFieldProvider(), getBoardSize());
+    public RectangleMatrixBoard<ConnectNSide> getBoard() throws IOException {
+        return new RectangleMatrixBoard<>(getFieldProvider(), getBoardSize());
     }
 
     @Bean
-    public RuleMap getRuleMap() {
-        RuleMap map = new RuleMap();
-        map.setRulesForAction(RectangleMatrixClick.class,
-                new OnlyCurrentPlayerMayMove(),
-                new OnlyOnePieceOnOneField(),
-                new PlaceNewPieceAtTarget(new SideProviderCurrent()),
-                new NextPlayer(),
-                new ConnectNVictoryCondition(3)
-        );
+    public RuleMap<Game<ConnectNSide, RectangleMatrixBoard<ConnectNSide>>> getRuleMap() {
+        RuleMap<Game<ConnectNSide, RectangleMatrixBoard<ConnectNSide>>> map = new RuleMap<>();
+        map.appendRuleForAction(RectangleMatrixClick.class, new OnlyCurrentPlayerMayMove<>());
+        map.appendRuleForAction(RectangleMatrixClick.class, new OnlyOnePieceOnOneField<>());
+        map.appendRuleForAction(RectangleMatrixClick.class, new PlaceNewPieceAtTarget<>(new SideProviderCurrent<>()));
+        map.appendRuleForAction(RectangleMatrixClick.class, new NextPlayer<>());
+        map.appendRuleForAction(RectangleMatrixClick.class, new ConnectNVictoryCondition<>(3));
+
         return map;
     }
 

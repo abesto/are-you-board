@@ -2,21 +2,19 @@ package net.abesto.board.model.action;
 
 import net.abesto.board.model.User;
 import net.abesto.board.model.board.Point;
+import net.abesto.board.model.board.RectangleMatrixField;
+import net.abesto.board.model.side.Side;
 
-public class RectangleMatrixClick extends Action implements HasTarget {
-    protected Point point;
+public class RectangleMatrixClick<S extends Side> extends Action implements HasTarget<RectangleMatrixField<S>> {
+    protected RectangleMatrixField<S> field;
 
-    public RectangleMatrixClick(User player, Point point) {
+    public RectangleMatrixClick(User player, RectangleMatrixField<S> field) {
         super(player);
-        this.point = point;
-    }
-
-    public Point getPoint() {
-        return point;
+        this.field = field;
     }
 
     @Override
-    public Point getTarget() {
-        return point;
+    public RectangleMatrixField<S> getTarget() {
+        return field;
     }
 }

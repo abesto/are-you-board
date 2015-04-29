@@ -10,7 +10,7 @@ public class RectangleMatrixBoard<S extends Side> extends Board<Point, S, Rectan
     protected RectangleMatrixBoardSize size;
 
     public RectangleMatrixBoard(
-            FieldProvider<Point, RectangleMatrixField<S>> fieldProvider,
+            RectangleMatrixFieldProvider<S> fieldProvider,
             RectangleMatrixBoardSize size
     ) {
         super(fieldProvider);

@@ -1,7 +1,6 @@
 package net.abesto.board.controller;
 
 import net.abesto.board.model.board.RectangleMatrixBoard;
-import net.abesto.board.model.game.EmptyBoardConfiguration;
 import net.abesto.board.model.game.GameContextManager;
 import net.abesto.board.model.game.LudoGameConfiguration;
 import org.springframework.beans.factory.BeanFactory;
@@ -16,12 +15,6 @@ import javax.inject.Inject;
 public class BoardController {
     @Inject
     private BeanFactory beanFactory;
-
-    @RequestMapping("/empty")
-    public String empty(Model model) {
-        model.addAttribute("board", getBoard(EmptyBoardConfiguration.class));
-        return "board";
-    }
 
     @RequestMapping("/ludo")
     public String ludo(Model model) {
