@@ -1,31 +1,31 @@
 buildscript {
-	ext.kotlinVersion = '0.9.66'
-	ext.resteasyVersion = '3.0.10.Final'
+	ext.kotlinVersion = "0.12.613"
+	ext.resteasyVersion = "3.0.12.Final"
 	repositories {
 		jcenter()
 	}
 	dependencies {
 		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}",
-				'org.akhikhl.gretty:gretty:+'
+				"org.akhikhl.gretty:gretty:+"
 	}
 }
 
-apply plugin: 'kotlin'
-apply plugin: 'war'
-apply plugin: 'org.akhikhl.gretty'
+apply plugin: "kotlin"
+apply plugin: "war"
+apply plugin: "org.akhikhl.gretty"
 
 repositories {
 	jcenter()
 }
 
 dependencies {
-	compile 'org.slf4j:slf4j-api:1.7.5',
+	compile "org.webjars:jquery:2.1.4",
 			"org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}",
-			"org.jboss.resteasy:resteasy-jaxrs:${resteasyVersion}",
-			"org.jboss.resteasy:resteasy-servlet-initializer:${resteasyVersion}"
-	providedCompile 'javax.servlet:servlet-api:2.5',
-			'org.eclipse.jetty:jetty-server:9.2.5.v20141112'
-	testCompile "junit:junit:4.11"
+			"com.cedarsoftware:json-io:4.1.6"
+}
+
+project(":shared").sourceSets.main.kotlin.srcDirs.each {
+	sourceSets.main.kotlin.srcDir it
 }
 
 gretty {
@@ -33,3 +33,4 @@ gretty {
 	extraResourceBase new File(project(":client").projectDir, "web")
 	scanDir "${projectDir}/src/main/kotlin"
 }
+

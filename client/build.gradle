@@ -1,35 +1,43 @@
 buildscript {
-	ext.kotlinVersion = '0.1-SNAPSHOT'
+	ext.kotlinVersion = '0.12.613'
 	repositories {
-		mavenLocal()
-		maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
 		jcenter()
-		mavenCentral()
 	}
 
 	dependencies {
 		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 	}
 }
-
 apply plugin: 'kotlin2js'
 
 repositories {
-	mavenLocal()
-	maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
 	jcenter()
-	mavenCentral()
 }
+
+evaluationDependsOn(':shared')
 
 dependencies {
 	compile "org.jetbrains.kotlin:kotlin-js-library:$kotlinVersion"
 }
 
-compileKotlin2Js.kotlinOptions.outputFile = "${projectDir}/web/js/app.js"
-compileKotlin2Js.kotlinOptions.suppressWarnings = true
-compileKotlin2Js.kotlinOptions.verbose = true
-compileKotlin2Js.kotlinOptions.version = true
-compileKotlin2Js.kotlinOptions.sourceMap = true
+project(":shared").sourceSets.main.kotlin.srcDirs.each {
+	sourceSets.main.kotlin.srcDir it
+}
 
-copyKotlinJs.into "${projectDir}/web/js/lib"
+compileKotlin2Js.kotlinOptions.outputFile = "${projectDir}/web/js/app.js"
+
+task copyJsFilesFromDependencies(dependsOn: build) << {
+	configurations.compile.each { File file ->
+		copy {
+			includeEmptyDirs = false
+
+			from zipTree(file.absolutePath)
+			into "${projectDir}/web/js/lib"
+			include { fileTreeElement ->
+				def path = fileTreeElement.path
+				path.endsWith(".js") && (path.startsWith("META-INF/resources/") || !path.startsWith("META-INF/"))
+			}
+		}
+	}
+}
 
