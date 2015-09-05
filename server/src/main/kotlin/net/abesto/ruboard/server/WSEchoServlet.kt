@@ -1,7 +1,5 @@
 package net.abesto.ruboard.server
 
-import com.cedarsoftware.util.io.JsonReader
-import com.cedarsoftware.util.io.JsonWriter
 import net.abesto.ruboard.shared.messages.MsgBye
 import net.abesto.ruboard.shared.messages.MsgHello
 import net.abesto.ruboard.shared.messages.TestMessage
