@@ -20,8 +20,7 @@ repositories {
 
 dependencies {
 	compile "org.webjars:jquery:2.1.4",
-			"org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}",
-			"com.cedarsoftware:json-io:4.1.6"
+			"org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}"
 }
 
 project(":shared").sourceSets.main.kotlin.srcDirs.each {
