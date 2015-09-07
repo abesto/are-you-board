@@ -1,0 +1,25 @@
+{
+  "name": "are-you-board",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abesto/are-you-board.git"
+  },
+  "author": "Zoltan Nagy <abesto0@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/abesto/are-you-board/issues"
+  },
+  "homepage": "https://github.com/abesto/are-you-board#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-tslint": "^3.2.0",
+    "gulp-typescript": "^2.8.2",
+    "merge2": "^0.3.6"
+  }
+}

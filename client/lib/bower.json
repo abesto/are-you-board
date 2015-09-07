@@ -1,0 +1,19 @@
+{
+  "name": "are-you-board",
+  "version": "0.0.0",
+  "homepage": "https://github.com/abesto/are-you-board",
+  "authors": [
+    "Zoltan Nagy <abesto0@gmail.com>"
+  ],
+  "license": "ISC",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4"
+  }
+}

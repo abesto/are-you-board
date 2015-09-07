@@ -1,0 +1,25 @@
+nginx-data:
+  image: nginx
+  volumes:
+    - ./client/build:/usr/share/nginx/html
+
+nginx:
+  image: nginx
+  volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  volumes_from:
+    - nginx-data
+  ports:
+    - 8080:80
+  links:
+    - app
+
+app:
+  image: node
+  volumes:
+    - ./server/build:/app
+  command: >
+    bash -c "
+      cd /app
+      npm install
+      node app.js"
