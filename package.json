@@ -17,9 +17,7 @@
   },
   "homepage": "https://github.com/abesto/are-you-board#readme",
   "devDependencies": {
-    "gulp": "^3.9.0",
-    "gulp-tslint": "^3.2.0",
-    "gulp-typescript": "^2.8.2",
-    "merge2": "^0.3.6"
+    "tslint": "^2.4.5",
+    "typescript": "^1.5.3"
   }
 }

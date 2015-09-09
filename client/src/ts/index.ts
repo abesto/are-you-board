@@ -6,4 +6,4 @@ const msg: Message = new Message();
 console.log(msg);
 
 // Make a request
-$.get('/api/test', function (data) { console.log(data); });
+$.get("/api/test", function (data) { console.log(data); });

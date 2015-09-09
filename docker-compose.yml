@@ -22,4 +22,4 @@ app:
     bash -c "
       cd /app
       npm install
-      node app.js"
+      node index.js"
