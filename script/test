@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+cd "$(dirname "$0")/.."
+
+echo "==> Setting NODE_ENV to 'dev'"
+export NODE_ENV=dev
+
+./script/update
+
+echo "==> TODO: Set up tests for server"
+echo "==> TODO: Set up tests for client"

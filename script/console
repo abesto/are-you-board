@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+cd "$(dirname "$0")/.."
+
+docker-compose start
+docker-compose run --rm $1 bash
