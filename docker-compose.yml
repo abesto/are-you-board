@@ -15,11 +15,11 @@ nginx:
     - app
 
 app:
-  image: node
+  build: server
   volumes:
     - ./server/build:/app
-  command: >
-    bash -c "
-      cd /app
-      npm install
-      node index.js"
+  links:
+    - mongo
+
+mongo:
+  image: mongo

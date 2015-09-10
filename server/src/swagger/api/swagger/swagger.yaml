@@ -1,0 +1,94 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Hello World App
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /api/
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /cat:
+    x-swagger-router-controller: cat
+    get:
+      description: List cats
+      operationId: list
+      responses:
+        200:
+          description: A list of cats
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Cat"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Create a cat
+      operationId: create
+      parameters:
+        - name: cat
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/CreateCatRequest"
+      responses:
+        "200":
+          description: "Cat created"
+          schema:
+            $ref: "#/definitions/Cat"
+  /cat/{id}:
+    x-swagger-router-controller: cat
+    get:
+      description: Get a cat by id
+      operationId: getById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: A cat
+          schema:
+            $ref: "#/definitions/Cat"
+
+# complex objects have schema definitions
+definitions:
+  CreateCatRequest:
+    required:
+      - name
+    properties:
+      name:
+        type: string
+  Cat:
+    required:
+      - _id
+      - uri
+      - name
+    properties:
+      _id:
+        type: string
+      uri:
+        type: string
+      name:
+        type: string
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+

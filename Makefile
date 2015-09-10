@@ -1,7 +1,9 @@
 TSLINT=node_modules/tslint/bin/tslint
 TSC=node_modules/typescript/bin/tsc
+DOCKER_COMPOSE=docker-compose
+DOCKER=docker
 
-CLIENT_TS=$(shell find client/src/ts -name '*.ts' | grep -v '.d.ts')
+CLIENT_TS=$(shell find client/src/ts -name '*.ts' | grep -v '\.d\.ts')
 CLIENT_JS=client/build/js/app.js
 CLIENT_JS_MAP=client/build/js/app.js.map
 CLIENT_STATIC_SRC=$(shell find client/src/static -type f)
@@ -10,14 +12,16 @@ CLIENT_LIB_SRC=$(shell find client/lib/bower_components -type f)
 CLIENT_LIB_DST=$(patsubst client/lib/bower_components/%,client/build/lib/%,${CLIENT_LIB_SRC})
 CLIENT_DIRS=$(sort $(dir ${CLIENT_JS} ${CLIENT_STATIC_DST} ${CLIENT_LIB_DST}))
 
-SERVER_TS=$(shell find server/src/ts -name '*.ts' | grep -v '.d.ts')
+SERVER_TS=$(shell find server/src/ts -name '*.ts' | grep -v '\.d\.ts')
 SERVER_JS=$(patsubst server/src/ts/%.ts,server/build/%.js,${SERVER_TS})
+SERVER_FILES=${SERVER_JS} server/build/package.json server/build/api/swagger/swagger.yaml
+SERVER_DIRS=$(sort $(dir ${SERVER_FILES}))
 
-app: client server
+all: client server docker
 
 client: ${CLIENT_DIRS} ${CLIENT_LIB_DST} ${CLIENT_STATIC_DST} ${CLIENT_JS}
 
-${CLIENT_DIRS}:
+${CLIENT_DIRS} ${SERVER_DIRS}:
 	mkdir -p $@
 
 ${CLIENT_JS_MAP} ${CLIENT_JS}: ${CLIENT_TS}
@@ -30,7 +34,7 @@ client/build/%: client/src/static/%
 client/build/lib/%: client/lib/bower_components/%
 	cp $< $@
 
-server: server/build ${SERVER_JS} server/build/package.json
+server: server/build ${SERVER_DIRS} ${SERVER_FILES}
 
 server/build/%.js: server/src/ts/%.ts
 	${TSLINT} $<
@@ -39,12 +43,15 @@ server/build/%.js: server/src/ts/%.ts
 server/build/package.json: server/src/package.json
 	cp server/src/package.json $@
 
-server/build:
-	mkdir -p server/build
+server/build/api/swagger/swagger.yaml: server/src/swagger/api/swagger/swagger.yaml
+	cp $< $@
 
 clean:
 	-rm -r client/build
 	-rm -r server/build
 
-.PHONY: app client server clean
+docker:
+	${DOCKER_COMPOSE} build
+
+.PHONY: app client server clean docker runserver console
 

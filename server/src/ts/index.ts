@@ -1,15 +1,38 @@
 /// <reference path="typings/tsd.d.ts"/>
 
+const path = require("path");
+
 const express = require("express");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const SwaggerExpress = require("swagger-express-mw");
+
 const app = express();
 
-const api = require("./routes/api");
+app.use(bodyParser.json());
 
-app.get("/api/test", api.test);
+mongoose.connect("mongodb://mongo/areyouboard");
+const db = mongoose.connection;
 
-var server = app.listen(8000, function () {
-    var host = server.address().address;
-    var port = server.address().port;
+// TODO: handle connection going away at runtime
+db.on("error", console.error.bind(console, "connection error:"));
 
-    console.log("Example app listening at http://%s:%s", host, port);
+db.once("open", function () {
+    const swaggerConfig = {
+        appRoot: path.resolve(__dirname)
+    };
+
+    SwaggerExpress.create(swaggerConfig, function(err, swaggerExpress) {
+        if (err) {
+            throw err;
+        }
+        swaggerExpress.register(app);
+
+        var server = app.listen(8000, function () {
+            var host = server.address().address;
+            var port = server.address().port;
+
+            console.log("Example app listening at http://%s:%s", host, port);
+        });
+    });
 });

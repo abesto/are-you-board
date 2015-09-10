@@ -1,8 +1,0 @@
-#!/bin/bash
-
-set -e
-cd "$(dirname "$0")/.."
-
-./script/test
-
-echo "==> TODO: build Docker image and upload it"
