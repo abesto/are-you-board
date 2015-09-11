@@ -1,5 +1,6 @@
 TSLINT=node_modules/tslint/bin/tslint
 TSC=node_modules/typescript/bin/tsc
+WATCHMAN=node_modules/watchman/watchman
 DOCKER_COMPOSE=docker-compose
 DOCKER=docker
 
@@ -14,7 +15,7 @@ CLIENT_DIRS=$(sort $(dir ${CLIENT_JS} ${CLIENT_STATIC_DST} ${CLIENT_LIB_DST}))
 
 SERVER_TS=$(shell find server/src/ts -name '*.ts' | grep -v '\.d\.ts')
 SERVER_JS=$(patsubst server/src/ts/%.ts,server/build/%.js,${SERVER_TS})
-SERVER_FILES=${SERVER_JS} server/build/package.json server/build/api/swagger/swagger.yaml
+SERVER_FILES=${SERVER_JS} server/build/package.json server/build/api/swagger/swagger.yaml server/build/api/config/default.yaml
 SERVER_DIRS=$(sort $(dir ${SERVER_FILES}))
 
 all: client server docker
@@ -46,12 +47,24 @@ server/build/package.json: server/src/package.json
 server/build/api/swagger/swagger.yaml: server/src/swagger/api/swagger/swagger.yaml
 	cp $< $@
 
+server/build/api/config/default.yaml: server/src/swagger/config/default.yaml
+	cp $< $@
+
 clean:
 	-rm -r client/build
 	-rm -r server/build
 
 docker:
 	${DOCKER_COMPOSE} build
+
+watch/server:
+	${WATCHMAN} server/src "make server"
+
+watch/client:
+	${WATCHMAN} client/src "make client"
+
+watch: watch/client watch/server
+
 
 .PHONY: app client server clean docker runserver console
 

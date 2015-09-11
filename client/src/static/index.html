@@ -3,11 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
-    <script src="lib/jquery/dist/jquery.min.js"></script>
-    <script src="lib/socket.io-client/socket.io.js"></script>
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/lib/socket.io-client/socket.io.js"></script>
+    <script src="/lib/swagger-js/browser/swagger-client.js"></script>
+    <link rel="stylesheet" type="text/css" href="/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/lib/bootstrap/dist/css/bootstrap-theme.min.css"/>
     <script src="/js/app.js"></script>
 </head>
 <body>
-    foobar
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <form>
+                    <div class="form-group">
+                        <label for="nickname">Who you be?</label>
+                        <input type="text" class="form-control" id="nickname" placeholder="Nickname"/>
+                    </div>
+                    <input type="button" id="login" value="Go!"/>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

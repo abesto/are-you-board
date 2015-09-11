@@ -20,6 +20,9 @@ app:
     - ./server/build:/app
   links:
     - mongo
+  environment:
+    - SESSION_SECRET=local-secret
+    - DEBUG=swagger
 
 mongo:
   image: mongo

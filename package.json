@@ -18,6 +18,7 @@
   "homepage": "https://github.com/abesto/are-you-board#readme",
   "devDependencies": {
     "tslint": "^2.4.5",
-    "typescript": "^1.5.3"
+    "typescript": "^1.5.3",
+    "watchman": "^0.1.8"
   }
 }

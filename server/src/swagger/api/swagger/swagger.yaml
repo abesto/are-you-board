@@ -2,11 +2,7 @@ swagger: "2.0"
 info:
   version: "0.0.1"
   title: Are You Board
-# during dev, should point to your local machine
-host: 192.168.0.100:8080
-# basePath prefixes all resource paths
-basePath: /api/
-# 
+basePath: /api
 schemes:
   - http
   - ws
@@ -18,6 +14,7 @@ paths:
   /cat:
     x-swagger-router-controller: cat
     get:
+      tags: [ "cat" ]
       description: List cats
       operationId: list
       responses:
@@ -32,6 +29,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
     post:
+      tags: [ "cat" ]
       description: Create a cat
       operationId: create
       parameters:
@@ -48,6 +46,7 @@ paths:
   /cat/{id}:
     x-swagger-router-controller: cat
     get:
+      tags: [ "cat" ]
       description: Get a cat by id
       operationId: getById
       parameters:
