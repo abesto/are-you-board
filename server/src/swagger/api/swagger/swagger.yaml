@@ -1,20 +1,17 @@
 swagger: "2.0"
 info:
   version: "0.0.1"
-  title: Hello World App
+  title: Are You Board
 # during dev, should point to your local machine
-host: localhost:10010
-# basePath prefixes all resource paths 
+host: 192.168.0.100:8080
+# basePath prefixes all resource paths
 basePath: /api/
 # 
 schemes:
-  # tip: remove http to make production-grade
   - http
-  - https
-# format of bodies a client can send (Content-Type)
+  - ws
 consumes:
   - application/json
-# format of the responses to the client (Accepts)
 produces:
   - application/json
 paths:
@@ -30,7 +27,6 @@ paths:
             type: array
             items:
               $ref: "#/definitions/Cat"
-        # responses may fall through to errors
         default:
           description: Error
           schema:
@@ -65,7 +61,6 @@ paths:
           schema:
             $ref: "#/definitions/Cat"
 
-# complex objects have schema definitions
 definitions:
   CreateCatRequest:
     required:
