@@ -5,14 +5,19 @@ var merge = require('merge2');
 var changed = require('gulp-changed');
 var rsync = require('gulp-rsync');
 var clean = require('gulp-clean');
+var foreach = require('gulp-foreach');
 
 
 gulp.task('client:compileTypeScript', function () {
     const outDir = 'client/build/js';
-    return gulp.src(['client/src/ts/**/*.ts', 'shared/**/*.ts', '!**/*.d.ts'])
+    return gulp.src(['client/src/ts/**/*.ts', '!**/*.d.ts'])
         .pipe(changed(outDir, {extension: '.js'}))
         .pipe(tslint())
-        .pipe(ts())
+        .pipe(foreach(function(stream, file) {
+            return stream.pipe(ts({
+                out: file.relative.replace('.ts', '.js')
+            }))
+        }))
         .pipe(gulp.dest(outDir));
 });
 

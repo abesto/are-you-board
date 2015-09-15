@@ -5,4 +5,5 @@ var b = newLudoBoard();
 
 $(() => {
     document.getElementById("container").appendChild(b.render());
+    console.log("done");
 });
