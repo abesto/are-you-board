@@ -67,8 +67,6 @@ class Field {
 }
 
 
-
-
 class Board {
     fields: Array<Array<Field>>;
     config: BoardConfiguration;

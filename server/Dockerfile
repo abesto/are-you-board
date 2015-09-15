@@ -3,9 +3,9 @@ FROM node
 ENV NODE_ENV production
 
 ADD build/package.json /package.json
-RUN cd / && npm install && npm install -g nodemon
+RUN cd / && npm install
 
 ADD build /app
 WORKDIR /app
 
-CMD nodemon index.js
+CMD node index.js

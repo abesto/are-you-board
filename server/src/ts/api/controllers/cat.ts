@@ -29,7 +29,6 @@ export function create(req, res) {
         if (err) {
             return res.json(500, { message: err });
         }
-        console.log(cat);
         res.json(cat);
     });
 }

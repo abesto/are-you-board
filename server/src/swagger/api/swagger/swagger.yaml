@@ -11,6 +11,51 @@ consumes:
 produces:
   - application/json
 paths:
+  /login:
+    x-swagger-router-controller: auth
+    post:
+      tags: [ "auth" ]
+      operationId: login
+      consumes: [ "application/x-www-form-urlencoded" ]
+      produces: [ "text/html", "text/plain" ]
+      parameters:
+        - name: nick
+          in: formData
+          type: string
+      responses:
+        302:
+          description: Login successful
+          headers:
+            Location:
+              description: Redirect URL
+              type: string
+          schema:
+            type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /logout:
+    x-swagger-router-controller: auth
+    get:
+      tags: [ "auth" ]
+      operationId: logout
+      produces: [ "text/html", "text/plain" ]
+      responses:
+        302:
+          description: Logout successful
+          headers:
+            Location:
+              description: Redirect URL
+              type: string
+          schema:
+            type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
   /cat:
     x-swagger-router-controller: cat
     get:
@@ -84,5 +129,11 @@ definitions:
       - message
     properties:
       message:
+        type: string
+  LoginPostData:
+    required:
+      - nick
+    properties:
+      nick:
         type: string
 

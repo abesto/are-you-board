@@ -16,6 +16,8 @@ nginx:
 
 app:
   build: server
+  ports:
+    - 8081:8001
   volumes:
     - ./server/build:/app
   links:
@@ -23,6 +25,8 @@ app:
   environment:
     - SESSION_SECRET=local-secret
     - DEBUG=swagger
+    - NODE_ENV=development
+  command: bash -c 'npm install -g supervisor && supervisor -e node,js,yaml index.js'
 
 mongo:
   image: mongo

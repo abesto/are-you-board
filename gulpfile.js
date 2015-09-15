@@ -67,6 +67,18 @@ gulp.task('server:copyPackageJson', function () {
         .pipe(gulp.dest(outDir));
 });
 
+gulp.task('server:copyTemplates', function () {
+    return gulp.src('server/src/views')
+        .pipe(rsync({
+            root: 'server/src/views',
+            destination: 'server/build/views',
+            recursive: true,
+            clean: true,
+            silent: true,
+            update: true
+        }));
+});
+
 gulp.task('server:copySwagger', function () {
     return merge([
         gulp.src('server/src/swagger/api/swagger/swagger.yaml').pipe(gulp.dest('server/build/api/swagger')),
@@ -74,7 +86,7 @@ gulp.task('server:copySwagger', function () {
     ]);
 });
 
-gulp.task('server', ['server:compileTypeScript', 'server:copyPackageJson', 'server:copySwagger']);
+gulp.task('server', ['server:compileTypeScript', 'server:copyPackageJson', 'server:copySwagger', 'server:copyTemplates']);
 gulp.task('server:clean',  function () {
     return gulp.src('server/build', {read: false}).pipe(clean());
 });
@@ -89,4 +101,5 @@ gulp.task('watch', ['default'], function () {
     gulp.watch(['client/src/static/**/*.html', 'client/src/static/**/*.css', 'client/src/static/**/*.js', 'client/src/static/**/*.map'], ['client:copyStaticResources']);
     gulp.watch(['client/lib/bower_components/**/*.js', 'client/lib/bower_components/**/*.map', 'client/lib/bower_components/**/*.css'], ['client:copyLibs']);
     gulp.watch(['server/src/swagger/api/swagger/swagger.yaml', 'server/src/swagger/config/default.yaml'], ['server:copySwagger']);
+    gulp.watch(['server/src/views/**'], ['server:copyTemplates']);
 });

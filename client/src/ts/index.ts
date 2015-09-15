@@ -19,7 +19,7 @@ function main() {
     });
 }
 
-var socket = io();
+var socket = io(location.protocol + "//" + location.hostname + ":8081");
 
 socket.on("ping", function () {
     socket.emit("pong");

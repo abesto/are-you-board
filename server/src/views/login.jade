@@ -1,0 +1,13 @@
+html
+  head
+    link(rel="stylesheet", type="text/css", href="/lib/bootstrap/dist/css/bootstrap.min.css")
+    link(rel="stylesheet", type="text/css", href="/lib/bootstrap/dist/css/bootstrap-theme.min.css")
+  body
+    div.container
+      div.row
+        div.col-md-12
+          form(method="POST", action="/api/login")
+            div.form-group
+              label(for="nickname") Who you be?
+              input#nickname.form-control(type="text", name="nick", placeholder="Nickname")
+            input(type="submit" value="Go!")

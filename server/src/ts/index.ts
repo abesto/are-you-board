@@ -1,38 +1,47 @@
 /// <reference path="typings/tsd.d.ts"/>
-const MONGO_CONNECTION_STRING="mongodb://mongo/areyouboard";
+const MONGO_CONNECTION_STRING = "mongodb://mongo/areyouboard";
+const SESSION_COOKIE = "connect.sid";
 
 const app = require("express")();
 const http = require("http").Server(app);
 
-function setupExpress(callback) {
-    app.use(
-        require("body-parser").json()
-    );
+var configuredSessionMiddleware;
 
+import user = require("./models/user");
+
+function setupExpress(callback) {
+    const bodyParser = require("body-parser");
+    app.use(
+        bodyParser.json(),
+        bodyParser.urlencoded()
+    );
+    app.set("view engine", "jade");
     callback();
 }
 
 function setupSessions(callback) {
-    const session = require("express-session");
+    const session: any = require("express-session");
     const MongoDBStore = require("connect-mongodb-session")(session);
-    const store = new MongoDBStore({
+    const sessionStore = new MongoDBStore({
         uri: MONGO_CONNECTION_STRING,
         collection: "sessions"
     });
 
-    store.on("error", function(err) {
+    sessionStore.on("error", function(err) {
         if (err) {
             throw err;
         }
     });
 
-    app.use(require("express-session")({
+    configuredSessionMiddleware = session({
         secret: process.env.SESSION_SECRET,
         cookie: {
             maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
         },
-        store: store
-    }));
+        store: sessionStore,
+        name: SESSION_COOKIE
+    });
+    app.use(configuredSessionMiddleware);
 
     callback();
 }
@@ -62,12 +71,37 @@ function setupSwagger(callback) {
 }
 
 function setupSocketIO(callback) {
-    const io = require("socket.io")(http);
-    io.on("connection", function(socket){
-        setInterval(function () {
-            socket.emit("ping");
-        }, 5000);
+    const sio = require("socket.io").listen(8001);
+    const sioExpressSession = require('socket.io-express-session');
+
+    sio.use(sioExpressSession(configuredSessionMiddleware));
+
+    sio.on("connection", (socket) => {
+        var session = socket.handshake.session;
+        setInterval(() => { socket.emit("ping"); }, 5000);
+        socket.on("pong", () => user.seen(session.userId, (err, user) => {
+            console.log(`Seen in session ${session.id} user ${user}`);
+        }));
     });
+
+    callback();
+}
+
+function setupViews(callback) {
+    // TODO: redirect to where the user wanted to go
+    // TODO: look into "passport" library
+    app.use((req, res, next) => {
+        if (req.path != "/login" && !("userId" in req.session)) {
+            res.redirect("/login");
+        } else {
+            next();
+        }
+    });
+
+    ["login", "dev/board-test"].forEach((path) =>
+        app.get("/" + path, (req, res) => res.render(path))
+    );
+    app.get("/", (req, res) => res.render("lobby"));
     callback();
 }
 
@@ -80,7 +114,11 @@ function listen(callback) {
     });
 }
 
-require("async").series([setupExpress, setupSessions, setupDb, setupSwagger, setupSocketIO, listen], function (err) {
+require("async").series([
+    setupExpress, setupSessions,
+    setupDb,
+    setupSwagger, setupSocketIO, setupViews,
+    listen], function (err) {
     if (err) {
         console.log("Startup failed");
         throw err;
