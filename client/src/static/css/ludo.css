@@ -1,0 +1,36 @@
+.ludo-board > tr > td {
+    text-align: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+}
+
+.ludo-board > tr > td.red {
+    background-color: darkred;
+    border: 1px solid black;
+}
+
+.ludo-board > tr > td.green {
+    background-color: darkgreen;
+    border: 1px solid black;
+}
+
+.ludo-board > tr > td.blue {
+    background-color: darkblue;
+    border: 1px solid black;
+}
+
+.ludo-board > tr > td.yellow {
+    background-color: #ccaa00;
+    border: 1px solid black;
+}
+
+.ludo-board > tr > td.black {
+    background-color: black;
+    border: 1px solid black;
+}
+
+.ludo-board > tr > td.white {
+    background-color: white;
+    border: 1px solid black;
+}

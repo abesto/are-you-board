@@ -9,7 +9,7 @@ var clean = require('gulp-clean');
 
 gulp.task('client:compileTypeScript', function () {
     const outDir = 'client/build/js';
-    return gulp.src(['client/src/ts/**/*.ts', '!**/*.d.ts'])
+    return gulp.src(['client/src/ts/**/*.ts', 'shared/**/*.ts', '!**/*.d.ts'])
         .pipe(changed(outDir, {extension: '.js'}))
         .pipe(tslint())
         .pipe(ts())
@@ -77,10 +77,11 @@ gulp.task('server:clean',  function () {
 gulp.task('default', ['server', 'client']);
 gulp.task('clean', ['server:clean', 'client:clean']);
 
-gulp.task('watch', function () {
+gulp.task('watch', ['default'], function () {
     gulp.watch(['client/src/ts/**/*.ts', '!**/*.d.ts'], ['client:compileTypeScript']);
+    gulp.watch(['server/src/ts/**/*.ts', '!**/*.d.ts'], ['server:compileTypeScript']);
+    gulp.watch(['shared/**/*.ts', '!**/*.d.ts'], ['client:compileTypeScript', 'server:compileTypeScript']);
     gulp.watch(['client/src/static/**/*.html', 'client/src/static/**/*.css', 'client/src/static/**/*.js', 'client/src/static/**/*.map'], ['client:copyStaticResources']);
     gulp.watch(['client/lib/bower_components/**/*.js', 'client/lib/bower_components/**/*.map', 'client/lib/bower_components/**/*.css'], ['client:copyLibs']);
-    gulp.watch(['server/src/ts/**/*.ts', '!**/*.d.ts'], ['server:compileTypeScript']);
     gulp.watch(['server/src/swagger/api/swagger/swagger.yaml', 'server/src/swagger/config/default.yaml'], ['server:copySwagger']);
 });
