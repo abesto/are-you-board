@@ -110,6 +110,6 @@ function buildBoard(config: BoardConfiguration): Board {
     return new Board(fields, config);
 }
 
-function newLudoBoard() {
+export function newLudoBoard() {
     return buildBoard(LudoBoardConfiguration);
 }

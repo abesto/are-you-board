@@ -1,7 +1,7 @@
 /// <reference path="../../typings/tsd.d.ts"/>
 
-import user = require("../../models/user");
-const User = user.User;
+import IUser = require("../../shared/IUser");
+import User = require("../../models/User");
 
 export function login(req, res) {
     if ("userId" in req.session) {

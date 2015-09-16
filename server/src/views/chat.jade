@@ -1,0 +1,20 @@
+html
+   head
+      script(src="/lib/jquery/dist/jquery.min.js")
+      script(src="/lib/swagger-js/browser/swagger-client.min.js")
+      script(src="/lib/socket.io-client/socket.io.js")
+      link(rel="stylesheet", type="text/css", href="/lib/bootstrap/dist/css/bootstrap.min.css")
+      link(rel="stylesheet", type="text/css", href="/lib/bootstrap/dist/css/bootstrap-theme.min.css")
+
+      script(data-main="/js/chat.js" src="/lib/requirejs/require.js")
+      link(rel="stylesheet", type="text/css", href="/css/chat.css")
+   body
+      div#container
+         div.chat
+            table.history
+            form
+              input.msg.form-control(type="text")
+              input.send.form-control(type="button", value="Send")
+      script.
+         var Site = !{JSON.stringify(Site)};
+

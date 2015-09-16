@@ -7,8 +7,6 @@ const http = require("http").Server(app);
 
 var configuredSessionMiddleware;
 
-import user = require("./models/user");
-
 function setupExpress(callback) {
     const bodyParser = require("body-parser");
     app.use(
@@ -70,20 +68,22 @@ function setupSwagger(callback) {
     });
 }
 
+function applyModules(to, prefix) {
+    const fs = require("fs");
+    var names = fs.readdirSync(`./${prefix}`);
+    names.forEach((moduleName: String) => {
+        const module = require(`./${prefix}/${moduleName}`);
+        if (typeof module.apply == "function") {
+            module.apply(to);
+        }
+    });
+}
+
 function setupSocketIO(callback) {
     const sio = require("socket.io").listen(8001);
     const sioExpressSession = require('socket.io-express-session');
-
     sio.use(sioExpressSession(configuredSessionMiddleware));
-
-    sio.on("connection", (socket) => {
-        var session = socket.handshake.session;
-        setInterval(() => { socket.emit("ping"); }, 5000);
-        socket.on("pong", () => user.seen(session.userId, (err, user) => {
-            console.log(`Seen in session ${session.id} user ${user}`);
-        }));
-    });
-
+    applyModules(sio, "socketio");
     callback();
 }
 
@@ -98,10 +98,8 @@ function setupViews(callback) {
         }
     });
 
-    ["login", "dev/board-test"].forEach((path) =>
-        app.get("/" + path, (req, res) => res.render(path))
-    );
-    app.get("/", (req, res) => res.render("lobby"));
+    applyModules(app, "routes");
+
     callback();
 }
 

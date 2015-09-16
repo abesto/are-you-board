@@ -5,7 +5,6 @@ var merge = require('merge2');
 var changed = require('gulp-changed');
 var rsync = require('gulp-rsync');
 var clean = require('gulp-clean');
-var foreach = require('gulp-foreach');
 
 
 gulp.task('client:compileTypeScript', function () {
@@ -13,11 +12,7 @@ gulp.task('client:compileTypeScript', function () {
     return gulp.src(['client/src/ts/**/*.ts', '!**/*.d.ts'])
         .pipe(changed(outDir, {extension: '.js'}))
         .pipe(tslint())
-        .pipe(foreach(function(stream, file) {
-            return stream.pipe(ts({
-                out: file.relative.replace('.ts', '.js')
-            }))
-        }))
+        .pipe(ts({module: "amd"}))
         .pipe(gulp.dest(outDir));
 });
 
@@ -68,15 +63,8 @@ gulp.task('server:copyPackageJson', function () {
 });
 
 gulp.task('server:copyTemplates', function () {
-    return gulp.src('server/src/views')
-        .pipe(rsync({
-            root: 'server/src/views',
-            destination: 'server/build/views',
-            recursive: true,
-            clean: true,
-            silent: true,
-            update: true
-        }));
+    return gulp.src('server/src/views/**/*')
+        .pipe(gulp.dest('server/build/views'));
 });
 
 gulp.task('server:copySwagger', function () {

@@ -1,20 +1,15 @@
 /// <reference path="../typings/tsd.d.ts"/>
 
-const mongoose = require("mongoose");
+import mongoose = require("mongoose");
+import IUser = require("../shared/IUser");
+
+interface IUserModel extends IUser, mongoose.Document {}
 
 const userSchema = new mongoose.Schema({
     nick: String,
     lastSeen: Date
 });
 
-export const User = mongoose.model("User", userSchema);
+const User = mongoose.model<IUserModel>("User", userSchema);
 
-export function seen(userId, cb) {
-    User.findById(userId, (err, user) => {
-        if (!err && user) {
-            user["lastSeen"] = new Date();
-            user.save(cb);
-        }
-        cb(err, user);
-    })
-}
+export = User;
