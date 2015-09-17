@@ -26,7 +26,7 @@ app:
     - SESSION_SECRET=local-secret
     - DEBUG=swagger
     - NODE_ENV=development
-  command: bash -c 'npm install -g supervisor && supervisor -e node,js,yaml index.js'
+  command: bash -c 'npm install -g supervisor && supervisor -e node,js,yaml -- index.js --color'
 
 mongo:
   image: mongo

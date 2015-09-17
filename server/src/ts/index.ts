@@ -2,8 +2,11 @@
 const MONGO_CONNECTION_STRING = "mongodb://mongo/areyouboard";
 const SESSION_COOKIE = "connect.sid";
 
-const app = require("express")();
-const http = require("http").Server(app);
+const
+    app = require("express")(),
+    http = require("http").Server(app),
+    winston = require("winston"),
+    expressWinston = require('express-winston');
 
 var configuredSessionMiddleware;
 
@@ -53,6 +56,26 @@ function setupDb(callback) {
     db.once("open", callback);
 }
 
+const logging = {
+    consoleTransport: new winston.transports.Console({
+            json: false,
+            colorize: true
+    }),
+    setupRequest: (callback) => {
+        app.use(expressWinston.logger({
+            transports: [logging.consoleTransport],
+            expressFormat: true
+        }));
+        callback();
+    },
+    setupError: (callback) => {
+        app.use(expressWinston.errorLogger({
+            transports: [logging.consoleTransport]
+        }));
+        callback();
+    }
+};
+
 function setupSwagger(callback) {
     const path = require("path");
     const swaggerConfig = {
@@ -68,14 +91,12 @@ function setupSwagger(callback) {
     });
 }
 
-function applyModules(to, prefix) {
+function forEachModuleIn(prefix, f) {
     const fs = require("fs");
     var names = fs.readdirSync(`./${prefix}`);
     names.forEach((moduleName: String) => {
         const module = require(`./${prefix}/${moduleName}`);
-        if (typeof module.apply == "function") {
-            module.apply(to);
-        }
+        f(module);
     });
 }
 
@@ -83,7 +104,7 @@ function setupSocketIO(callback) {
     const sio = require("socket.io").listen(8001);
     const sioExpressSession = require('socket.io-express-session');
     sio.use(sioExpressSession(configuredSessionMiddleware));
-    applyModules(sio, "socketio");
+    forEachModuleIn("socketio", (module) => module.apply(sio) );
     callback();
 }
 
@@ -98,7 +119,7 @@ function setupViews(callback) {
         }
     });
 
-    applyModules(app, "routes");
+    forEachModuleIn("routes", (module) => app.use("/", module));
 
     callback();
 }
@@ -115,8 +136,11 @@ function listen(callback) {
 require("async").series([
     setupExpress, setupSessions,
     setupDb,
+    logging.setupRequest,
     setupSwagger, setupSocketIO, setupViews,
-    listen], function (err) {
+    logging.setupError,
+    listen
+], function (err) {
     if (err) {
         console.log("Startup failed");
         throw err;

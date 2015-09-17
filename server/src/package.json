@@ -14,10 +14,12 @@
     "connect-mongodb-session": "^1.0.5",
     "express": "^4.13.3",
     "express-session": "^1.11.3",
+    "express-winston": "^0.4.1",
     "jade": "^1.11.0",
     "mongoose": "^4.1.6",
     "socket.io": "^1.3.6",
     "socket.io-express-session": "^0.1.2",
-    "swagger-express-mw": "0.0.4"
+    "swagger-express-mw": "0.0.4",
+    "winston": "^1.0.1"
   }
 }
