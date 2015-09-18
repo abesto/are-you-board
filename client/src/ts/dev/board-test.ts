@@ -1,10 +1,23 @@
 /// <reference path="../typings/tsd.d.ts"/>
 
 import board = require("../shared/board");
-
-var b = board.newLudoBoard();
+import BoardView = require("../BoardView");
 
 $(() => {
-    document.getElementById("container").appendChild(b.render());
-    console.log("done");
+    var v;
+    var b = board.newLudoBoard();
+
+    b.addPiece(new board.Piece(board.PieceColor.RED), 4, 0);
+    b.addPiece(new board.Piece(board.PieceColor.GREEN), 0, 6);
+    b.addPiece(new board.Piece(board.PieceColor.YELLOW), 6, 10);
+    b.addPiece(new board.Piece(board.PieceColor.BLUE), 10, 4);
+
+    v = new BoardView(b);
+
+    v.render($("#container"));
+
+    setInterval(() => {
+        b.pieces.forEach((piece) => board.LudoPath.moveOne(piece));
+        v.render($("#container"));
+    }, 200)
 });

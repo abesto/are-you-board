@@ -1,36 +1,36 @@
-.ludo-board > tr > td {
+.ludo-board > tbody > tr > td {
     text-align: center;
     width: 30px;
     height: 30px;
     padding: 0;
 }
 
-.ludo-board > tr > td.red {
+.ludo-board > tbody > tr > td.red {
     background-color: darkred;
     border: 1px solid black;
 }
 
-.ludo-board > tr > td.green {
+.ludo-board > tbody >  tr > td.green {
     background-color: darkgreen;
     border: 1px solid black;
 }
 
-.ludo-board > tr > td.blue {
+.ludo-board > tbody >  tr > td.blue {
     background-color: darkblue;
     border: 1px solid black;
 }
 
-.ludo-board > tr > td.yellow {
+.ludo-board > tbody >  tr > td.yellow {
     background-color: #ccaa00;
     border: 1px solid black;
 }
 
-.ludo-board > tr > td.black {
+.ludo-board > tbody >  tr > td.black {
     background-color: black;
     border: 1px solid black;
 }
 
-.ludo-board > tr > td.white {
+.ludo-board > tbody >  tr > td.white {
     background-color: white;
     border: 1px solid black;
 }
