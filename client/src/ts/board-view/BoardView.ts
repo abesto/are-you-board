@@ -1,6 +1,10 @@
-/// <reference path="typings/tsd.d.ts"/>
+/// <reference path="../typings/tsd.d.ts"/>
 
-import board = require("./shared/Board");
+import board = require("../shared/Board");
+import IBoardViewConfiguration = require("./IBoardViewConfiguration");
+
+const PieceColorMap = {};
+PieceColorMap[board.PieceColor.BLUE] = "blue";
 
 class PieceMapItem {
     piece: board.Piece;
@@ -35,12 +39,14 @@ class PieceMap {
 
 class BoardView {
     board: board.Board;
+    config: IBoardViewConfiguration;
     $board: JQuery;
     pieces: PieceMap;
 
-    constructor(_board) {
+    constructor(_board: board.Board, config: IBoardViewConfiguration) {
         this.board = _board;
         this.pieces = new PieceMap();
+        this.config = config;
     }
 
     getField(row, column): JQuery {
@@ -50,13 +56,13 @@ class BoardView {
     }
 
     render($container: JQuery) {
-        this.$board = $("<table>").addClass(this.board.config.className);
+        this.$board = $("<table>").addClass(this.config.boardClassName);
 
         this.board.fields.forEach((row: Array<board.Field>, rowNum) => {
             const $row = $("<tr>");
             row.forEach((field: board.Field, columnNum) => $row.append(
                 $("<td>")
-                    .addClass(this.board.config.fieldTypeToCssClass[field.type])
+                    .addClass(this.config.fieldTypeToCssClass[field.type])
                     .data({
                         row: rowNum,
                         column: columnNum
@@ -66,7 +72,7 @@ class BoardView {
         });
 
         this.board.pieces.forEach((piece: board.Piece) => {
-            const $piece = $("<div>").text(piece.color);
+            const $piece = $("<div>").addClass(`${this.config.pieceClassName} ${this.config.pieceColorToCssClass[piece.color]}`);
             this.pieces.add(piece, $piece);
             this.getField(piece.field.row, piece.field.column).append($piece);
         });

@@ -11,7 +11,7 @@
 }
 
 .ludo-board > tbody >  tr > td.green {
-    background-color: darkgreen;
+    background-color: #003100;
     border: 1px solid black;
 }
 
@@ -33,4 +33,30 @@
 .ludo-board > tbody >  tr > td.white {
     background-color: white;
     border: 1px solid black;
+}
+
+.ludo-piece {
+    border: 2px solid black;
+    width: 20px;
+    height: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    margin: auto;
+}
+
+.ludo-piece.red {
+    background-color: red;
+}
+
+.ludo-piece.green {
+    background-color: green;
+}
+
+.ludo-piece.yellow {
+    background-color: yellow;
+}
+
+.ludo-piece.blue{
+    background-color: blue;
 }

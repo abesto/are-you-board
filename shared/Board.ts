@@ -2,15 +2,9 @@ interface Dictionary<T> {
     [index: string]: T;
 }
 
-interface NumberIndexedDictionary<T> {
-    [index: number]: T
-}
-
 interface BoardConfiguration {
-    className: string
     shape: string
     charToFieldType: Dictionary<number>
-    fieldTypeToCssClass: NumberIndexedDictionary<string>
 }
 
 class Vector {
@@ -105,10 +99,8 @@ nwwww.swwww
     }
 };
 
-enum LudoFieldType { BLANK, WHITE, GREEN, YELLOW, RED, BLUE, BLACK }
+export enum LudoFieldType { BLANK, WHITE, GREEN, YELLOW, RED, BLUE, BLACK }
 const LudoBoardConfiguration: BoardConfiguration = {
-    className: "ludo-board",
-
     shape: `
 ....www....
 ....wgw....
@@ -132,16 +124,7 @@ wwwwwbwwwww
         "B": LudoFieldType.BLACK,
         ".": LudoFieldType.BLANK
     },
-
-    fieldTypeToCssClass: {}
 };
-LudoBoardConfiguration.fieldTypeToCssClass[LudoFieldType.WHITE] = 'white';
-LudoBoardConfiguration.fieldTypeToCssClass[LudoFieldType.GREEN] = 'green';
-LudoBoardConfiguration.fieldTypeToCssClass[LudoFieldType.YELLOW] = 'yellow';
-LudoBoardConfiguration.fieldTypeToCssClass[LudoFieldType.BLUE] = 'blue';
-LudoBoardConfiguration.fieldTypeToCssClass[LudoFieldType.RED] = 'red';
-LudoBoardConfiguration.fieldTypeToCssClass[LudoFieldType.BLACK] = 'black';
-LudoBoardConfiguration.fieldTypeToCssClass[LudoFieldType.BLANK] = 'blank';
 
 
 export class Field {
@@ -166,7 +149,7 @@ export class Board {
     constructor(fields: Array<Array<Field>>, config: BoardConfiguration) {
         this.fields = fields;
         this.config = config;
-        this.fields.forEach((row) => row.forEach((field) => field.board = this));
+        this.fields.forEach((row: Array<Field>) => row.forEach((field: Field) => field.board = this));
         this.pieces = [];
     }
 
