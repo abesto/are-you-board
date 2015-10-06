@@ -2,29 +2,31 @@ package main
 
 import (
 	"net/http"
-	
+
 	"github.com/abesto/are-you-board/shared"
 
 	"github.com/gin-gonic/gin"
 )
 
-var socketioServer *socketio.Server
-
 func main() {
-	var err error
-	r := gin.Default()
-	if err != nil {
-		panic(err)
-	}
+	router := gin.Default()
+	router.Static("/static", "../client")
+	router.LoadHTMLGlob("templates/*")
 
-	r.GET("/ping", func(c *gin.Context) {
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"title": "Main website",
+		})
+	})
+
+	router.GET("/ping", func(c *gin.Context) {
 		c.String(200, "pong")
 	})
 
-	r.GET("/msg", func(c *gin.Context) {
-		msg := ChatMessage{Message: "message", Sender: "sender", Timestamp: 30}
+	router.GET("/msg", func(c *gin.Context) {
+		msg := shared.ChatMessage{Message: "message", Sender: "sender", Timestamp: 30}
 		c.JSON(http.StatusOK, msg)
 	})
-	
-	r.Run(":8080") // listen and serve on 0.0.0.0:8080
+
+	router.Run(":8080") // listen and serve on 0.0.0.0:8080
 }

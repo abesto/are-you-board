@@ -1,0 +1,11 @@
+{
+  "name": "are-you-board-client",
+  "main": "client.js",
+  "version": "0.0.0",
+  "homepage": "https://github.com/abesto/are-you-board",
+  "authors": [
+    "Zoltan Nagy <abesto@abesto.net>"
+  ],
+  "moduleType": [],
+  "private": true
+}

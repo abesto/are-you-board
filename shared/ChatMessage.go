@@ -7,7 +7,7 @@ type ChatMessageWithoutSender struct {
 
 // ChatMessage is sent by the server to the clients
 type ChatMessage struct {
-	ChatMessageWithoutSender
+	Message string `json:"msg"`
 	Sender string `json:"sender"`
 	Timestamp int `json:"timestamp"`
 }
