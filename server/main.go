@@ -1,9 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
-	"encoding/json"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -37,29 +37,43 @@ func main() {
 			panic(err)
 		}
 		for {
-			messageType, p, err := conn.ReadMessage()
+			var in shared.ChatMessageWithoutSender
+			var out shared.ChatMessage
+			err := read(conn, &in)
 			if err != nil {
 				log.Print(err)
 				return
 			}
-			var in shared.ChatMessageWithoutSender
-			var out shared.ChatMessage
-			json.Unmarshal(p, &in)
 			out.Message = in.Message
 			out.Sender = "whoever"
 			out.Timestamp = 3000
-			var outp []byte
-			outp, err = json.Marshal(out)
-			if err != nil {
-				log.Print(err)
-				return
-			}
-			if err = conn.WriteMessage(messageType, outp); err != nil {
-				log.Print(err)
-				return
-			}
+			write(conn, out)
 		}
 	})
 
 	router.Run(":8080") // listen and serve on 0.0.0.0:8080
+}
+
+func read(conn *websocket.Conn, obj interface{}) error {
+	_, p, err := conn.ReadMessage()
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+	json.Unmarshal(p, obj)
+	return nil
+
+}
+
+func write(conn *websocket.Conn, obj interface{}) {
+	outp, err := json.Marshal(obj)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	if err = conn.WriteMessage(websocket.TextMessage, outp); err != nil {
+		log.Print(err)
+		return
+	}
+
 }
