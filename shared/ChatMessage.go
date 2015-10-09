@@ -11,3 +11,7 @@ type ChatMessage struct {
 	Sender string `json:"sender"`
 	Timestamp int `json:"timestamp"`
 }
+
+type Ohai struct {
+	Nickname string `json:"nick"`
+}

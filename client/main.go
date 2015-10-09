@@ -4,47 +4,68 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/gopherjs/jquery"
 	"github.com/gopherjs/websocket"
+	"honnef.co/go/js/dom"
 
 	"github.com/abesto/are-you-board/shared"
 )
 
-func main() {
-	jquery.Get("/msg", nil, nil, "text").Done(func(response string) {
-		var msg shared.ChatMessage
-		json.Unmarshal([]byte(response), &msg)
-		log.Print(msg)
-		log.Print(msg.Message)
-		go wstest()
-	})
+var conn *websocket.Conn
+
+func write(obj interface{}) (int, error) {
+	buf, err := json.Marshal(obj)
+	if err != nil {
+		return -1, err
+	}
+	return conn.WriteString(string(buf))
 }
 
-func wstest() {
-	c, err := websocket.Dial("ws://localhost:8080/ws/chat")
+func read(into interface{}) error {
+	bufsize := 1024
+	buf := make([]byte, bufsize)
+	var content []byte
+	var err error
+	n := 0
+	for {
+		n, err = conn.Read(buf)
+		if err != nil {
+			return err
+		}
+		content = append(content, buf[:n]...)
+		if n < bufsize {
+			break
+		}
+	}
+	return json.Unmarshal(content, &into)
+}
+
+func main() {
+	var err error
+	conn, err = websocket.Dial("ws://localhost:8080/ws/chat")
+	if err != nil {
+		log.Print("Failed to connect to websocket server")
+		log.Print(err)
+		return
+	}
+
+	window := dom.GetWindow()
+	nickname := window.Prompt("Nickname", "")
+
 	if err != nil {
 		handleError(err)
 	}
 
-	myMsg := shared.ChatMessageWithoutSender{Message: "client originated this message"}
-	var buf []byte
-	buf, err = json.Marshal(myMsg)
-	if err != nil {
-		handleError(err)
-	}
+	write(shared.Ohai{Nickname: nickname})
+	write(shared.ChatMessageWithoutSender{Message: "client originated this message"})
 
-	c.Send(string(buf))
-
-	buf = make([]byte, 1024)
-	var n int
-	n, err = c.Read(buf)
-	if err != nil {
-		handleError(err)
-	}
 	var msg shared.ChatMessage
-	json.Unmarshal(buf[:n], &msg)
-	log.Print(string(buf[:n]))
-	log.Print(msg)
+	for {
+		err = read(&msg)
+		if err != nil {
+			handleError(err)
+		}
+		log.Print(msg)
+	}
 }
 
 func handleError(err error) {

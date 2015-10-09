@@ -31,10 +31,18 @@ func main() {
 		c.JSON(http.StatusOK, msg)
 	})
 
+	socketRegistry := NewSocketRegistry()
+
 	router.GET("/ws/chat", func(c *gin.Context) {
+		var failedConn *websocket.Conn
 		conn, err := websocket.Upgrade(c.Writer, c.Request, nil, 1024, 1024)
 		if err != nil {
 			panic(err)
+		}
+		socketRegistry.Add("chat", conn)
+		var ohai shared.Ohai
+		if err = read(conn, &ohai); err != nil {
+			return
 		}
 		for {
 			var in shared.ChatMessageWithoutSender
@@ -42,12 +50,16 @@ func main() {
 			err := read(conn, &in)
 			if err != nil {
 				log.Print(err)
+				socketRegistry.Remove("chat", conn)
 				return
 			}
 			out.Message = in.Message
-			out.Sender = "whoever"
+			out.Sender = ohai.Nickname
 			out.Timestamp = 3000
-			write(conn, out)
+			if err, failedConn = socketRegistry.Get("chat").WriteJson(out); err != nil {
+				socketRegistry.Remove("chat", failedConn)
+				log.Print(err)
+			}
 		}
 	})
 
@@ -62,18 +74,5 @@ func read(conn *websocket.Conn, obj interface{}) error {
 	}
 	json.Unmarshal(p, obj)
 	return nil
-
-}
-
-func write(conn *websocket.Conn, obj interface{}) {
-	outp, err := json.Marshal(obj)
-	if err != nil {
-		log.Print(err)
-		return
-	}
-	if err = conn.WriteMessage(websocket.TextMessage, outp); err != nil {
-		log.Print(err)
-		return
-	}
 
 }
