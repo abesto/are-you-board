@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -63,7 +64,15 @@ func main() {
 		}
 	})
 
-	router.Run(":8080") // listen and serve on 0.0.0.0:8080
+	router.Run("127.0.0.1:" + getPort())
+}
+
+func getPort() string {
+	portFromEnv, portSetInEnv := os.LookupEnv("PORT")
+	if portSetInEnv {
+		return portFromEnv
+	}
+	return "8080"
 }
 
 func read(conn *websocket.Conn, obj interface{}) error {
