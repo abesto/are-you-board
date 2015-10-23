@@ -63,6 +63,7 @@ func main() {
 		err = read(&msg)
 		if err != nil {
 			handleError(err)
+			break
 		}
 		log.Print(msg)
 	}
