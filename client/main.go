@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"html/template"
 	"log"
 
+	"github.com/gopherjs/jquery"
 	"github.com/gopherjs/websocket"
 	"honnef.co/go/js/dom"
 
@@ -56,17 +59,43 @@ func main() {
 	}
 
 	write(shared.Ohai{Nickname: nickname})
-	write(shared.ChatMessageWithoutSender{Message: "client originated this message"})
 
-	var msg shared.ChatMessage
-	for {
-		err = read(&msg)
-		if err != nil {
-			handleError(err)
-			break
+	const historyItemHTML = `
+<tr>
+  <td>{{.Timestamp}}</td>
+  <td>{{.Sender}}</td>
+  <td>{{.Message}}</td>
+</tr>
+`
+	historyItemTpl := template.Must(template.New("HistoryItem").Parse(historyItemHTML))
+
+	var jQuery = jquery.NewJQuery
+
+	go func() {
+		var msg shared.ChatMessage
+		for {
+			err = read(&msg)
+			if err != nil {
+				handleError(err)
+				break
+			}
+
+			var b bytes.Buffer
+			historyItemTpl.Execute(&b, msg)
+			html := b.String()
+
+			jQuery("#history").Append(html)
+			log.Print(msg)
+
 		}
-		log.Print(msg)
-	}
+	}()
+
+	jQuery("#send-form").Submit(func() bool {
+		msg := jQuery("#msg").Val()
+		jQuery("#msg").SetVal("")
+		write(shared.ChatMessageWithoutSender{Message: msg})
+		return false
+	})
 }
 
 func handleError(err error) {

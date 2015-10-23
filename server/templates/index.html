@@ -2,9 +2,21 @@
 <html>
   <head>
     <title>{{ .title }}</title>
+    <link href="/static/main.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/static/client.js"></script>
+    <table id="history">
+        <tr>
+            <th>Timestamp</th>
+            <th>Sender</th>
+            <th>Message</th>
+        </tr>
+    </table>
+    <form id="send-form">
+        <input type="text" id="msg">
+        <input type="submit" value="send">
+    </form>
   </body>
 </html>

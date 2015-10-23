@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -45,6 +46,11 @@ func main() {
 		if err = read(conn, &ohai); err != nil {
 			return
 		}
+		socketRegistry.Get("chat").WriteJson(shared.ChatMessage{
+			Sender:    "system",
+			Timestamp: (int)(time.Now().Unix()),
+			Message:   ohai.Nickname + " joined",
+		})
 		for {
 			var in shared.ChatMessageWithoutSender
 			var out shared.ChatMessage
@@ -56,7 +62,7 @@ func main() {
 			}
 			out.Message = in.Message
 			out.Sender = ohai.Nickname
-			out.Timestamp = 3000
+			out.Timestamp = (int)(time.Now().Unix())
 			if err, failedConn = socketRegistry.Get("chat").WriteJson(out); err != nil {
 				socketRegistry.Remove("chat", failedConn)
 				log.Print(err)
