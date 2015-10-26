@@ -5,6 +5,8 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
+
+	"github.com/abesto/are-you-board/shared"
 )
 
 // +gen set
@@ -21,7 +23,7 @@ func (connections ConnSet) WriteMessage(msgType int, bytes []byte) (error, *webs
 	return nil, nil
 }
 
-func (connections ConnSet) WriteJson(obj interface{}) (error, *websocket.Conn) {
+func (connections ConnSet) WriteEnvelope(obj shared.WSEnvelope) (error, *websocket.Conn) {
 	outp, err := json.Marshal(obj)
 	if err != nil {
 		return err, nil
@@ -60,4 +62,16 @@ func (r SocketRegistry) Get(name string) ConnSet {
 	conns := r.m[name]
 	r.lock.RUnlock()
 	return conns
+}
+
+func (r SocketRegistry) WriteJson(name string, obj interface{}) (error, *websocket.Conn) {
+	content, err := json.Marshal(obj)
+	if err != nil {
+		return err, nil
+	}
+	envelope := shared.WSEnvelope{
+		Name:    name,
+		Content: content,
+	}
+	return r.Get(name).WriteEnvelope(envelope)
 }

@@ -11,6 +11,7 @@ func main() {
 	if wsConnect() != nil {
 		return
 	}
+	go wsListen()
 
 	tplHistoryItem := newTpl("HistoryItem", `
 <tr>

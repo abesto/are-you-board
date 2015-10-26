@@ -46,11 +46,12 @@ func main() {
 		if err = read(conn, &ohai); err != nil {
 			return
 		}
-		socketRegistry.Get("chat").WriteJson(shared.ChatMessage{
+		socketRegistry.WriteJson("chat", shared.ChatMessage{
 			Sender:    "system",
 			Timestamp: (int)(time.Now().Unix()),
 			Message:   ohai.Nickname + " joined",
 		})
+		log.Printf("joined: %s", ohai.Nickname)
 		for {
 			var in shared.ChatMessageWithoutSender
 			var out shared.ChatMessage
@@ -63,7 +64,7 @@ func main() {
 			out.Message = in.Message
 			out.Sender = ohai.Nickname
 			out.Timestamp = (int)(time.Now().Unix())
-			if err, failedConn = socketRegistry.Get("chat").WriteJson(out); err != nil {
+			if err, failedConn = socketRegistry.WriteJson("chat", out); err != nil {
 				socketRegistry.Remove("chat", failedConn)
 				log.Print(err)
 			}
@@ -87,7 +88,11 @@ func read(conn *websocket.Conn, obj interface{}) error {
 		log.Print(err)
 		return err
 	}
-	json.Unmarshal(p, obj)
+	var envelope shared.WSEnvelope
+	json.Unmarshal(p, &envelope)
+	log.Print(envelope)
+	// TODO here will come routing by Envelope.Name
+	json.Unmarshal(envelope.Content, &obj)
+	log.Print(obj)
 	return nil
-
 }

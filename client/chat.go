@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 
 	"github.com/gopherjs/jquery"
@@ -37,26 +38,25 @@ func newChat(opts chatOpts) *chat {
 }
 
 func (c *chat) connect(nickname string) {
-	wsWrite(shared.Ohai{Nickname: nickname})
-	go c.listen()
+	wsWrite("ohai", shared.Ohai{Nickname: nickname})
+	c.listen()
 	c.form.Submit(func() bool {
 		msg := c.input.Val()
 		c.input.SetVal("")
-		wsWrite(shared.ChatMessageWithoutSender{Message: msg})
+		wsWrite("chat", shared.ChatMessageWithoutSender{Message: msg})
 		return false
 	})
 }
 
 func (c *chat) listen() {
-	var msg shared.ChatMessage
-	for {
-		err := wsRead(&msg)
+	wsOn("chat", func(data []byte) {
+		var msg shared.ChatMessage
+		err := json.Unmarshal(data, &msg)
 		if err != nil {
 			log.Fatal(err)
-			break
+			return
 		}
-
 		c.history.Append(c.tplHistoryItem.render(msg))
 		log.Print(msg)
-	}
+	})
 }
