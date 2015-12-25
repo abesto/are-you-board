@@ -58,6 +58,15 @@ if (ss.env === 'production') {
     ss.session.store.use('redis');
     ss.publish.transport.use('redis');
     ss.responders.add(require('ss-heartbeat-responder'));
+    // Redirect HTTP to HTTPS
+    ss.http.middleware.prepend(require('connect-redirection')());
+    ss.http.middleware.prepend(function(req, res, next) {
+        if (req.headers["x-forwarded-proto"] === 'https') {
+            return next();
+        }
+        res.redirect('https://' + req.headers.host.split(':')[0] + req.url);
+    });
+
 } else {
     // Start Console Server (REPL)
     // To install client: sudo npm install -g ss-console
