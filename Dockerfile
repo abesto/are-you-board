@@ -14,5 +14,4 @@ WORKDIR /usr/src/app
 ADD . /usr/src/app
 
 EXPOSE 80
-CMD [ "sleep", "500000" ]
-#CMD [ "node", "app.js", "80", "0.0.0.0" ]
+CMD [ "node", "app.js", "80", "0.0.0.0" ]
