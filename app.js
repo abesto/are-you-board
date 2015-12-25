@@ -55,9 +55,9 @@ if (ss.env === 'production') {
     ss.client.packAssets();
     winston.handleExceptions(new winston.transports.File({ filename: 'exceptions.log', timestamp: true }));
     winston.add(winston.transports.File, { filename: 'app.log', level: 'silly', timestamp: true });
-    ss.session.store.use('redis');
-    ss.publish.transport.use('redis');
-    ss.responders.add(require('ss-heartbeat-responder'));
+    ss.session.store.use('redis', { host: redisHost });
+    ss.publish.transport.use('redis', { host: redisHost });
+    ss.responders.add(require('ss-heartbeat-responder'), { host: redisHost });
     // Redirect HTTP to HTTPS
     ss.http.middleware.prepend(require('connect-redirection')());
     ss.http.middleware.prepend(function(req, res, next) {
