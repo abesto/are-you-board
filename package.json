@@ -13,13 +13,14 @@
     "ss-hogan": "0.1.x",
     "ss-console": "0.1.x",
     "ss-less": "0.1.x",
-    "ss-heartbeat-responder": "latest",
+    "ss-heartbeat-responder": "0.1.2",
     "redis": "0.7.x",
     "lodash": "latest",
     "winston": "latest",
     "async": "latest",
     "bcrypt": "latest",
-    "signals": "1.0.0"
+    "signals": "1.0.0",
+	"connect-redirection": "0.0.1"
   },
 
   "optionalDependencies": {
