@@ -74,29 +74,27 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-
-		// TODO: detach here from the gin request serving goroutine
-
-		session := WSSession{Conn: conn}
-
-		for {
-			_, p, err := conn.ReadMessage()
-			if err != nil {
-				panic(err)
-			}
-
-			var envelope shared.WSEnvelope
-			err = json.Unmarshal(p, &envelope)
-			if err != nil {
-				panic(err)
-			}
-			log.Printf("Received %s", envelope)
-
-			wsHandlers.Get(envelope.Name)(envelope.Content, session, socketRegistry)
-		}
+		go wsLoop(conn, wsHandlers, socketRegistry)
 	})
 
 	router.Run("127.0.0.1:" + getPort())
+}
+
+func wsLoop(conn *websocket.Conn, wsHandlers WSHandlerRegistry, socketRegistry SocketRegistry) {
+	session := WSSession{Conn: conn}
+	for {
+		_, p, err := conn.ReadMessage()
+		if err != nil {
+			panic(err)
+		}
+		var envelope shared.WSEnvelope
+		err = json.Unmarshal(p, &envelope)
+		if err != nil {
+			panic(err)
+		}
+		log.Printf("Received %s", envelope)
+		wsHandlers.Get(envelope.Name)(envelope.Content, session, socketRegistry)
+	}
 }
 
 func getPort() string {
