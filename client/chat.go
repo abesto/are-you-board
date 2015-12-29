@@ -38,18 +38,18 @@ func newChat(opts chatOpts) *chat {
 }
 
 func (c *chat) connect(nickname string) {
-	wsWrite("ohai", shared.Ohai{Nickname: nickname})
+	wsWrite("Ohai", shared.Ohai{Nickname: nickname})
 	c.listen()
 	c.form.Submit(func() bool {
 		msg := c.input.Val()
 		c.input.SetVal("")
-		wsWrite("chat", shared.ChatMessageWithoutSender{Message: msg})
+		wsWrite("ChatMessage", shared.ChatMessageWithoutSender{Message: msg})
 		return false
 	})
 }
 
 func (c *chat) listen() {
-	wsOn("chat", func(data []byte) {
+	wsOn("ChatMessage", func(data []byte) {
 		var msg shared.ChatMessage
 		err := json.Unmarshal(data, &msg)
 		if err != nil {

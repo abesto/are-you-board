@@ -20,7 +20,7 @@ type wsHandler func(content []byte)
 
 func wsConnect() error {
 	var err error
-	conn, err = websocket.Dial("ws://localhost:8080/ws/chat")
+	conn, err = websocket.Dial("ws://localhost:8080/ws")
 	if err != nil {
 		log.Fatal("Failed to connect to websocket server")
 		log.Fatal(err)

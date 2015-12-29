@@ -1,5 +1,9 @@
 package shared
 
+import (
+	"fmt"
+)
+
 // ChatMessageWithoutSender is sent by clients to the server
 type ChatMessageWithoutSender struct {
 	Message string `json:"msg"`
@@ -19,4 +23,8 @@ type Ohai struct {
 type WSEnvelope struct {
 	Name    string
 	Content []byte
+}
+
+func (e WSEnvelope) String() string {
+	return fmt.Sprintf("WSEnvelope<%s|%s>", e.Name, e.Content)
 }

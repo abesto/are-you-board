@@ -27,55 +27,72 @@ func main() {
 		})
 	})
 
-	router.GET("/ping", func(c *gin.Context) {
-		c.String(200, "pong")
-	})
-
-	router.GET("/msg", func(c *gin.Context) {
-		msg := shared.ChatMessage{Message: "message", Sender: "sender", Timestamp: 30}
-		c.JSON(http.StatusOK, msg)
-	})
-
 	socketRegistry := NewSocketRegistry()
 	healthcheck.Register("websocketRegistry", func() interface{} {
-		data := map[string]int{}
+		data := map[string]interface{}{}
 		data["connectionCount"] = socketRegistry.ConnectionCount()
 		return data
 	})
 
-	router.GET("/ws/chat", func(c *gin.Context) {
-		var failedConn *websocket.Conn
+	wsHandlers := NewWSHandlerRegistry()
+	healthcheck.Register("wsHandlerRegistry", func() interface{} {
+		data := map[string]interface{}{}
+		data["registeredHandlers"] = wsHandlers.HandlerNames()
+		return data
+	})
+
+	wsHandlers.Register("Ohai", func(data []byte, session WSSession, socketRegistry SocketRegistry) (error, *websocket.Conn) {
+		var ohai shared.Ohai
+		mustUnmarshal(data, &ohai)
+		socketRegistry.Add("ChatMessage", session.Conn)
+		session.Nickname = ohai.Nickname
+		log.Printf("joined: %s", session.Nickname)
+		return socketRegistry.WriteJson("ChatMessage", shared.ChatMessage{
+			Sender:    "system",
+			Timestamp: (int)(time.Now().Unix()),
+			Message:   session.Nickname + " joined",
+		})
+	})
+
+	wsHandlers.Register("ChatMessage", func(data []byte, session WSSession, socketRegistry SocketRegistry) (error, *websocket.Conn) {
+		var in shared.ChatMessageWithoutSender
+		mustUnmarshal(data, &in)
+		out := shared.ChatMessage{
+			Message:   in.Message,
+			Sender:    session.Nickname,
+			Timestamp: (int)(time.Now().Unix()),
+		}
+		err, failedConn := socketRegistry.WriteJson("ChatMessage", out)
+		if err != nil {
+			socketRegistry.Remove("ChatMessage", failedConn)
+		}
+		return err, failedConn
+	})
+
+	router.GET("/ws", func(c *gin.Context) {
 		conn, err := websocket.Upgrade(c.Writer, c.Request, nil, 1024, 1024)
 		if err != nil {
 			panic(err)
 		}
-		socketRegistry.Add("chat", conn)
-		var ohai shared.Ohai
-		if err = read(conn, &ohai); err != nil {
-			return
-		}
-		socketRegistry.WriteJson("chat", shared.ChatMessage{
-			Sender:    "system",
-			Timestamp: (int)(time.Now().Unix()),
-			Message:   ohai.Nickname + " joined",
-		})
-		log.Printf("joined: %s", ohai.Nickname)
+
+		// TODO: detach here from the gin request serving goroutine
+
+		session := WSSession{Conn: conn}
+
 		for {
-			var in shared.ChatMessageWithoutSender
-			var out shared.ChatMessage
-			err := read(conn, &in)
+			_, p, err := conn.ReadMessage()
 			if err != nil {
-				log.Print(err)
-				socketRegistry.Remove("chat", conn)
-				return
+				panic(err)
 			}
-			out.Message = in.Message
-			out.Sender = ohai.Nickname
-			out.Timestamp = (int)(time.Now().Unix())
-			if err, failedConn = socketRegistry.WriteJson("chat", out); err != nil {
-				socketRegistry.Remove("chat", failedConn)
-				log.Print(err)
+
+			var envelope shared.WSEnvelope
+			err = json.Unmarshal(p, &envelope)
+			if err != nil {
+				panic(err)
 			}
+			log.Printf("Received %s", envelope)
+
+			wsHandlers.Get(envelope.Name)(envelope.Content, session, socketRegistry)
 		}
 	})
 
@@ -90,17 +107,8 @@ func getPort() string {
 	return "8080"
 }
 
-func read(conn *websocket.Conn, obj interface{}) error {
-	_, p, err := conn.ReadMessage()
-	if err != nil {
-		log.Print(err)
-		return err
+func mustUnmarshal(data []byte, obj interface{}) {
+	if err := json.Unmarshal(data, &obj); err != nil {
+		panic(err)
 	}
-	var envelope shared.WSEnvelope
-	json.Unmarshal(p, &envelope)
-	log.Print(envelope)
-	// TODO here will come routing by Envelope.Name
-	json.Unmarshal(envelope.Content, &obj)
-	log.Print(obj)
-	return nil
 }
