@@ -18,6 +18,9 @@ func main() {
 	router.Static("/static", "../client")
 	router.LoadHTMLGlob("templates/*")
 
+	healthcheck := NewHealthcheck()
+	router.GET("/healthcheck", healthcheck.HandleRequest)
+
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"title": "Main website",
@@ -34,6 +37,11 @@ func main() {
 	})
 
 	socketRegistry := NewSocketRegistry()
+	healthcheck.Register("websocketRegistry", func() interface{} {
+		data := map[string]int{}
+		data["connectionCount"] = socketRegistry.ConnectionCount()
+		return data
+	})
 
 	router.GET("/ws/chat", func(c *gin.Context) {
 		var failedConn *websocket.Conn

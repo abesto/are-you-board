@@ -75,3 +75,13 @@ func (r SocketRegistry) WriteJson(name string, obj interface{}) (error, *websock
 	}
 	return r.Get(name).WriteEnvelope(envelope)
 }
+
+func (r SocketRegistry) ConnectionCount() int {
+	val := 0
+	r.lock.RLock()
+	for _, connset := range r.m {
+		val += connset.Cardinality()
+	}
+	r.lock.RUnlock()
+	return val
+}
