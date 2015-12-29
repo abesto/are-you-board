@@ -1,0 +1,99 @@
+{
+	"ImportPath": "github.com/abesto/are-you-board",
+	"GoVersion": "go1.5",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/clipperhouse/set",
+			"Rev": "c425a638bbb3034eaa3dfe8c2f0f4bc29129b7fc"
+		},
+		{
+			"ImportPath": "github.com/clipperhouse/slice",
+			"Rev": "3ae82e00044e045370183e264317ec785b8f0da3"
+		},
+		{
+			"ImportPath": "github.com/clipperhouse/stringer",
+			"Rev": "e6cc61d80c83044f503c16cae53b02e28ee1788d"
+		},
+		{
+			"ImportPath": "github.com/clipperhouse/typewriter",
+			"Rev": "e4695409e04426fb684b104fd685dd3ff02ef95a"
+		},
+		{
+			"ImportPath": "github.com/gin-gonic/gin",
+			"Comment": "v1.0rc1-148-g52fcc5d",
+			"Rev": "52fcc5dbf6e94df33ad313858fb94b713e9d1b4a"
+		},
+		{
+			"ImportPath": "github.com/gopherjs/gopherjs/js",
+			"Rev": "95b076501b37b4f05dc0ce6eebe62431682bbf2e"
+		},
+		{
+			"ImportPath": "github.com/gopherjs/jquery",
+			"Rev": "2d1c86e856580447d508a91f214d81774c7deb47"
+		},
+		{
+			"ImportPath": "github.com/gopherjs/websocket",
+			"Rev": "0cc62e3dac541014182cec1a9ade778e2e5187ab"
+		},
+		{
+			"ImportPath": "github.com/gorilla/websocket",
+			"Rev": "00ae02c5f519724d30cd51a909ec3bf5edd46aa6"
+		},
+		{
+			"ImportPath": "github.com/manucorporat/sse",
+			"Rev": "fe6ea2c8e398672518ef204bf0fbd9af858d0e15"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-colorable",
+			"Rev": "d67e0b7d1797975196499f79bcc322c08b9f218b"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-isatty",
+			"Rev": "56b76bdf51f7708750eac80fa38b952bb9f32639"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "47990a1ba55743e6ef1affd3a14e5bac8553615d"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "833a04a10549a95dc34458c195cbad61bbb6cb4d"
+		},
+		{
+			"ImportPath": "golang.org/x/tools/go/ast/astutil",
+			"Rev": "f53a5581bc2fdd52820df86cbfd8483816fe8bcc"
+		},
+		{
+			"ImportPath": "golang.org/x/tools/go/exact",
+			"Rev": "f53a5581bc2fdd52820df86cbfd8483816fe8bcc"
+		},
+		{
+			"ImportPath": "golang.org/x/tools/go/gcimporter",
+			"Rev": "f53a5581bc2fdd52820df86cbfd8483816fe8bcc"
+		},
+		{
+			"ImportPath": "golang.org/x/tools/go/types",
+			"Rev": "f53a5581bc2fdd52820df86cbfd8483816fe8bcc"
+		},
+		{
+			"ImportPath": "golang.org/x/tools/imports",
+			"Rev": "f53a5581bc2fdd52820df86cbfd8483816fe8bcc"
+		},
+		{
+			"ImportPath": "gopkg.in/bluesuncorp/validator.v5",
+			"Comment": "v5.12",
+			"Rev": "d5acf1dac43705f8bfbb71d878e290e2bed3950b"
+		},
+		{
+			"ImportPath": "honnef.co/go/js/dom",
+			"Rev": "a900f4636e01f006b98f184aaba35f669bcf568f"
+		},
+		{
+			"ImportPath": "honnef.co/go/js/util",
+			"Rev": "96b8dd9d16214b6cd9d8c8e84b3a375da4688108"
+		}
+	]
+}
