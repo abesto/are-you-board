@@ -1,0 +1,36 @@
+<template name="Chat">
+    <div class="row chat">
+        <div class="col-md-9">
+            <div class="chat-messages-list-container col-md-9">
+                <table class="chat-messages-list">
+                    {{> ChatMessage welcome }}
+                    {{#each chat.messages}} {{> ChatMessage}} {{/each}}
+                </table>
+            </div>
+            <form class="col-md-9 send">
+                <input class="col-md-7 message" type="text" placeholder="Say it!"/>
+                <input class="col-md-2" type="submit" value="Send"/>
+            </form>
+        </div>
+        <div class="col-md-3">
+            <strong>Online users</strong>
+            <ul class="list-unstyled">
+                {{#each users chat}} {{> ChatUser}} {{/each}}
+            </ul>
+        </div>
+    </div>
+</template>
+
+<template name="ChatMessage">
+    <tr>
+        <td class="message-time">{{formatTime time}}</td>
+        <td class="message-from">{{displayName(sender(from))}}</td>
+        <td class="message-text">{{text}}</td>
+    </tr>
+</template>
+
+<template name="ChatUser">
+    <li>
+        <a href="{{userLink this}}">{{displayName this}}</a>
+    </li>
+</template>
