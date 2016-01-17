@@ -1,0 +1,139 @@
+@import "{}/client/mixins.import.less";
+
+.current-player-arrow-frames () {
+    @offset: 7px;
+    from { padding-left: 0;       padding-right: @offset; }
+    to   { padding-left: @offset; padding-right: 0;       }
+}
+@-webkit-keyframes current-player-arrow {.current-player-arrow-frames;}
+@-moz-keyframes current-player-arrow {.current-player-arrow-frames;}
+@-ms-keyframes current-player-arrow {.current-player-arrow-frames;}
+@-o-keyframes current-player-arrow {.current-player-arrow-frames;}
+@keyframes current-player-arrow {.current-player-arrow-frames}
+
+table.ludo-board {
+    margin-top: 30px;
+
+    td {
+        text-align: center;
+        width: 30px;
+        height: 30px;
+        padding: 0;
+
+        &.path {
+            border: 1px solid black;
+        }
+
+        &.red { background-color: darkred; }
+        &.blue { background-color: darkblue; }
+        &.green { background-color: darken(darkgreen, 10%); }
+        &.yellow { background-color: #ccaa00; }
+        &.black { background-color: black; }
+
+        span.path-step-label.by-dice { font-weight: bold; }
+
+        div.piece {
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            margin: auto;
+            border: 3px solid black;
+            .rounded(20px);
+            &.red { background-color: red; }
+            &.blue { background-color: blue; }
+            &.green { background-color: green; }
+            &.yellow { background-color: yellow; }
+
+            &.ghost { opacity: 0.3; }
+        }
+    }
+
+    .nick {
+        font-size: .85em;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        padding-left: 7px;
+        padding-right: 7px;
+        background-color: #eee;
+        font-weight: bold;
+        .rounded(7px);
+
+        &.current {
+            background-color: #ffc;
+        }
+
+        &.red {
+            .box-shadow(0 0 5px red);
+            background-color: #fee;
+        }
+        &.blue {
+            .box-shadow(0 0 5px blue);
+            background-color: #eef;
+        }
+        &.green {
+            .box-shadow(0 0 5px green);
+            background-color: #efe;
+        }
+        &.yellow {
+            .box-shadow(0 0 5px yellow);
+            background-color: #ffe;
+        }
+    }
+}
+
+#controls #state-container {
+    .state {
+        border: 2px solid silver;
+        color: #777;
+        padding: 4px;
+        margin: 2px;
+        border-radius: 4px;
+        float: left;
+        &.new-line { clear: both; }
+        &.active { border-color: black; color: black; }
+        &.active.btn:not(.disabled) { color: #4092ff; }
+    }
+}
+
+#controls #auto-skip {
+    vertical-align: bottom;
+}
+
+#controls #dice {
+    clear: both;
+}
+
+#controls table#players {
+    @rowHeight: 16px;
+    @padding: 3px;
+    width: 100%;
+    tr.player {
+        height: @rowHeight;
+        td {
+            height: @rowHeight;
+            padding: @padding;
+        }
+
+        td.player-arrow {
+            width: 20px;
+            border: none;
+            color: transparent;
+            .pulse(current-player-arrow);
+            &.current { color: black; }
+        }
+
+        td.player-color {
+            width: (@rowHeight + @padding);
+            border: none;
+        }
+        .color-row(@color) { &.@{color} .player-color { background-color: @color; } }
+        .color-row(e('red')); .color-row(e('green')); .color-row(e('yellow')); .color-row(e('blue'));
+
+        td.no-player {
+            font-size: .8em;
+            color: gray;
+            &:before {content: "("}
+            &:after {content: ")"}
+        }
+    }
+}

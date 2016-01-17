@@ -1,0 +1,68 @@
+<template name="Ludo">
+    <div id="board" class="col-md-4 col-md-offset-2">
+        {{> LudoBoard }}
+    </div>
+    <div id="controls" class="col-md-4">
+        {{> LudoControls }}
+    </div>
+    <div id="rules-container" class="col-md-5 well">
+        {{> LudoRules }}
+    </div>
+</template>
+
+<template name="LudoBoard">
+    <table class="ludo-board">
+        {{#each rows}}
+        <tr>
+            {{#each fields}}
+            <td class="{{fieldClasses this}}"></td>
+            {{/each}}
+        </tr>
+        {{/each}}
+    </table>
+</template>
+
+<template name="LudoControls">
+    <div id="state-container">
+        <div data-state="1" data-trans="ludo.state.waitingForPlayers" class="state active">Várjuk, hogy beszálljanak még páran...</div>
+        <div id="roll-dice" data-state="2" data-trans="ludo.state.diceRoll" class="btn state new-line disabled">Kockadobás</div>
+        <div data-state="3" data-trans="ludo.state.move" class="state">Lépés</div>
+        <div id="skip" data-state="ui-skip" data-trans="ludo.state.skip" class="btn state disabled">Kimarad</div>
+    </div>
+    <div id="dice"><strong data-trans="ludo.dice">Dobókocka:</strong><span id="last-dice-value"></span></div>
+    <table id="players" class="table">
+        <tbody>
+            <tr data-side="0" class="player red">
+                <td class="player-arrow">▶</td>
+                <td class="player-color"></td>
+                <td class="player-nick">foo</td>
+            </tr>
+            <tr data-side="1" class="player green">
+                <td class="player-arrow">▶</td>
+                <td class="player-color"></td>
+                <td class="player-nick no-player"><span data-trans="ludo.noPlayer">Senki</span></td>
+            </tr>
+            <tr data-side="2" class="player yellow">
+                <td class="player-arrow">▶</td>
+                <td class="player-color"></td>
+                <td class="player-nick no-player"><span data-trans="ludo.noPlayer">Senki</span></td>
+            </tr>
+            <tr data-side="3" class="player blue">
+                <td class="player-arrow">▶</td>
+                <td class="player-color"></td>
+                <td class="player-nick no-player"><span data-trans="ludo.noPlayer">Senki</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <a style="display: none;" id="start" href="#" data-trans="ludo.start" class="btn">Kezdjük!</a>
+</template>
+
+<template name="LudoRules">
+    <h4 data-trans="generic.rules">Szabályok</h4>
+    <ul id="rules" class="unstyled">
+        <li data-trans="ludo.rules.takeOnStartingField.off">Nem lehet leütni a saját kezdőmezőjén álló bábut</li>
+        <li data-trans="ludo.rules.startOnOneAndSix.on">1-es és 6-os kockadobás után is lehet új bábut indítani</li>
+        <li data-trans="ludo.rules.reRollAfterSix.off">Nincs újradobás 6-os kockadobás után</li>
+        <li data-trans="ludo.rules.skipAfterRollingThreeSixes.off">Nem marad ki, aki egymás után háromszor 6-ost dob</li>
+    </ul>
+</template>
