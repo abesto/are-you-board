@@ -1,4 +1,4 @@
-boardDef = [
+var boardDef = [
     '....www....',
     '....wgw....',
     '....wgw....',
@@ -12,7 +12,7 @@ boardDef = [
     '....www....'
 ];
 
-fieldClasses = {
+var fieldClasses = {
     '.': '',
     'w': 'path',
     'r': 'path red',

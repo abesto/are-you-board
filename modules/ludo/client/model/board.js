@@ -18,4 +18,4 @@ LudoBoard = function LudoBoard() {
         this.rows.push(new LudoRow(row));
     }
     return this;
-}
+};
