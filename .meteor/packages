@@ -22,7 +22,6 @@ accounts-facebook
 twbs:bootstrap
 iron:router
 reactive-var
-mike:mocha
 msavin:mongol
 momentjs:moment
 check
@@ -30,3 +29,4 @@ accounts-password
 jamielob:accounts-ui-no-dropdown
 konecty:user-presence
 less
+aldeed:template-extension

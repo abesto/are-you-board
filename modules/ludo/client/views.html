@@ -14,15 +14,21 @@
     <table class="ludo-board">
         {{#each rows}}
         <tr>
-            {{#each fields}}
-            <td class="{{fieldClasses this}}"></td>
-            {{/each}}
+            {{#each fields}} {{> LudoField }} {{/each}}
         </tr>
         {{/each}}
     </table>
 </template>
 
 <template name="LudoControls">
+    Dice: {{game.dice}}
+    <button id="roll-dice">Roll dice</button>
+</template>
+
+<template name="LudoRules">
+</template>
+
+<template name="LudoControlsExample">
     <div id="state-container">
         <div data-state="1" data-trans="ludo.state.waitingForPlayers" class="state active">Várjuk, hogy beszálljanak még páran...</div>
         <div id="roll-dice" data-state="2" data-trans="ludo.state.diceRoll" class="btn state new-line disabled">Kockadobás</div>
@@ -57,7 +63,7 @@
     <a style="display: none;" id="start" href="#" data-trans="ludo.start" class="btn">Kezdjük!</a>
 </template>
 
-<template name="LudoRules">
+<template name="LudoRulesExample">
     <h4 data-trans="generic.rules">Szabályok</h4>
     <ul id="rules" class="unstyled">
         <li data-trans="ludo.rules.takeOnStartingField.off">Nem lehet leütni a saját kezdőmezőjén álló bábut</li>
@@ -65,4 +71,23 @@
         <li data-trans="ludo.rules.reRollAfterSix.off">Nincs újradobás 6-os kockadobás után</li>
         <li data-trans="ludo.rules.skipAfterRollingThreeSixes.off">Nem marad ki, aki egymás után háromszor 6-ost dob</li>
     </ul>
+</template>
+
+<template name="LudoField">
+    <td class="{{fieldClasses}}">
+
+    {{#if ghost}}
+        <div class="piece ghost {{ghost.side}}">{{> LudoHintText}}</div>
+    {{else}}
+        {{#if piece}}
+            <div class="piece {{piece.side}}">{{> LudoHintText}}</div>
+        {{else}}
+            {{> LudoHintText }}
+        {{/if}}
+    {{/if}}
+    </td>
+</template>
+
+<template name="LudoHintText">
+    <div class="ludo-hint-text">{{ hintText }}</div>
 </template>

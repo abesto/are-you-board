@@ -30,7 +30,7 @@ table.ludo-board {
         &.yellow { background-color: #ccaa00; }
         &.black { background-color: black; }
 
-        span.path-step-label.by-dice { font-weight: bold; }
+        div.ludo-hint-text { font-size: 0.8em; }
 
         div.piece {
             width: 20px;
@@ -44,7 +44,19 @@ table.ludo-board {
             &.green { background-color: green; }
             &.yellow { background-color: yellow; }
 
-            &.ghost { opacity: 0.3; }
+            &.ghost {
+                border-color: fade(black, 30%);
+                &.red { background-color: fade(red, 30%); }
+                &.blue { background-color: blue; }
+                &.green { background-color: green; }
+                &.yellow { background-color: yellow; }
+            }
+            div.ludo-hint-text {
+                font-weight: bold;
+                padding: 0;
+                margin: 0;
+                margin-top: -1px;
+            }
         }
     }
 
