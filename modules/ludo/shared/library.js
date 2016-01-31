@@ -21,8 +21,8 @@ Ludo = {
         if (!pos) {
             return pos;
         }
-        var spec = Ludo.paths[side][pos.row][pos.column];
-        if (spec === 'S') {
+        var spec = Ludo.paths[side][pos.row][pos.column].toLowerCase();
+        if (spec === 'i') {
             return Ludo.pathHead[side];
         } else if (spec === "e") {
             return {row: pos.row, column: pos.column + 1};
@@ -38,38 +38,64 @@ Ludo = {
     },
 
     nextPositions: function (side, init, n) {
-        var positions = [init];
-        for (var i = 0; i < n; i++) {
+        var positions = [Ludo.nextPosition(side, init)];
+        if (positions[0] === Ludo.pathHead[side]) {
+            return positions;
+        }
+        for (var i = 1; i < n; i++) {
             positions.push(Ludo.nextPosition(side, positions[positions.length - 1]));
         }
-        positions.shift();
         return positions;
+    },
+
+    canMove: function (game, piece) {
+        if (!game || !piece) { return false; }
+        if (_.find(Ludo.initialPositions[piece.side], piece.pos) && game.dice !== 6) { return false; }
+        var to = Ludo.nextPositions(piece.side, piece.pos, game.dice).pop();
+        if (!to) { return false; }
+
+        var pieceAtDest = _(game.pieces).find(function (piece) { return _(piece.pos).isEqual(to); });
+        if (pieceAtDest && pieceAtDest.side === piece.side) { return false; }
+        return true;
+    },
+
+    newPositionsIfMoved: function (game, piece) {
+        console.log(game, piece);
+        var piecesAt = _(game.pieces).map('.pos'),
+            pieceIndex = piecesAt.findIndex(piece.pos),
+            retval = [];
+
+        var path = Ludo.nextPositions(piece.side, piece.pos, game.dice);
+        if (!path) { return retval; }
+        var newPos = _.last(path);
+        retval.push({
+            pieceIndex: pieceIndex,
+            piece: game.pieces[pieceIndex],
+            newPos: _.last(path),
+            path: path});
+
+        var takenPieceIndex = piecesAt.findIndex(newPos);
+        if (takenPieceIndex === -1) {
+            return retval;
+        }
+        var initialPositions = Ludo.initialPositions[game.pieces[takenPieceIndex].side];
+        retval.push({
+            pieceIndex: takenPieceIndex,
+            piece: game.pieces[takenPieceIndex],
+            newPos: _(initialPositions).find(function (pos) { return !piecesAt.find(pos); }),
+            path: []
+        });
+
+        return retval;
     }
 };
 
-Ludo.initialPositions[Ludo.Sides.red] = [
-    Ludo.Pos(1, 1), Ludo.Pos(1, 2),
-    Ludo.Pos(2, 1), Ludo.Pos(2, 2),
-];
-Ludo.initialPositions[Ludo.Sides.green] = [
-    Ludo.Pos(1, 8), Ludo.Pos(1, 9),
-    Ludo.Pos(2, 8), Ludo.Pos(2, 9),
-];
-Ludo.initialPositions[Ludo.Sides.yellow] = [
-    Ludo.Pos(8, 8), Ludo.Pos(8, 9),
-    Ludo.Pos(9, 8), Ludo.Pos(9, 9),
-];
-Ludo.initialPositions[Ludo.Sides.blue] = [
-    Ludo.Pos(8, 1), Ludo.Pos(8, 2),
-    Ludo.Pos(9, 1), Ludo.Pos(9, 2),
-];
-
 Ludo.paths[Ludo.Sides.red] = [
     '....ees....',
-    '.SS.n.s....',
-    '.SS.n.s....',
+    '.ii.n.s....',
+    '.ii.n.s....',
     '....n.s....',
-    'eeeen.eeees',
+    'Eeeen.eeees',
     'eeee......s',
     'nwwww.swwww',
     '....n.s....',
@@ -77,5 +103,61 @@ Ludo.paths[Ludo.Sides.red] = [
     '....n.s....',
     '....nww....'
 ];
+Ludo.paths[Ludo.Sides.green] = [
+    '....esS....',
+    '....nss.ii.',
+    '....nss.ii.',
+    '....nss....',
+    'eeeen.eeees',
+    'n.........s',
+    'nwwww.swwww',
+    '....n.s....',
+    '....n.s....',
+    '....n.s....',
+    '....nww....'
+];
+Ludo.paths[Ludo.Sides.yellow] = [
+    '....ees....',
+    '....n.s....',
+    '....n.s....',
+    '....n.s....',
+    'eeeen.eeees',
+    'n......wwww',
+    'nwwww.swwwW',
+    '....n.s....',
+    '....n.s.ii.',
+    '....n.s.ii.',
+    '....nww....'
+];
+Ludo.paths[Ludo.Sides.blue] = [
+    '....ees....',
+    '....n.s....',
+    '....n.s....',
+    '....n.s....',
+    'eeeen.eeees',
+    'n.........s',
+    'nwwww.swwww',
+    '....nns....',
+    '.ii.nns....',
+    '.ii.nns....',
+    '....Nnw....'
+];
 
-Ludo.pathHead[Ludo.Sides.red] = Ludo.Pos(4, 0);
+_.each(Ludo.Sides, function (side) {
+    var pathSpec = Ludo.paths[side];
+    Ludo.initialPositions[side] = [];
+    for (var rowIndex = 0; rowIndex < pathSpec.length; rowIndex++) {
+        var row = pathSpec[rowIndex];
+        for (var columnIndex = 0; columnIndex < row.length; columnIndex++) {
+            var spec = row[columnIndex];
+            if (spec === 'i') {
+                Ludo.initialPositions[side].push(Ludo.Pos(rowIndex, columnIndex));
+            } else if (_.indexOf('NESW', spec) > -1) {
+                if (Ludo.pathHead[side]) {
+                    throw "Path head for " + side + " is already defined. Old is row=" + Ludo.pathHead[side].row + " column=" + Ludo.pathHead[side].column + ", new is row=" + rowIndex + " column=" + columnIndex + " for spec=" + spec;
+                }
+                Ludo.pathHead[side] = Ludo.Pos(rowIndex, columnIndex);
+            }
+        }
+    }
+});

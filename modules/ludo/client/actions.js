@@ -1,5 +1,5 @@
 function clearGhostAndHints() {
-    Session.set("ludo/ghost", null);
+    Session.set("ludo/ghosts", null);
     Session.set("ludo/hints", null);
 }
 
@@ -9,19 +9,24 @@ Template.LudoField.events({
         clearGhostAndHints();
     },
 
-    "mouseenter .piece": function (event, template) {
-        var game = template.parent(2).data.game;
-        var nextPositions = Ludo.nextPositions(this.piece.side, this.piece.pos, game.dice);
-        var last = nextPositions[nextPositions.length - 1];
-        Session.set("ludo/ghost", {
-            pos: last,
-            side: this.piece.side
-        });
+    "mouseenter .piece.can-move": function (event, template) {
+        var game = template.parent(2).data.game,
+            newPositions = Ludo.newPositionsIfMoved(game, this.piece);
+
+        Session.set("ludo/ghosts", newPositions.map(function (spec) {
+            return {
+                side: spec.piece.side,
+                pos: spec.newPos
+            };
+        }));
+
         var hints = {};
-        for (var i = 0; i < nextPositions.length; i++) {
-            var pos = nextPositions[i];
-            hints[pos.row + "," + pos.column] = i + 1;
-        }
+        _.each(newPositions, function (spec) {
+            _.each(spec.path, function (pos, index) {
+                hints[pos.row + "," + pos.column] = index + 1;
+            });
+        });
+
         Session.set("ludo/hints", hints);
     },
 

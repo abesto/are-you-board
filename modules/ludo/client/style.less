@@ -47,15 +47,27 @@ table.ludo-board {
             &.ghost {
                 border-color: fade(black, 30%);
                 &.red { background-color: fade(red, 30%); }
-                &.blue { background-color: blue; }
-                &.green { background-color: green; }
-                &.yellow { background-color: yellow; }
+                &.blue { background-color: fade(blue, 30%); }
+                &.green { background-color: fade(green, 30%); }
+                &.yellow { background-color: fade(yellow, 30%); }
+
+                div.ludo-hint-text {
+                    font-weight: bold;
+                }
             }
+
+            &.can-move:hover {
+                &.red { .box-shadow(0 0 8px red); } 
+                &.blue { .box-shadow(0 0 8px blue); } 
+                &.green { .box-shadow(0 0 8px green); } 
+                &.yellow { .box-shadow(0 0 8px darken(yellow, 30%)); } 
+                cursor: pointer;
+            }
+
             div.ludo-hint-text {
-                font-weight: bold;
                 padding: 0;
-                margin: 0;
                 margin-top: -1px;
+                margin-left: 1px;
             }
         }
     }

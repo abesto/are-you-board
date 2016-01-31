@@ -80,7 +80,7 @@
         <div class="piece ghost {{ghost.side}}">{{> LudoHintText}}</div>
     {{else}}
         {{#if piece}}
-            <div class="piece {{piece.side}}">{{> LudoHintText}}</div>
+            <div class="piece {{piece.side}} {{  canMoveClass }}">{{> LudoHintText}}</div>
         {{else}}
             {{> LudoHintText }}
         {{/if}}

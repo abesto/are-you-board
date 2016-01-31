@@ -30,7 +30,7 @@ Template.LudoBoard.helpers({
         for (i = 0; i < 11; i++) {
             var row = {fields: []};
             for (j = 0; j < 11; j++) {
-                row.fields.push({row: i, column: j, piece: null, ghost: null});
+                row.fields.push({row: i, column: j, piece: null, ghost: null, game: game});
             }
             rows.push(row);
         }
@@ -38,11 +38,9 @@ Template.LudoBoard.helpers({
             var piece = game.pieces[i];
             rows[piece.pos.row].fields[piece.pos.column].piece = piece;
         }
-        var ghost = Session.get("ludo/ghost");
-        console.log(ghost);
-        if (ghost) {
+        _.each(Session.get("ludo/ghosts"), function (ghost) {
             rows[ghost.pos.row].fields[ghost.pos.column].ghost = ghost;
-        }
+        });
         return rows;
     }
 });
@@ -51,6 +49,13 @@ Template.LudoField.helpers({
     fieldClasses: function () {
         var fieldDef = boardDef[this.row][this.column];
         return fieldClasses[fieldDef];
+    },
+
+    canMoveClass: function () {
+        if (Ludo.canMove(this.game, this.piece)) {
+            return 'can-move';
+        }
+        return '';
     }
 });
 

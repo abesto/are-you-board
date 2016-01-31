@@ -30,23 +30,15 @@ Meteor.methods({
     },
     
     "ludo/move": function (gameId, row, column) {
-        var game = Games.findOne({type: "ludo", _id: gameId});
-        var i, piece;
-        for (i = 0; i < game.pieces.length; i++) {
-            if (game.pieces[i].pos.row === row && game.pieces[i].pos.column === column) {
-                piece = game.pieces[i];
-                break;
-            }
-        }
-        var pieceKey = "pieces." + i;
+        var game = Games.findOne({type: "ludo", _id: gameId}),
+            piece = _(game.pieces).find({pos: {row: row, column: column}}),
+            newPositions = Ludo.newPositionsIfMoved(game, piece);
+
         var updateOperation = {$set: {}};
+        _.each(newPositions, function (spec) {
+            updateOperation.$set["pieces." + spec.pieceIndex + ".pos"] = spec.newPos;
+        });
 
-        var newPos = Ludo.nextPositions(piece.side, piece.pos, game.dice).pop();
-
-        if (newPos === null) {
-            throw {error: "no-next-move", piece: piece};
-        }
-        updateOperation.$set[pieceKey] = {pos: newPos, side: piece.side};
         return Games.update(
             {type: "ludo", _id: gameId},
             updateOperation
