@@ -60,19 +60,24 @@ Ludo = {
     },
 
     newPositionsIfMoved: function (game, piece) {
-        console.log(game, piece);
         var piecesAt = _(game.pieces).map('.pos'),
             pieceIndex = piecesAt.findIndex(piece.pos),
             retval = [];
 
+        if (!Ludo.canMove(game, piece)) { return retval; }
+
         var path = Ludo.nextPositions(piece.side, piece.pos, game.dice);
         if (!path) { return retval; }
+
         var newPos = _.last(path);
+        if (!newPos) { return retval; }
+
         retval.push({
             pieceIndex: pieceIndex,
             piece: game.pieces[pieceIndex],
             newPos: _.last(path),
-            path: path});
+            path: path
+        });
 
         var takenPieceIndex = piecesAt.findIndex(newPos);
         if (takenPieceIndex === -1) {

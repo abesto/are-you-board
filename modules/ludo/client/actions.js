@@ -4,7 +4,7 @@ function clearGhostAndHints() {
 }
 
 Template.LudoField.events({
-    "click .piece": function (event, template) {
+    "click .piece.can-move": function (event, template) {
         Meteor.call("ludo/move", template.parent(2).data.game._id, this.row, this.column);
         clearGhostAndHints();
     },
